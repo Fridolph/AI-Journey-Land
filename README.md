@@ -123,13 +123,30 @@ pnpm dev
 ## 常用脚本
 
 ```bash
-pnpm build
-pnpm lint
-pnpm format
-pnpm format:check
-pnpm typecheck
-pnpm test
+pnpm build          # 构建所有 package
+pnpm lint           # oxlint 检查
+pnpm format         # oxfmt 格式化
+pnpm format:check   # 校验格式
+pnpm typecheck      # TypeScript 类型检查
+pnpm test           # 运行全部测试单元
 ```
+
+单个 package 测试：
+
+```bash
+pnpm test --filter @ai-journey-land/ai-core
+pnpm test --filter @ai-journey-land/shared
+pnpm test --filter @ai-journey-land/demo-registry
+pnpm test --filter @ai-journey-land/api
+```
+
+覆盖率报告：
+
+```bash
+pnpm --filter @ai-journey-land/ai-core exec vitest run --coverage
+```
+
+详细信息见 [测试规范](./docs/03-测试规范.md)。
 
 ## 当前已接入 demo
 
@@ -188,6 +205,7 @@ Prompt Template 周报生成 demo。
 - [项目上下文](./docs/00-项目上下文.md)
 - [AI 演示平台架构设计](./docs/01-AI演示平台架构设计.md)
 - [工程化约定](./docs/02-工程化约定.md)
+- [测试规范](./docs/03-测试规范.md)
 - [Demo 文档索引](./docs/demos/README.md)
 - [Prompt Template 周报生成 Demo 总览](./docs/demos/prompt-template-weekly-report/总览.md)
 - [Prompt Template 周报生成 Demo 复盘](./docs/03-Prompt%20Template%20周报生成%20Demo%20复盘.md)
