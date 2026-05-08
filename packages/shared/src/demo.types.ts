@@ -1,10 +1,8 @@
-import type { PromptTemplateWeeklyReportInput } from './demo.schemas'
-
 export type DemoRunStatus = 'success' | 'error'
 export type DemoDisplayMode = 'custom-page' | 'generic-runner'
 
 export interface DemoInputField {
-  name: keyof PromptTemplateWeeklyReportInput
+  name: string
   label: string
   component: 'input' | 'textarea'
   placeholder: string
