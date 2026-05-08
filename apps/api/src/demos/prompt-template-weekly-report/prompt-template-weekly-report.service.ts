@@ -5,15 +5,12 @@ import {
   AiConfigurationError,
   createChatModel,
   stringifyAiContent,
-  type ChatModelConfig,
+  type AiProvider,
+  type ProviderConfig,
 } from '@ai-journey-land/ai-core'
 import { demoRunRequestSchema, type DemoRunRequest } from '@ai-journey-land/shared'
 import { ZodError } from 'zod'
 import type { DemoRunner } from '../demo-runner'
-
-const supportedProviders = ['openai', 'deepseek'] as const
-
-type AiProvider = (typeof supportedProviders)[number]
 
 const weeklyReportTemplate = `
 你是一名严谨但不失人情味的工程团队负责人，需要根据本周数据写一份周报。
@@ -44,8 +41,9 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
 
   async run(body: unknown): Promise<string> {
     const request = this.parseRunRequest(body)
-    const model = createChatModel({
-      ...this.getModelConfig(),
+    const provider = this.resolveProvider()
+    const model = createChatModel(provider, {
+      ...this.buildProviderConfig(provider),
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -56,8 +54,9 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
 
   async *stream(body: unknown): AsyncGenerator<string> {
     const request = this.parseRunRequest(body)
-    const model = createChatModel({
-      ...this.getModelConfig(),
+    const provider = this.resolveProvider()
+    const model = createChatModel(provider, {
+      ...this.buildProviderConfig(provider),
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -90,41 +89,31 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
     return promptTemplate.format(request.input)
   }
 
-  private getModelConfig(): ChatModelConfig {
-    const provider = this.getAiProvider()
+  private resolveProvider(): AiProvider {
+    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
 
+    if (provider !== 'openai' && provider !== 'deepseek') {
+      throw new AiConfigurationError(
+        `AI_PROVIDER 仅支持：openai, deepseek，当前值：${provider}`,
+      )
+    }
+
+    return provider
+  }
+
+  private buildProviderConfig(provider: AiProvider): ProviderConfig {
     if (provider === 'deepseek') {
       return {
-        provider,
         apiKey: this.configService.get<string>('DEEPSEEK_API_KEY'),
-        apiKeyEnvName: 'DEEPSEEK_API_KEY',
         baseUrl: this.configService.get<string>('DEEPSEEK_BASE_URL'),
-        baseUrlEnvName: 'DEEPSEEK_BASE_URL',
         modelName: this.configService.get<string>('DEEPSEEK_MODEL_NAME'),
-        modelNameEnvName: 'DEEPSEEK_MODEL_NAME',
       }
     }
 
     return {
-      provider,
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      apiKeyEnvName: 'OPENAI_API_KEY',
       baseUrl: this.configService.get<string>('OPENAI_BASE_URL'),
-      baseUrlEnvName: 'OPENAI_BASE_URL',
       modelName: this.configService.get<string>('MODEL_NAME'),
-      modelNameEnvName: 'MODEL_NAME',
     }
-  }
-
-  private getAiProvider(): AiProvider {
-    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
-
-    if (supportedProviders.includes(provider as AiProvider)) {
-      return provider as AiProvider
-    }
-
-    throw new AiConfigurationError(
-      `AI_PROVIDER 仅支持：${supportedProviders.join(', ')}，当前值：${provider}`,
-    )
   }
 }
