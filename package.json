@@ -1,0 +1,33 @@
+{
+  "name": "ai-journey-land",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "oxlint .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "oxfmt": "0.48.0",
+    "oxlint": "1.63.0",
+    "turbo": "2.9.10",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": "22.18.0",
+    "pnpm": ">=11.0.8"
+  },
+  "packageManager": "pnpm@11.0.8",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@parcel/watcher",
+      "esbuild",
+      "vue-demi"
+    ]
+  }
+}

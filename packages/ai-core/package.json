@@ -1,0 +1,22 @@
+{
+  "name": "@ai-journey-land/ai-core",
+  "version": "0.1.0",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node -e \"console.log('ai-core: no tests yet')\""
+  },
+  "dependencies": {
+    "@langchain/openai": "1.4.5"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}

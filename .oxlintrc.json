@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "coverage/**",
+    ".turbo/**",
+    ".nuxt/**",
+    ".output/**",
+    "apps/web/.nuxt/**",
+    "apps/web/.output/**",
+    "packages/*/dist/**",
+    "apps/api/dist/**"
+  ]
+}

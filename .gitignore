@@ -53,6 +53,9 @@ web_modules/
 # Optional eslint cache
 .eslintcache
 
+# Turbo
+.turbo/
+
 # Optional stylelint cache
 .stylelintcache
 
@@ -82,6 +85,12 @@ out
 .nuxt
 dist
 .output
+
+# NestJS build output
+apps/api/dist/
+
+# Workspace package build output
+packages/*/dist/
 
 # Gatsby files
 .cache/
