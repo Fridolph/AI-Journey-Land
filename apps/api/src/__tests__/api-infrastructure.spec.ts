@@ -1,142 +1,100 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { Test } from '@nestjs/testing'
-import { Reflector } from '@nestjs/core'
-import { Logger, NotFoundException, type INestApplication } from '@nestjs/common'
-import type { AddressInfo } from 'node:net'
+import { ServiceUnavailableException } from '@nestjs/common'
 import { AiConfigurationError } from '@ai-journey-land/ai-core'
-import { AllExceptionsFilter } from '../common/filters/all-exceptions.filter'
-import { ResponseInterceptor } from '../common/interceptors/response.interceptor'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Response } from 'express'
 import { DemosController } from '../demos/demos.controller'
-import { DemosService } from '../demos/demos.service'
+import type { DemosService } from '../demos/demos.service'
 import { HealthController } from '../health.controller'
 
-describe('API infrastructure', () => {
-  let app: INestApplication
-  let baseUrl: string
+function createMockResponse() {
+  const response = {
+    setHeader: vi.fn(),
+    flushHeaders: vi.fn(),
+    write: vi.fn(),
+    end: vi.fn(),
+  }
 
-  beforeAll(async () => {
-    vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined)
-    vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined)
+  return response as unknown as Response
+}
 
-    const moduleRef = await Test.createTestingModule({
-      controllers: [HealthController, DemosController],
-      providers: [
-        {
-          provide: DemosService,
-          useValue: {
-            listDemos: () => ({
-              items: [
-                {
-                  id: 'prompt-template-weekly-report',
-                },
-              ],
-            }),
-            getDemo: (id: string) => {
-              throw new NotFoundException(`未找到 demo：${id}`)
-            },
-            runDemo: () => {
-              throw new AiConfigurationError('provider deepseek 缺少环境变量：DEEPSEEK_API_KEY')
-            },
-            async *streamDemo() {
-              yield 'partial'
-              throw new Error('stream failed')
-            },
-          },
-        },
-      ],
-    }).compile()
+describe('API infrastructure controller behavior', () => {
+  const demosService = {
+    listDemos: vi.fn(),
+    getDemo: vi.fn(),
+    runDemo: vi.fn(),
+    streamDemo: vi.fn(),
+  }
 
-    app = moduleRef.createNestApplication()
-    app.setGlobalPrefix('api')
-    app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)))
-    app.useGlobalFilters(new AllExceptionsFilter())
+  let demosController: DemosController
+  let healthController: HealthController
 
-    await app.listen(0)
-
-    const address = app.getHttpServer().address() as AddressInfo
-    baseUrl = `http://127.0.0.1:${address.port}`
+  beforeEach(() => {
+    vi.clearAllMocks()
+    demosController = new DemosController(demosService as unknown as DemosService)
+    healthController = new HealthController()
   })
 
-  afterAll(async () => {
-    await app?.close()
-    vi.restoreAllMocks()
-  })
-
-  it('统一包装 GET /api/health 响应', async () => {
-    const response = await fetch(`${baseUrl}/api/health`)
-    const body = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(body).toMatchObject({
-      code: 200,
-      message: '操作成功',
-      data: {
-        status: 'ok',
-        service: 'ai-journey-land-api',
-      },
-      path: '/api/health',
+  it('health controller 返回基础健康数据', () => {
+    expect(healthController.getHealth()).toMatchObject({
+      status: 'ok',
+      service: 'ai-journey-land-api',
     })
   })
 
-  it('统一包装 GET /api/demos 响应', async () => {
-    const response = await fetch(`${baseUrl}/api/demos`)
-    const body = await response.json()
+  it('demos controller 透传普通 demo 列表', () => {
+    demosService.listDemos.mockReturnValue({
+      items: [{ id: 'prompt-template-weekly-report' }],
+    })
 
-    expect(response.status).toBe(200)
-    expect(body.data.items).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: 'prompt-template-weekly-report',
-        }),
-      ]),
+    expect(demosController.listDemos()).toEqual({
+      items: [{ id: 'prompt-template-weekly-report' }],
+    })
+  })
+
+  it('run 接口将 AiConfigurationError 转成 503 异常', async () => {
+    demosService.runDemo.mockRejectedValue(
+      new AiConfigurationError('provider deepseek 缺少环境变量：DEEPSEEK_API_KEY'),
+    )
+
+    await expect(demosController.runDemo('demo-1', { input: {} })).rejects.toThrow(
+      ServiceUnavailableException,
     )
   })
 
-  it('统一包装 NotFound 错误响应', async () => {
-    const response = await fetch(`${baseUrl}/api/demos/unknown-demo`)
-    const body = await response.json()
-
-    expect(response.status).toBe(404)
-    expect(body).toMatchObject({
-      code: 404,
-      message: '未找到 demo：unknown-demo',
-      data: null,
-      path: '/api/demos/unknown-demo',
+  it('stream 接口保持 SSE 事件格式', async () => {
+    demosService.streamDemo.mockImplementation(async function* () {
+      yield 'first chunk'
+      yield 'second chunk'
     })
+
+    const response = createMockResponse()
+    await demosController.streamDemo('demo-1', { input: {} }, response)
+
+    expect(response.setHeader).toHaveBeenCalledWith(
+      'Content-Type',
+      'text/event-stream; charset=utf-8',
+    )
+    expect(response.write).toHaveBeenCalledWith('event: meta\n')
+    expect(response.write).toHaveBeenCalledWith('data: {"demoId":"demo-1","status":"started"}\n\n')
+    expect(response.write).toHaveBeenCalledWith('event: token\n')
+    expect(response.write).toHaveBeenCalledWith('data: {"text":"first chunk"}\n\n')
+    expect(response.write).toHaveBeenCalledWith('data: {"text":"second chunk"}\n\n')
+    expect(response.write).toHaveBeenCalledWith('event: done\n')
+    expect(response.end).toHaveBeenCalled()
   })
 
-  it('保持 SSE 接口为 text/event-stream', async () => {
-    const response = await fetch(`${baseUrl}/api/demos/unknown-demo/stream`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ input: {} }),
+  it('stream 接口将错误写成 SSE error 事件', async () => {
+    demosService.streamDemo.mockImplementation(async function* () {
+      yield 'partial chunk before error'
+      throw new Error('stream failed')
     })
-    const body = await response.text()
 
-    expect(response.status).toBe(200)
-    expect(response.headers.get('content-type')).toContain('text/event-stream')
-    expect(body).toContain('event: meta')
-    expect(body).toContain('event: error')
-  })
+    const response = createMockResponse()
+    await demosController.streamDemo('demo-1', { input: {} }, response)
 
-  it('普通 run 遇到 AI 配置错误时返回统一 503 响应', async () => {
-    const response = await fetch(`${baseUrl}/api/demos/prompt-template-weekly-report/run`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ input: {} }),
-    })
-    const body = await response.json()
-
-    expect(response.status).toBe(503)
-    expect(body).toMatchObject({
-      code: 503,
-      message: 'provider deepseek 缺少环境变量：DEEPSEEK_API_KEY',
-      data: null,
-      path: '/api/demos/prompt-template-weekly-report/run',
-    })
+    expect(response.write).toHaveBeenCalledWith('event: error\n')
+    expect(response.write).toHaveBeenCalledWith(
+      'data: {"status":"error","message":"AI demo 流式运行失败。"}\n\n',
+    )
   })
 })

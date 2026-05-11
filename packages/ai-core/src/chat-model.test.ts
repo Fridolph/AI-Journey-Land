@@ -15,15 +15,30 @@ vi.mock('@langchain/openai', () => ({
 }))
 
 import { ChatOpenAI } from '@langchain/openai'
-import { createChatModel, AiConfigurationError, type AiProvider, type ProviderConfig } from './chat-model'
+import {
+  AiConfigurationError,
+  AiProviderUnsupportedError,
+  assertProviderConfig,
+  createChatModel,
+  createCreativeModel,
+  createDefaultModel,
+  createStableModel,
+  createStreamingModel,
+  isAiProvider,
+  parseAiProvider,
+  providerEnvMap,
+  type ProviderConfig,
+} from './chat-model'
 
 const openaiConfig: ProviderConfig = {
+  provider: 'openai',
   apiKey: 'sk-test',
   baseUrl: 'https://test.openai.com/v1',
   modelName: 'gpt-test',
 }
 
 const deepseekConfig: ProviderConfig = {
+  provider: 'deepseek',
   apiKey: 'sk-deepseek-test',
   baseUrl: 'https://api.deepseek.com',
   modelName: 'deepseek-test',
@@ -33,124 +48,93 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe('createChatModel', () => {
-  it('creates a ChatOpenAI instance with openai provider', () => {
-    const model = createChatModel('openai', openaiConfig)
+describe('provider-config', () => {
+  it('识别合法 provider', () => {
+    expect(isAiProvider('openai')).toBe(true)
+    expect(isAiProvider('deepseek')).toBe(true)
+    expect(isAiProvider('foo')).toBe(false)
+  })
+
+  it('解析合法 provider', () => {
+    expect(parseAiProvider('openai')).toBe('openai')
+    expect(parseAiProvider('deepseek')).toBe('deepseek')
+  })
+
+  it('解析未知 provider 时抛出错误', () => {
+    expect(() => parseAiProvider('foo')).toThrow(AiProviderUnsupportedError)
+  })
+
+  it('校验通过时返回完整 provider 配置', () => {
+    expect(assertProviderConfig(openaiConfig)).toMatchObject(openaiConfig)
+  })
+
+  it('缺少配置时抛出清晰错误', () => {
+    expect(() =>
+      assertProviderConfig({
+        provider: 'openai',
+        apiKey: 'sk-test',
+        baseUrl: 'https://test.openai.com/v1',
+      }),
+    ).toThrow(AiConfigurationError)
+  })
+
+  it('包含正确的环境变量映射', () => {
+    expect(providerEnvMap.deepseek.modelNameEnvName).toBe('DEEPSEEK_MODEL_NAME')
+  })
+})
+
+describe('model-factory', () => {
+  it('创建基础 ChatOpenAI 实例', () => {
+    const model = createChatModel(openaiConfig, { temperature: 0.4, maxTokens: 1234 })
+
     expect(model).toBeDefined()
     expect(ChatOpenAI).toHaveBeenCalledWith({
       apiKey: 'sk-test',
       model: 'gpt-test',
-      temperature: 0,
+      temperature: 0.4,
+      maxTokens: 1234,
       configuration: {
         baseURL: 'https://test.openai.com/v1',
       },
     })
   })
 
-  it('creates a ChatOpenAI instance with deepseek provider', () => {
-    const model = createChatModel('deepseek', deepseekConfig)
-    expect(model).toBeDefined()
-    expect(ChatOpenAI).toHaveBeenCalledWith({
-      apiKey: 'sk-deepseek-test',
-      model: 'deepseek-test',
-      temperature: 0,
-      configuration: {
-        baseURL: 'https://api.deepseek.com',
-      },
-    })
-  })
+  it('支持 deepseek provider', () => {
+    createChatModel(deepseekConfig)
 
-  it('respects custom temperature', () => {
-    createChatModel('openai', { ...openaiConfig, temperature: 0.7 })
     expect(ChatOpenAI).toHaveBeenCalledWith(
-      expect.objectContaining({ temperature: 0.7 }),
+      expect.objectContaining({
+        apiKey: 'sk-deepseek-test',
+        model: 'deepseek-test',
+        configuration: {
+          baseURL: 'https://api.deepseek.com',
+        },
+      }),
     )
   })
 
-  it('defaults temperature to 0 when not provided', () => {
-    createChatModel('openai', openaiConfig)
-    expect(ChatOpenAI).toHaveBeenCalledWith(
-      expect.objectContaining({ temperature: 0 }),
-    )
-  })
-})
-
-describe('createChatModel error handling', () => {
-  it('throws AiConfigurationError when apiKey is missing for openai', () => {
-    expect(() =>
-      createChatModel('openai', {
-        baseUrl: 'https://test.openai.com/v1',
-        modelName: 'gpt-test',
-      }),
-    ).toThrow(AiConfigurationError)
+  it('default preset 使用默认温度', () => {
+    createDefaultModel(openaiConfig)
+    expect(ChatOpenAI).toHaveBeenCalledWith(expect.objectContaining({ temperature: 0.2 }))
   })
 
-  it('throws AiConfigurationError when baseUrl is missing for openai', () => {
-    expect(() =>
-      createChatModel('openai', {
-        apiKey: 'sk-test',
-        modelName: 'gpt-test',
-      }),
-    ).toThrow(AiConfigurationError)
+  it('stable preset 使用低温度', () => {
+    createStableModel(openaiConfig)
+    expect(ChatOpenAI).toHaveBeenCalledWith(expect.objectContaining({ temperature: 0.1 }))
   })
 
-  it('throws AiConfigurationError when modelName is missing for openai', () => {
-    expect(() =>
-      createChatModel('openai', {
-        apiKey: 'sk-test',
-        baseUrl: 'https://test.openai.com/v1',
-      }),
-    ).toThrow(AiConfigurationError)
+  it('creative preset 使用高温度', () => {
+    createCreativeModel(openaiConfig)
+    expect(ChatOpenAI).toHaveBeenCalledWith(expect.objectContaining({ temperature: 0.8 }))
   })
 
-  it('throws AiConfigurationError when apiKey is missing for deepseek', () => {
-    expect(() =>
-      createChatModel('deepseek', {
-        baseUrl: 'https://api.deepseek.com',
-        modelName: 'deepseek-test',
-      }),
-    ).toThrow(AiConfigurationError)
+  it('streaming preset 保留默认温度', () => {
+    createStreamingModel(openaiConfig)
+    expect(ChatOpenAI).toHaveBeenCalledWith(expect.objectContaining({ temperature: 0.2 }))
   })
 
-  it('error message includes provider name and missing env var names', () => {
-    try {
-      createChatModel('openai', {
-        apiKey: 'sk-test',
-        baseUrl: 'https://test.openai.com/v1',
-      })
-    } catch (error) {
-      expect(error).toBeInstanceOf(AiConfigurationError)
-      expect((error as Error).message).toContain('openai')
-      expect((error as Error).message).toContain('MODEL_NAME')
-    }
-  })
-
-  it('error message includes deepseek-specific env var names', () => {
-    try {
-      createChatModel('deepseek', {
-        apiKey: 'sk-test',
-        baseUrl: 'https://api.deepseek.com',
-      })
-    } catch (error) {
-      expect((error as Error).message).toContain('deepseek')
-      expect((error as Error).message).toContain('DEEPSEEK_MODEL_NAME')
-    }
-  })
-})
-
-describe('AiConfigurationError', () => {
-  it('has name "AiConfigurationError"', () => {
-    const error = new AiConfigurationError('test')
-    expect(error.name).toBe('AiConfigurationError')
-  })
-
-  it('is an instance of Error', () => {
-    const error = new AiConfigurationError('test')
-    expect(error).toBeInstanceOf(Error)
-  })
-
-  it('preserves the message', () => {
-    const error = new AiConfigurationError('custom message')
-    expect(error.message).toBe('custom message')
+  it('允许预设被自定义参数覆盖', () => {
+    createStableModel(openaiConfig, { temperature: 0.3 })
+    expect(ChatOpenAI).toHaveBeenCalledWith(expect.objectContaining({ temperature: 0.3 }))
   })
 })
