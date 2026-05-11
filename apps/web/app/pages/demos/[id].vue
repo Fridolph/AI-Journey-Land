@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { demoSources } from '../../data/demo-sources'
+
 const route = useRoute()
 const demoId = computed(() => String(route.params.id ?? ''))
 
 const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, runDemo, streamDemo } =
   useDemoRunner()
+
+const demoSource = computed(() => demoSources[demoId.value])
 
 const pageErrorMessage = shallowRef('')
 const isLoadingDemo = shallowRef(true)
@@ -175,7 +179,7 @@ onMounted(() => {
             />
           </UCard>
 
-          <UCard v-if="selectedDemo.sourceCode" :ui="{ body: 'p-0 sm:p-0' }">
+          <UCard v-if="demoSource" :ui="{ body: 'p-0 sm:p-0' }">
             <template #header>
               <div class="demo-page__section-title">
                 <UIcon name="i-lucide-file-code-2" />
@@ -183,8 +187,8 @@ onMounted(() => {
               </div>
             </template>
             <DemoSourceCode
-              :code="selectedDemo.sourceCode"
-              :language="selectedDemo.sourceLanguage"
+              :code="demoSource.code"
+              :language="demoSource.language"
               :filename="sourceFilename"
             />
           </UCard>

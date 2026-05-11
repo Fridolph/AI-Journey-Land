@@ -25,8 +25,6 @@ export interface DemoMeta {
   supportsStreaming: boolean
   inputFields: DemoInputField[]
   sourceUrl?: string
-  sourceCode?: string
-  sourceLanguage?: string
   docsUrl?: string
   draftUrl?: string
   knownLimits: string[]
