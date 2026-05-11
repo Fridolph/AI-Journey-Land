@@ -1,6 +1,17 @@
 export type DemoRunStatus = 'success' | 'error'
 export type DemoDisplayMode = 'custom-page' | 'generic-runner'
 
+/**
+ * API 标准响应结构，与后端 ResponseInterceptor 保持一致。
+ */
+export interface ApiResponse<T> {
+  code: number
+  message: string
+  data: T | null
+  timestamp: string
+  path: string
+}
+
 export interface DemoInputField {
   name: string
   label: string
