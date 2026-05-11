@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  demoRunRequestSchema,
-  promptTemplateWeeklyReportInputSchema,
-} from './demo.schemas'
+import { demoRunRequestSchema, promptTemplateWeeklyReportInputSchema } from './demo.schemas'
 
 describe('demoRunRequestSchema (generic)', () => {
   it('accepts any string key-value input', () => {
