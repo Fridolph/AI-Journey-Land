@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PromptTemplate } from '@langchain/core/prompts'
 import {
@@ -37,7 +37,7 @@ const weeklyReportTemplate = `
 export class PromptTemplateWeeklyReportService implements DemoRunner {
   readonly demoId = 'prompt-template-weekly-report'
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
 
   async run(body: unknown): Promise<string> {
     const request = this.parseRunRequest(body)
@@ -93,9 +93,7 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
     const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
 
     if (provider !== 'openai' && provider !== 'deepseek') {
-      throw new AiConfigurationError(
-        `AI_PROVIDER 仅支持：openai, deepseek，当前值：${provider}`,
-      )
+      throw new AiConfigurationError(`AI_PROVIDER 仅支持：openai, deepseek，当前值：${provider}`)
     }
 
     return provider

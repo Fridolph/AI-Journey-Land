@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
@@ -22,10 +22,7 @@ export default defineConfig({
     alias: {
       '@ai-journey-land/shared': resolve(__dirname, '../../packages/shared/src'),
       '@ai-journey-land/ai-core': resolve(__dirname, '../../packages/ai-core/src'),
-      '@ai-journey-land/demo-registry': resolve(
-        __dirname,
-        '../../packages/demo-registry/src',
-      ),
+      '@ai-journey-land/demo-registry': resolve(__dirname, '../../packages/demo-registry/src'),
     },
   },
 })
