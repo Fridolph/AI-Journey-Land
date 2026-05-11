@@ -130,7 +130,7 @@ pnpm build
 
 ## 合并与关闭
 
-- PR: 待创建。
-- Commit: 待提交。
-- 合并到 `dev`: 待完成。
-- Issue 关闭时间: 待完成。
+- PR: https://github.com/Fridolph/AI-Journey-Land/pull/9
+- Commit: `1c81bec`
+- 合并到 `dev`: `35c1165`
+- Issue 关闭时间: 2026-05-11
