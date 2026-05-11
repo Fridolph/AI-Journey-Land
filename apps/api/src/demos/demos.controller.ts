@@ -6,27 +6,43 @@ import {
   Body,
   Res,
   ServiceUnavailableException,
+  HttpCode,
+  HttpStatus,
+  Inject,
 } from '@nestjs/common'
 import type { Response } from 'express'
 import { AiConfigurationError } from '@ai-journey-land/ai-core'
+import { Public } from '../auth/public.decorator'
+import { SkipApiResponse } from '../common/decorators/skip-api-response.decorator'
 import { DemosService } from './demos.service'
 import { prepareSseResponse, writeSseEvent } from './sse'
 
+@Public()
 @Controller('demos')
 export class DemosController {
-  constructor(private readonly demosService: DemosService) {}
+  constructor(@Inject(DemosService) private readonly demosService: DemosService) {}
 
+  /**
+   * 获取 demo catalog 列表。
+   */
   @Get()
   listDemos() {
     return this.demosService.listDemos()
   }
 
+  /**
+   * 获取单个 demo 的完整元信息。
+   */
   @Get(':id')
   getDemo(@Param('id') id: string) {
     return this.demosService.getDemo(id)
   }
 
+  /**
+   * 以普通 JSON 方式运行 demo。
+   */
   @Post(':id/run')
+  @HttpCode(HttpStatus.OK)
   async runDemo(@Param('id') id: string, @Body() body: unknown) {
     try {
       return await this.demosService.runDemo(id, body)
@@ -39,7 +55,12 @@ export class DemosController {
     }
   }
 
+  /**
+   * 以 SSE 方式流式运行 demo。
+   */
   @Post(':id/stream')
+  @HttpCode(HttpStatus.OK)
+  @SkipApiResponse()
   async streamDemo(
     @Param('id') id: string,
     @Body() body: unknown,

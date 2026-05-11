@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { getDemoById, listDemoItems } from '@ai-journey-land/demo-registry'
 import type { DemoListResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
@@ -9,6 +9,7 @@ export class DemosService {
   private readonly runners: Map<string, DemoRunner>
 
   constructor(
+    @Inject(PromptTemplateWeeklyReportService)
     private readonly promptTemplateWeeklyReportService: PromptTemplateWeeklyReportService,
   ) {
     this.runners = new Map([
