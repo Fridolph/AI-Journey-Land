@@ -13,7 +13,7 @@
 - Issue: https://github.com/Fridolph/AI-Journey-Land/issues/6
 - 分支: `feat/#6-api-infrastructure`
 - 类型: feat
-- 状态: 已自测，待提交 / PR / 合并
+- 状态: 已合并并关闭
 
 ## Plan / TDD
 
@@ -132,7 +132,7 @@ pnpm --filter @ai-journey-land/api build
 
 ## 合并与关闭
 
-- PR: 待创建。
-- Commit: 待提交。
-- 合并到 `dev`: 待完成。
-- Issue 关闭时间: 待完成。
+- PR: https://github.com/Fridolph/AI-Journey-Land/pull/8
+- Commit: `89fbc63`
+- 合并到 `dev`: `fe09478`
+- Issue 关闭时间: 2026-05-11
