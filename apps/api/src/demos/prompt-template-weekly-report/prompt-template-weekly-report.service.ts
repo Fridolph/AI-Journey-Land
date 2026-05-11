@@ -1,15 +1,9 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { PromptTemplate } from '@langchain/core/prompts'
-import {
-  AiConfigurationError,
-  createChatModel,
-  stringifyAiContent,
-  type AiProvider,
-  type ProviderConfig,
-} from '@ai-journey-land/ai-core'
+import { stringifyAiContent } from '@ai-journey-land/ai-core'
 import { demoRunRequestSchema, type DemoRunRequest } from '@ai-journey-land/shared'
 import { ZodError } from 'zod'
+import { AiService } from '../../ai/ai.service'
 import type { DemoRunner } from '../demo-runner'
 
 const weeklyReportTemplate = `
@@ -37,13 +31,11 @@ const weeklyReportTemplate = `
 export class PromptTemplateWeeklyReportService implements DemoRunner {
   readonly demoId = 'prompt-template-weekly-report'
 
-  constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
+  constructor(@Inject(AiService) private readonly aiService: AiService) {}
 
   async run(body: unknown): Promise<string> {
     const request = this.parseRunRequest(body)
-    const provider = this.resolveProvider()
-    const model = createChatModel(provider, {
-      ...this.buildProviderConfig(provider),
+    const model = this.aiService.createStableModel({
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -54,9 +46,7 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
 
   async *stream(body: unknown): AsyncGenerator<string> {
     const request = this.parseRunRequest(body)
-    const provider = this.resolveProvider()
-    const model = createChatModel(provider, {
-      ...this.buildProviderConfig(provider),
+    const model = this.aiService.createStreamingModel({
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -87,31 +77,5 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
   private async formatPrompt(request: DemoRunRequest): Promise<string> {
     const promptTemplate = PromptTemplate.fromTemplate(weeklyReportTemplate)
     return promptTemplate.format(request.input)
-  }
-
-  private resolveProvider(): AiProvider {
-    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
-
-    if (provider !== 'openai' && provider !== 'deepseek') {
-      throw new AiConfigurationError(`AI_PROVIDER 仅支持：openai, deepseek，当前值：${provider}`)
-    }
-
-    return provider
-  }
-
-  private buildProviderConfig(provider: AiProvider): ProviderConfig {
-    if (provider === 'deepseek') {
-      return {
-        apiKey: this.configService.get<string>('DEEPSEEK_API_KEY'),
-        baseUrl: this.configService.get<string>('DEEPSEEK_BASE_URL'),
-        modelName: this.configService.get<string>('DEEPSEEK_MODEL_NAME'),
-      }
-    }
-
-    return {
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      baseUrl: this.configService.get<string>('OPENAI_BASE_URL'),
-      modelName: this.configService.get<string>('MODEL_NAME'),
-    }
   }
 }
