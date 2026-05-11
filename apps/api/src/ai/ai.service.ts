@@ -1,13 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
+  assertProviderConfig,
   createCreativeModel,
   createDefaultModel,
   createStableModel,
   createStreamingModel,
-  parseAiProvider,
+  llmProviderRegistry,
+  parseLlmProvider,
   SessionManager,
   type ChatModelOptions,
+  type ProviderConfig,
 } from '@ai-journey-land/ai-core'
 import type { ChatOpenAI } from '@langchain/openai'
 import type { ApiAiModelPreset, ResolvedAiProviderConfig } from './ai.types'
@@ -67,34 +70,28 @@ export class AiService {
 
   /**
    * 返回当前 provider 配置。
+   * 从注册表读取环境变量名，自动获取 apiKey / 可选覆盖值，
+   * 由 assertProviderConfig 统一填充内置默认值。
    */
   getProviderConfig(): ResolvedAiProviderConfig {
     const provider = this.getProvider()
+    const entry = llmProviderRegistry[provider]
 
-    if (provider === 'deepseek') {
-      return {
-        provider,
-        apiKey: this.configService.get<string>('DEEPSEEK_API_KEY'),
-        baseUrl: this.configService.get<string>('DEEPSEEK_BASE_URL'),
-        modelName: this.configService.get<string>('DEEPSEEK_MODEL_NAME'),
-      }
-    }
-
-    return {
+    return assertProviderConfig({
       provider,
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      baseUrl: this.configService.get<string>('OPENAI_BASE_URL'),
-      modelName: this.configService.get<string>('MODEL_NAME'),
-    }
+      apiKey: this.configService.get<string>(entry.apiKeyEnvName),
+      baseUrl: this.configService.get<string>(entry.baseUrlEnvName),
+      modelName: this.configService.get<string>(entry.modelNameEnvName),
+    } satisfies ProviderConfig)
   }
 
   /**
-   * 返回当前生效的 provider。
+   * 返回当前生效的 LLM provider。
    */
   getProvider() {
-    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
+    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'deepseek'
 
-    return parseAiProvider(provider)
+    return parseLlmProvider(provider)
   }
 
   /**

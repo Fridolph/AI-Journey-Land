@@ -18,24 +18,6 @@ function createConfigService(values: Record<string, string | undefined>) {
 }
 
 describe('AiService', () => {
-  it('读取 openai provider 配置', () => {
-    const service = new AiService(
-      createConfigService({
-        AI_PROVIDER: 'openai',
-        OPENAI_API_KEY: 'sk-openai',
-        OPENAI_BASE_URL: 'https://openai.example.com/v1',
-        MODEL_NAME: 'gpt-test',
-      }),
-    )
-
-    expect(service.getProviderConfig()).toMatchObject({
-      provider: 'openai',
-      apiKey: 'sk-openai',
-      baseUrl: 'https://openai.example.com/v1',
-      modelName: 'gpt-test',
-    })
-  })
-
   it('读取 deepseek provider 配置', () => {
     const service = new AiService(
       createConfigService({
@@ -54,25 +36,53 @@ describe('AiService', () => {
     })
   })
 
-  it('provider 未配置时默认 openai', () => {
+  it('仅配置 API key 时使用注册表默认 baseUrl 和 modelName', () => {
     const service = new AiService(
       createConfigService({
-        OPENAI_API_KEY: 'sk-openai',
-        OPENAI_BASE_URL: 'https://openai.example.com/v1',
-        MODEL_NAME: 'gpt-test',
+        AI_PROVIDER: 'deepseek',
+        DEEPSEEK_API_KEY: 'sk-deepseek',
       }),
     )
 
-    expect(service.getProvider()).toBe('openai')
+    const config = service.getProviderConfig()
+
+    expect(config.provider).toBe('deepseek')
+    expect(config.apiKey).toBe('sk-deepseek')
+    expect(config.baseUrl).toBe('https://api.deepseek.com')
+    expect(config.modelName).toBe('deepseek-v4-pro')
+  })
+
+  it('支持 qwen provider 并使用注册表默认值', () => {
+    const service = new AiService(
+      createConfigService({
+        AI_PROVIDER: 'qwen',
+        QWEN_API_KEY: 'sk-qwen',
+      }),
+    )
+
+    const config = service.getProviderConfig()
+
+    expect(config.provider).toBe('qwen')
+    expect(config.apiKey).toBe('sk-qwen')
+    expect(config.baseUrl).toBe('https://dashscope.aliyuncs.com/compatible-mode/v1')
+    expect(config.modelName).toBe('qwen3.6-plus')
+  })
+
+  it('provider 未配置时默认 deepseek', () => {
+    const service = new AiService(
+      createConfigService({
+        DEEPSEEK_API_KEY: 'sk-deepseek',
+      }),
+    )
+
+    expect(service.getProvider()).toBe('deepseek')
   })
 
   it('创建 stable 模型时沿用统一配置校验', () => {
     const service = new AiService(
       createConfigService({
-        AI_PROVIDER: 'openai',
-        OPENAI_API_KEY: 'sk-openai',
-        OPENAI_BASE_URL: 'https://openai.example.com/v1',
-        MODEL_NAME: 'gpt-test',
+        AI_PROVIDER: 'deepseek',
+        DEEPSEEK_API_KEY: 'sk-deepseek',
       }),
     )
 
@@ -81,7 +91,7 @@ describe('AiService', () => {
     expect(model).toBeDefined()
   })
 
-  it('缺少配置时抛出清晰错误', () => {
+  it('缺少 API key 时抛出清晰错误', () => {
     const service = new AiService(
       createConfigService({
         AI_PROVIDER: 'deepseek',
@@ -102,8 +112,28 @@ describe('AiService', () => {
     expect(() => service.getProvider()).toThrow(AiProviderUnsupportedError)
   })
 
+  it('env 传入的 baseUrl/modelName 覆盖注册表默认值', () => {
+    const service = new AiService(
+      createConfigService({
+        AI_PROVIDER: 'qwen',
+        QWEN_API_KEY: 'sk-qwen',
+        QWEN_BASE_URL: 'https://custom-qwen.example.com',
+        QWEN_MODEL_NAME: 'custom-model',
+      }),
+    )
+
+    const config = service.getProviderConfig()
+
+    expect(config.baseUrl).toBe('https://custom-qwen.example.com')
+    expect(config.modelName).toBe('custom-model')
+  })
+
   it('共享 session manager 实例', () => {
-    const service = new AiService(createConfigService({}))
+    const service = new AiService(
+      createConfigService({
+        DEEPSEEK_API_KEY: 'sk-deepseek',
+      }),
+    )
 
     expect(service.getSessionManager()).toBe(service.getSessionManager())
   })

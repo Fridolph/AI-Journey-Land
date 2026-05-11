@@ -8,17 +8,20 @@ export {
 } from './model-factory'
 export {
   assertProviderConfig,
-  isAiProvider,
-  parseAiProvider,
-  providerEnvMap,
+  isLlmProvider,
+  llmProviderRegistry,
+  parseLlmProvider,
+  vectorProviderRegistry,
 } from './provider-config'
 export type {
-  AiProvider,
   ChatModelOptions,
   ChatModelPreset,
+  LlmProvider,
+  LlmProviderEntry,
   ProviderConfig,
-  ProviderEnvMapping,
   ResolvedProviderConfig,
+  VectorProvider,
+  VectorProviderEntry,
 } from './provider.types'
 export {
   AiConfigurationError,
