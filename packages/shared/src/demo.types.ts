@@ -35,6 +35,7 @@ export interface DemoMeta {
   ownerPackage: string
   supportsStreaming: boolean
   inputFields: DemoInputField[]
+  rolePresets?: string[]
   sourceUrl?: string
   docsUrl?: string
   draftUrl?: string
@@ -55,6 +56,7 @@ export interface DemoListItem {
   displayMode: DemoDisplayMode
   ownerPackage: string
   supportsStreaming: boolean
+  rolePresets?: string[]
   sourceUrl?: string
   knownLimits: string[]
 }

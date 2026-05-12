@@ -19,6 +19,7 @@ export function listDemoItems(): DemoListItem[] {
       displayMode,
       ownerPackage,
       supportsStreaming,
+      rolePresets,
       sourceUrl,
       knownLimits,
     }) => ({
@@ -35,6 +36,7 @@ export function listDemoItems(): DemoListItem[] {
       displayMode,
       ownerPackage,
       supportsStreaming,
+      rolePresets,
       sourceUrl,
       knownLimits,
     }),

@@ -12,6 +12,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   displayMode: 'custom-page',
   ownerPackage: '@ai-journey-land/api',
   supportsStreaming: true,
+  rolePresets: ['技术 Leader', '产品经理', 'CEO 视角', '实习生'],
   inputFields: [
     {
       name: 'role',

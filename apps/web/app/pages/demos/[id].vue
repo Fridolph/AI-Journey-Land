@@ -9,6 +9,10 @@ const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, run
 
 const demoSource = computed(() => demoSources[demoId.value])
 
+const nonRoleFields = computed(() =>
+  (selectedDemo.value?.inputFields ?? []).filter((f) => f.name !== 'role'),
+)
+
 const pageErrorMessage = shallowRef('')
 const isLoadingDemo = shallowRef(true)
 const keyLogicItems = [
@@ -115,6 +119,14 @@ onMounted(() => {
 
       <section class="demo-page__body">
         <div class="demo-page__primary">
+          <RoleSelector
+            v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
+            :model-value="form.role ?? ''"
+            :presets="selectedDemo.rolePresets"
+            :is-running="isRunning"
+            @update:model-value="form.role = $event"
+          />
+
           <UCard>
             <template #header>
               <div class="demo-page__section-title">
@@ -124,7 +136,7 @@ onMounted(() => {
             </template>
             <DemoInputForm
               :model-value="form"
-              :fields="selectedDemo.inputFields"
+              :fields="nonRoleFields"
               :is-running="isRunning"
               @update:model-value="Object.assign(form, $event)"
               @run="runDemo"
