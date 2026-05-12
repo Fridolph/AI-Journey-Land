@@ -4,10 +4,8 @@ export const REPORT_PROMPT = `
 【角色视角】{rolePerspective}
 
 报告类型：{reportType}
-公司名称：{companyName}
-部门名称：{teamName}
-汇报对象：{managerName}
-时间范围：{dateRange}
+{authorName}
+{companyName}{teamName}{managerName}时间范围：{dateRange}
 
 {teamGoal}
 

@@ -17,10 +17,17 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   inputFields: [
     {
       name: 'role',
-      label: '角色设定',
+      label: '角色',
       component: 'input',
       placeholder: '',
       defaultValue: '部门Leader',
+    },
+    {
+      name: 'authorName',
+      label: '姓名',
+      component: 'input',
+      placeholder: '你的名字（可选）',
+      defaultValue: '',
     },
     {
       name: 'reportType',
@@ -40,26 +47,26 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
       name: 'companyName',
       label: '公司名称',
       component: 'input',
-      placeholder: '例如：极光云科技',
-      defaultValue: '极光云科技',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'teamName',
       label: '部门名称',
       component: 'input',
-      placeholder: '例如：订单结算后端组',
-      defaultValue: '订单结算后端组',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'managerName',
       label: '汇报对象',
       component: 'input',
-      placeholder: '例如：陈总',
-      defaultValue: '陈总',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'teamGoal',
-      label: '当前目标（可选）',
+      label: '当前目标',
       component: 'input',
       placeholder: '有需要AI结合这块内容，没写就参考下面的主要内容',
       defaultValue: '',
@@ -68,7 +75,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
       name: 'devActivities',
       label: '主要内容',
       component: 'textarea',
-      placeholder: '按人员或模块列出关键产出、任务和数据',
+      placeholder: '按人员或模块列出关键产出、任务和数据（至少 15 个字）',
       defaultValue:
         '- 老王：修复高优先级线上 Bug 7 个，关联工单：PAY-1024 / PAY-1056\n' +
         '- 小何：重构结算批任务调度逻辑，将执行时间从 35min 优化到 18min\n' +
@@ -77,9 +84,9 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
     },
     {
       name: 'reportTemplate',
-      label: '报告模版（可选）',
+      label: '报告模版',
       component: 'textarea',
-      placeholder: '可提供一份参考模版或 Few-Shot 示例，AI 会参考其格式和风格生成报告',
+      placeholder: '可提供一份参考模版或 Few-Shot 示例（可选）',
       defaultValue: '',
     },
   ],

@@ -14,7 +14,7 @@ const demoSource = computed(() => demoSources[demoId.value])
 
 const nonMetaFields = computed(() =>
   (selectedDemo.value?.inputFields ?? []).filter(
-    (f) => f.name !== 'role' && f.name !== 'reportType' && f.name !== 'dateRange',
+    (f) => f.name !== 'role' && f.name !== 'authorName' && f.name !== 'reportType' && f.name !== 'dateRange',
   ),
 )
 
@@ -87,6 +87,18 @@ const sourceFilename = computed(() => {
 
   return selectedDemo.value.sourceUrl.split('/').at(-1) ?? 'source'
 })
+
+function reportTypeColor(type: string): 'primary' | 'info' | 'success' | 'warning' | 'secondary' | 'error' | 'neutral' {
+  switch (type) {
+    case '日报': return 'info'
+    case '周报': return 'primary'
+    case '月报': return 'success'
+    case '季度总结': return 'warning'
+    case '半年总结': return 'secondary'
+    case '年度总结': return 'error'
+    default: return 'neutral'
+  }
+}
 
 async function loadCurrentDemo() {
   if (!demoId.value) {
@@ -180,19 +192,12 @@ onMounted(() => {
               <DemoReportTypeSelector
                 v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
                 :model-value="form.reportType ?? ''"
+                :date-range="form.dateRange ?? ''"
                 :presets="selectedDemo.reportTypePresets"
                 :is-running="isRunning"
                 @update:model-value="form.reportType = $event"
                 @update:date-range="form.dateRange = $event"
               />
-            </div>
-
-            <div v-if="form.dateRange" class="grid gap-1.5 mb-3">
-              <span class="text-[0.82rem] font-bold text-[#334155]">汇报时间</span>
-              <span class="flex items-center gap-1.5 text-[0.9rem] font-semibold text-[var(--ui-primary)]">
-                <UIcon name="i-lucide-calendar-range" />
-                {{ form.dateRange }}
-              </span>
             </div>
 
             <DemoInputForm
@@ -237,14 +242,14 @@ onMounted(() => {
                 class="flex items-center justify-between gap-2 py-2.5 px-3 rounded-md bg-white/65 border border-black/5"
               >
                 <div class="flex flex-wrap items-center gap-[0.45rem] min-w-0">
-                  <UBadge color="primary" variant="soft" size="xs">
+                  <UBadge :color="reportTypeColor(record.reportType)" variant="soft" size="sm">
                     {{ record.reportType }}
                   </UBadge>
-                  <UBadge color="neutral" variant="subtle" size="xs">
+                  <UBadge color="neutral" variant="subtle" size="sm">
                     <UIcon name="i-lucide-users" />
                     {{ record.role }}
                   </UBadge>
-                  <span class="text-[0.76rem] text-[var(--ui-text-muted)] whitespace-nowrap">
+                  <span class="text-sm text-[var(--ui-text-muted)] whitespace-nowrap">
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>

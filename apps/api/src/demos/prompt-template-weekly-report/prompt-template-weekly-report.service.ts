@@ -67,6 +67,10 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
 
     return promptTemplate.format({
       ...request,
+      authorName: request.authorName ? `作者：${request.authorName}` : '',
+      companyName: request.companyName ? `公司名称：${request.companyName}\n` : '',
+      teamName: request.teamName ? `部门名称：${request.teamName}\n` : '',
+      managerName: request.managerName ? `汇报对象：${request.managerName}\n` : '',
       reportTypeGuide:
         REPORT_TYPE_GUIDE[request.reportType] ?? '结构清晰，重点突出',
       rolePerspective: ROLE_PERSPECTIVE[request.role] ?? '',

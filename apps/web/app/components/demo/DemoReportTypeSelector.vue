@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string
+  dateRange: string
   presets: string[]
   isRunning: boolean
 }>()
@@ -65,13 +66,20 @@ function onTypeChange(type: string) {
 
 <template>
   <label class="grid gap-1.5 flex-1 min-w-0">
-    <span class="text-[0.82rem] font-bold text-land-ink">报告类型</span>
-    <USelect
-      :model-value="modelValue"
-      :items="presets"
-      :disabled="isRunning"
-      size="sm"
-      @update:model-value="onTypeChange(String($event))"
-    />
+    <span class="text-[0.82rem] font-bold text-[#334155]">报告类型</span>
+    <div class="flex items-center gap-2 flex-wrap">
+      <USelect
+        :model-value="modelValue"
+        :items="presets"
+        :disabled="isRunning"
+        size="sm"
+        class="min-w-[140px] max-w-[200px]"
+        @update:model-value="onTypeChange(String($event))"
+      />
+      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-[var(--ui-primary)] font-semibold">
+        <UIcon name="i-lucide-calendar-range" />
+        {{ dateRange }}
+      </span>
+    </div>
   </label>
 </template>
