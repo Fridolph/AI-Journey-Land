@@ -28,7 +28,9 @@ function updateField(name: string, value: string) {
         v-for="field in fields"
         :key="field.name"
         class="grid gap-1.5"
-        :class="{ 'col-span-full': field.name === 'teamGoal' }"
+        :class="{
+          'col-span-full': field.name === 'teamGoal' || field.name === 'devActivities' || field.name === 'reportTemplate',
+        }"
       >
         <span class="text-[0.82rem] font-bold text-[#334155]">{{ field.label }}</span>
         <UTextarea
