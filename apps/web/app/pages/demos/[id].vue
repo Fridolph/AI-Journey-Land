@@ -14,7 +14,7 @@ const demoSource = computed(() => demoSources[demoId.value])
 
 const nonMetaFields = computed(() =>
   (selectedDemo.value?.inputFields ?? []).filter(
-    (f) => f.name !== 'role' && f.name !== 'reportType',
+    (f) => f.name !== 'role' && f.name !== 'reportType' && f.name !== 'dateRange',
   ),
 )
 
@@ -161,21 +161,25 @@ onMounted(() => {
 
       <section class="demo-page__body">
         <div class="demo-page__primary">
-          <DemoRoleSelector
-            v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
-            :model-value="form.role ?? ''"
-            :presets="selectedDemo.rolePresets"
-            :is-running="isRunning"
-            @update:model-value="form.role = $event"
-          />
+          <div class="demo-page__meta-row">
+            <DemoRoleSelector
+              v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
+              :model-value="form.role ?? ''"
+              :presets="selectedDemo.rolePresets"
+              :is-running="isRunning"
+              @update:model-value="form.role = $event"
+            />
 
-          <DemoReportTypeSelector
-            v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
-            :model-value="form.reportType ?? ''"
-            :presets="selectedDemo.reportTypePresets"
-            :is-running="isRunning"
-            @update:model-value="form.reportType = $event"
-          />
+            <DemoReportTypeSelector
+              v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
+              :model-value="form.reportType ?? ''"
+              :date-range="form.dateRange ?? ''"
+              :presets="selectedDemo.reportTypePresets"
+              :is-running="isRunning"
+              @update:model-value="form.reportType = $event"
+              @update:date-range="form.dateRange = $event"
+            />
+          </div>
 
           <UCard>
             <template #header>
@@ -365,6 +369,12 @@ onMounted(() => {
 .demo-page__side {
   display: grid;
   gap: 1rem;
+}
+
+.demo-page__meta-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .demo-page__section-title {
