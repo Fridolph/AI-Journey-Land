@@ -17,6 +17,7 @@ export const promptTemplateWeeklyReportInputSchema = z.object({
   teamGoal: z.string().optional().default(''),
   devActivities: z.string().min(15, '主要内容至少 15 个字'),
   reportTemplate: z.string().optional().default(''),
+  customPrompt: z.string().optional().default(''),
 })
 
 export type PromptTemplateWeeklyReportInput = z.infer<typeof promptTemplateWeeklyReportInputSchema>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { DEFAULT_PROMPT } from '@ai-journey-land/demo-registry'
+
 const route = useRoute()
 const demoId = computed(() => String(route.params.id ?? ''))
 
@@ -7,6 +9,13 @@ const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, run
 
 const { records: savedReports, save: saveReport, remove: deleteSavedReport, loadAll: loadSavedReports } =
   useReportStore()
+
+const customPrompt = ref(DEFAULT_PROMPT)
+const showPrompt = ref(false)
+
+function resetPrompt() {
+  customPrompt.value = DEFAULT_PROMPT
+}
 
 const nonMetaFields = computed(() =>
   (selectedDemo.value?.inputFields ?? []).filter(
@@ -37,7 +46,7 @@ async function saveCurrentResult() {
     demoId: selectedDemo.value.id,
     reportType: form.reportType ?? '',
     role: form.role ?? '',
-    input: { ...form },
+    input: { ...form, customPrompt: customPrompt.value },
     output: output.value,
   })
 }
@@ -108,27 +117,27 @@ const codeAnalysisItems = [
   {
     file: 'schema.ts',
     title: 'Zod Schema 约束设计',
-    desc: '定义 REPORT_ROLES（部门Leader/技术研发/老板）和 REPORT_TYPES（日报~年度总结）两组 const enum，导出类型供前端复用。devActivities 用 z.string().min(15) 强校验，其余字段可选（z.optional().default("")）。reportTemplate 为 Few-Shot 入口。',
+    desc: '定义 REPORT_ROLES 和 REPORT_TYPES 两组 const enum，导出类型供前端复用。devActivities 用 z.string().min(15) 强校验，其余字段可选（z.optional().default("")）。reportTemplate 为 Few-Shot 入口，customPrompt 为 Prompt 覆盖入口。',
   },
   {
     file: 'prompts/',
     title: 'Prompt 模板维护与管理',
-    desc: '按职责拆分为 guides.ts（REPORT_TYPE_GUIDE 结构指引）、perspectives.ts（ROLE_PERSPECTIVE 角色视角）、report-template.ts（主模板）。通过 index.ts barrel 统一导出。新增 demo 参照此模式建 prompts/ 目录。',
+    desc: '按职责拆分为独立文件：guides.ts（REPORT_TYPE_GUIDE 结构指引）、perspectives.ts（ROLE_PERSPECTIVE 角色视角）、report-template.ts（主模板）。通过 index.ts barrel 统一导出。新增 demo 参照此模式在各自目录下建 prompts/ 目录。',
   },
   {
     file: 'service.ts',
     title: '组装、校验与调度',
-    desc: 'parseRunRequest() 双重检验：先走共享 demoRunRequestSchema（通用 Record<string,string>），再走 demo 专属 schema（enum + min）。formatPrompt() 注入 GUIDE+PERSPECTIVE+FewShot，按需拼接可选字段避免空行。run() 和 stream() 共享同一套 prompt 逻辑。',
+    desc: 'parseRunRequest() 双重检验：先走共享 demoRunRequestSchema（Record<string,string>），再走 demo 专属 schema（enum + min）。\n\nformatPrompt() 调用流程：① 若提供了 customPrompt 则用它替代默认模板 ② 注入 GUIDE+PERSPECTIVE+FewShot ③ 按需拼接可选字段（authorName/companyName 等），避免空行。\n\nrun() 和 stream() 共享同一套 prompt 逻辑，差异仅在 model.invoke() vs model.stream()。',
   },
   {
     file: 'useDemoRunner.ts',
     title: '前端运行状态机',
-    desc: '管理 mode: idle→loading/streaming→done/error 五种状态。runDemo() 通过 $fetch POST 普通运行并解包 ApiResponse<T>。streamDemo() 通过原生 fetch + ReadableStream 逐帧解析 SSE（event:/data: 分隔），累积 buffer 处理粘包。滚动策略：streaming 时每 3s 自动滚底。',
+    desc: '管理 mode 状态：idle → loading（普通）/ streaming（流式）→ done / error。\n\nrunDemo()：$fetch POST 普通运行，解包 ApiResponse<T> 取出 data。streamDemo()：原生 fetch + ReadableStream 逐帧解析 SSE（event:/data: 分隔），buffer 累积处理粘包。\n\n滚动策略：streaming 时每 3s 自动 scrollTo bottom，避免频繁打断阅读。',
   },
   {
     file: 'useReportStore.ts',
     title: 'IndexedDB 本地持久化',
-    desc: '封装 openDB() 初始化 idb（keyPath: id，索引：demoId/reportType/createdAt）。save() 自动生成 crypto.randomUUID() + ISO 时间戳。loadAll() 按 createdAt 倒序排列。remove()/removeAll() 支持单条和批量删除。浏览器端离线可用，无需后端数据库。',
+    desc: '封装 openDB() 初始化 idb（keyPath: id，索引：demoId / reportType / createdAt）。save() 自动生成 crypto.randomUUID() + ISO 时间戳。loadAll() 按 createdAt 倒序排列。remove() / removeAll() 支持单条和批量删除。\n\n浏览器端离线可用，无需后端数据库，数据完全由用户掌控。',
   },
 ]
 
@@ -286,6 +295,30 @@ onMounted(() => {
           </UCard>
 
           <UCard>
+            <template #header>
+              <button type="button" class="flex items-center justify-between gap-2 w-full cursor-pointer" @click="showPrompt = !showPrompt">
+                <div class="flex items-center gap-2 font-extrabold">
+                  <UIcon name="i-lucide-braces" />
+                  <span>Prompt 模板</span>
+                  <span v-if="customPrompt !== DEFAULT_PROMPT" class="w-1.5 h-1.5 rounded-full bg-[var(--ui-primary)]" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <UButton v-if="customPrompt !== DEFAULT_PROMPT && !showPrompt" size="xs" variant="ghost" color="neutral" @click.stop="resetPrompt">
+                    重置
+                  </UButton>
+                  <UIcon :name="showPrompt ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="text-[var(--ui-text-muted)]" />
+                </div>
+              </button>
+            </template>
+            <div v-if="showPrompt" class="grid gap-2">
+              <p class="text-sm text-[var(--ui-text-muted)]">
+                下方是即将发送给 AI 的 Prompt 模板。你可以直接修改它来调整 AI 的输出风格。变量占位（如 {role}）会在运行时自动替换。
+              </p>
+              <UTextarea :model-value="customPrompt" :rows="12" :disabled="isRunning" autoresize @update:model-value="customPrompt = String($event ?? '')" />
+            </div>
+          </UCard>
+
+          <UCard>
             <DemoOutputPanel :mode="mode" :output="output" :error-message="errorMessage" />
           </UCard>
 
@@ -350,7 +383,7 @@ onMounted(() => {
               <span
                 v-for="tag in techTags"
                 :key="tag.name"
-                class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.7rem] font-semibold bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
+                class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.82rem] font-semibold bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
               >
                 {{ tag.name }}
               </span>
@@ -371,8 +404,8 @@ onMounted(() => {
                   <span class="text-[0.6rem] font-bold">{{ i + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-bold text-[var(--ui-text-highlighted)]">{{ step.label }}</p>
-                  <p class="text-xs text-[var(--ui-text-muted)] leading-relaxed mt-0.5">{{ step.detail }}</p>
+                  <p class="text-[0.875rem] font-bold text-[var(--ui-text-highlighted)]">{{ step.label }}</p>
+                  <p class="text-[0.875rem] text-[var(--ui-text-muted)] leading-relaxed mt-0.5">{{ step.detail }}</p>
                 </div>
               </div>
             </div>
@@ -382,10 +415,10 @@ onMounted(() => {
             <div class="grid gap-4">
               <div v-for="item in codeAnalysisItems" :key="item.file" class="grid gap-1">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-[0.65rem] font-mono font-bold text-[var(--ui-primary)] bg-[var(--ui-bg-muted)] rounded px-1 py-px">{{ item.file }}</span>
-                  <span class="text-sm font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
+                  <span class="text-[0.82rem] font-mono font-bold text-[var(--ui-primary)] bg-[var(--ui-bg-muted)] rounded px-1 py-px">{{ item.file }}</span>
+                  <span class="text-[0.875rem] font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
                 </div>
-                <p class="text-xs text-[var(--ui-text-muted)] leading-relaxed">{{ item.desc }}</p>
+                <p class="text-[0.875rem] text-[var(--ui-text-muted)] leading-relaxed whitespace-pre-line">{{ item.desc }}</p>
               </div>
             </div>
           </DemoCollapsibleCard>

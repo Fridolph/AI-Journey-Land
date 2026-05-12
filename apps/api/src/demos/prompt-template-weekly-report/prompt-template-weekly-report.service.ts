@@ -59,7 +59,8 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
   private async formatPrompt(
     request: PromptTemplateWeeklyReportInput,
   ): Promise<string> {
-    const promptTemplate = PromptTemplate.fromTemplate(REPORT_PROMPT)
+    const templateSource = request.customPrompt || REPORT_PROMPT
+    const promptTemplate = PromptTemplate.fromTemplate(templateSource)
 
     const fewShotExample = request.reportTemplate
       ? `\n参考示例（请参照此风格和结构）：\n${request.reportTemplate}\n`

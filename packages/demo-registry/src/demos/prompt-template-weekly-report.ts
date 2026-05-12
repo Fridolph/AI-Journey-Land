@@ -94,3 +94,24 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
     'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
   knownLimits: ['Few-Shot 示例通过文本输入自由设定，尚未提供预设模板快捷选择。'],
 }
+
+export const DEFAULT_PROMPT = `
+你是一名{role}，需要根据以下数据生成一份专业的 Markdown 文档。
+
+【角色视角】{rolePerspective}
+
+报告类型：{reportType}
+{authorName}
+{companyName}{teamName}{managerName}时间范围：{dateRange}
+
+{teamGoal}
+
+活动数据：
+{devActivities}
+{fewShotExample}
+请生成一份格式规范的【{reportType}】，要求：
+- 开头有简短的整体 summary（两三句话）
+- {reportTypeGuide}
+- 语气和视角贴合 {role} 的身份定位
+- 适合作为给老板和团队传阅的专业文档
+`.trim()

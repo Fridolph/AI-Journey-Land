@@ -12,7 +12,7 @@ const isOpen = ref(props.defaultOpen)
 </script>
 
 <template>
-  <UCard>
+  <UCard :ui="isOpen ? { body: 'p-0 sm:p-0' } : { body: 'hidden' }">
     <template #header>
       <button
         type="button"
@@ -29,8 +29,6 @@ const isOpen = ref(props.defaultOpen)
         />
       </button>
     </template>
-    <div v-show="isOpen">
-      <slot />
-    </div>
+    <slot />
   </UCard>
 </template>
