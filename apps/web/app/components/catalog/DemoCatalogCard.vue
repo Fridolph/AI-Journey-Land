@@ -9,8 +9,6 @@ const props = defineProps<{
 const displayModeLabel = computed(() =>
   props.demo.displayMode === 'custom-page' ? 'Custom Page' : 'Generic Runner',
 )
-
-const limitSummary = computed(() => props.demo.knownLimits[0] ?? '暂无已知限制。')
 </script>
 
 <template>
@@ -30,68 +28,59 @@ const limitSummary = computed(() => props.demo.knownLimits[0] ?? '暂无已知�
         />
         <div v-else class="catalog-card__media-placeholder">
           <UIcon name="i-lucide-sparkles" />
-          <span>{{ demo.category }}</span>
+          <UIcon name="i-lucide-brain" class="catalog-card__media-placeholder-icon" />
+          <UIcon name="i-lucide-zap" class="catalog-card__media-placeholder-icon" />
         </div>
       </div>
 
       <div class="catalog-card__content">
         <div class="catalog-card__topline">
-          <span>{{ demo.category }}</span>
+          <UBadge :inert="true" color="neutral" variant="subtle" size="xs">
+            {{ demo.category }}
+          </UBadge>
           <UBadge
-            :color="demo.displayMode === 'custom-page' ? 'primary' : 'neutral'"
+            v-if="demo.supportsStreaming"
+            icon="i-lucide-radio"
+            color="primary"
             variant="soft"
+            size="xs"
           >
-            {{ displayModeLabel }}
+            SSE
           </UBadge>
         </div>
 
-        <div class="catalog-card__body">
-          <h2 class="catalog-card__title">{{ demo.title }}</h2>
-          <p class="catalog-card__description">{{ demo.description }}</p>
-        </div>
+        <h2 class="catalog-card__title">{{ demo.title }}</h2>
+        <p class="catalog-card__description">{{ demo.description }}</p>
 
-        <div class="catalog-card__tags" aria-label="使用到的 AI 技术">
-          <UBadge
+        <div class="catalog-card__techs" aria-label="使用到的 AI 技术">
+          <span
             v-for="tag in demo.tags"
             :key="tag"
-            color="neutral"
-            variant="subtle"
-            size="sm"
-            icon="i-lucide-cpu"
+            class="catalog-card__tech-tag"
           >
+            <UIcon
+              :name="tag === 'Streaming' ? 'i-lucide-radio' : tag === 'LangChain' ? 'i-lucide-link-2' : 'i-lucide-file-text'"
+              class="catalog-card__tech-icon"
+            />
             {{ tag }}
-          </UBadge>
+          </span>
         </div>
 
-        <div class="catalog-card__details">
-          <p class="catalog-card__detail-text">{{ demo.learningGoal }}</p>
-          <div class="catalog-card__detail-grid">
-            <UTooltip text="后端 API namespace">
-              <span class="catalog-card__namespace">
-                <UIcon name="i-lucide-route" />
-                {{ demo.apiNamespace }}
-              </span>
-            </UTooltip>
-          </div>
-          <p class="catalog-card__limit">
-            <UIcon name="i-lucide-info" />
-            <span>{{ limitSummary }}</span>
-          </p>
+        <div class="catalog-card__goal">
+          <UIcon name="i-lucide-bullseye" class="catalog-card__goal-icon" />
+          <span>{{ demo.learningGoal }}</span>
         </div>
+
+        <p v-if="demo.knownLimits.length > 0" class="catalog-card__limit">
+          <UIcon name="i-lucide-info" />
+          <span>{{ demo.knownLimits[0] }}</span>
+        </p>
       </div>
 
       <template #footer>
         <div class="catalog-card__footer">
           <div class="catalog-card__capabilities">
-            <UBadge
-              v-if="demo.supportsStreaming"
-              icon="i-lucide-radio"
-              color="primary"
-              variant="soft"
-            >
-              Streaming
-            </UBadge>
-            <UBadge icon="i-lucide-panels-top-left" color="neutral" variant="soft">
+            <UBadge icon="i-lucide-panels-top-left" color="neutral" variant="soft" size="sm">
               {{ displayModeLabel }}
             </UBadge>
           </div>
@@ -116,25 +105,24 @@ const limitSummary = computed(() => props.demo.knownLimits[0] ?? '暂无已知�
 .catalog-card {
   --delay: 0ms;
   position: relative;
-  height: 24.5rem;
   overflow: hidden;
   transform: translateY(10px);
   animation: card-enter 420ms ease forwards;
   animation-delay: var(--delay);
   opacity: 0;
   transition:
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    box-shadow 200ms ease,
+    transform 200ms ease;
 }
 
 .catalog-card-link:hover .catalog-card,
 .catalog-card-link:focus-visible .catalog-card {
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.13);
-  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(15, 23, 42, 0.12);
+  transform: translateY(-2px);
 }
 
 .catalog-card__media {
-  height: 8.75rem;
+  height: 6.5rem;
   overflow: hidden;
   background:
     linear-gradient(135deg, rgba(13, 148, 136, 0.16), rgba(15, 23, 42, 0.04)),
@@ -150,21 +138,24 @@ const limitSummary = computed(() => props.demo.knownLimits[0] ?? '暂无已知�
 .catalog-card__media-placeholder {
   display: flex;
   height: 100%;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
   color: var(--ui-primary);
-  font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0.08em;
-  padding: 1rem;
-  text-transform: uppercase;
+  opacity: 0.48;
 }
 
-.catalog-card__media-placeholder svg {
-  font-size: 2.25rem;
+.catalog-card__media-placeholder > .i-lucide-sparkles {
+  font-size: 2rem;
+}
+
+.catalog-card__media-placeholder-icon {
+  font-size: 1.35rem;
 }
 
 .catalog-card__content {
+  display: grid;
+  gap: 0.65rem;
   padding: 1rem;
 }
 
@@ -172,153 +163,98 @@ const limitSummary = computed(() => props.demo.knownLimits[0] ?? '暂无已知�
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  color: var(--ui-primary);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.catalog-card__body {
-  margin-top: 0.8rem;
+  gap: 0.5rem;
 }
 
 .catalog-card__title {
   max-width: 22rem;
   color: var(--ui-text-highlighted);
-  font-size: 1.125rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  line-height: 1.22;
+  line-height: 1.25;
 }
 
 .catalog-card__description {
-  margin-top: 0.65rem;
   color: var(--ui-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.865rem;
   line-height: 1.6;
 }
 
-.catalog-card__tags {
+.catalog-card__techs {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 1rem;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
-.catalog-card__details {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  display: grid;
-  height: 50%;
-  align-content: start;
-  gap: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(2, 6, 23, 0.94);
-  box-shadow: 0 -18px 42px rgba(2, 6, 23, 0.28);
-  color: rgba(255, 255, 255, 0.9);
-  opacity: 0;
-  overflow: auto;
-  padding: 1rem;
-  pointer-events: none;
-  transform: translateY(100%);
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+.catalog-card__tech-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 0.4rem;
+  background: color-mix(in oklab, var(--ui-primary) 7%, transparent);
+  color: var(--ui-primary);
+  font-size: 0.78rem;
+  font-weight: 750;
+  padding: 0.3rem 0.55rem;
 }
 
-.catalog-card-link:hover .catalog-card__details,
-.catalog-card-link:focus-visible .catalog-card__details {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
+.catalog-card__tech-icon {
+  font-size: 0.88rem;
 }
 
-.catalog-card__detail-text,
-.catalog-card__limit {
-  color: rgba(255, 255, 255, 0.76);
-  font-size: 0.86rem;
+.catalog-card__goal {
+  display: flex;
+  gap: 0.4rem;
+  color: var(--ui-text-muted);
+  font-size: 0.81rem;
   line-height: 1.6;
 }
 
-.catalog-card__detail-grid,
+.catalog-card__goal-icon {
+  flex-shrink: 0;
+  margin-top: 0.22rem;
+  color: var(--ui-primary);
+  opacity: 0.7;
+}
+
+.catalog-card__limit {
+  display: flex;
+  gap: 0.4rem;
+  color: var(--ui-text-muted);
+  font-size: 0.78rem;
+  opacity: 0.72;
+  line-height: 1.5;
+}
+
+.catalog-card__limit svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
 .catalog-card__footer,
 .catalog-card__capabilities {
   display: flex;
   align-items: center;
 }
 
-.catalog-card__detail-grid {
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.catalog-card__namespace {
-  display: inline-flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.35rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.78rem;
-  font-weight: 750;
-  line-height: 1.2;
-  padding: 0.3rem 0.55rem;
-}
-
-.catalog-card__namespace svg {
-  flex-shrink: 0;
-  color: rgba(45, 212, 191, 0.96);
-}
-
-.catalog-card__limit {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.catalog-card__limit svg {
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-  color: rgba(45, 212, 191, 0.94);
-}
-
 .catalog-card__footer {
   justify-content: space-between;
-  gap: 1rem;
-}
-
-.catalog-card__capabilities {
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .catalog-card__action {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   color: var(--ui-primary);
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   font-weight: 800;
 }
 
-@media (max-width: 639px), (hover: none) {
-  .catalog-card {
-    height: 30rem;
-  }
-
-  .catalog-card__details {
-    height: 50%;
-    overflow: auto;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-    -webkit-overflow-scrolling: touch;
+@media (max-width: 639px) {
+  .catalog-card__title {
+    font-size: 1.05rem;
   }
 }
 
