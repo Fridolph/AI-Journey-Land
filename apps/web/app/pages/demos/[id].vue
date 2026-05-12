@@ -129,10 +129,10 @@ onMounted(() => {
       <span>正在加载 demo 配置...</span>
     </section>
 
-    <section v-else-if="selectedDemo" class="demo-page__workspace">
+    <section v-else-if="selectedDemo" class="grid gap-4">
       <UPageHeader :title="selectedDemo.title" :description="selectedDemo.description">
         <template #headline>
-          <div class="demo-page__badges">
+          <div class="flex flex-wrap gap-[0.45rem]">
             <UBadge color="primary" variant="soft">{{ selectedDemo.category }}</UBadge>
             <UBadge v-if="selectedDemo.supportsStreaming" icon="i-lucide-radio" color="primary">
               支持流式输出
@@ -163,13 +163,13 @@ onMounted(() => {
         <div class="demo-page__primary">
           <UCard>
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-file-input" />
                 <span>输入数据</span>
               </div>
             </template>
 
-            <div class="demo-page__meta-row">
+            <div class="flex gap-2 flex-wrap mb-3">
               <DemoRoleSelector
                 v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
                 :model-value="form.role ?? ''"
@@ -187,9 +187,9 @@ onMounted(() => {
               />
             </div>
 
-            <div v-if="form.dateRange" class="demo-page__date-row">
-              <span class="demo-page__date-label">汇报时间</span>
-              <span class="demo-page__date-value">
+            <div v-if="form.dateRange" class="grid gap-1.5 mb-3">
+              <span class="text-[0.82rem] font-bold text-[#334155]">汇报时间</span>
+              <span class="flex items-center gap-1.5 text-[0.9rem] font-semibold text-[var(--ui-primary)]">
                 <UIcon name="i-lucide-calendar-range" />
                 {{ form.dateRange }}
               </span>
@@ -204,7 +204,7 @@ onMounted(() => {
               @stream="handleStream"
             />
 
-            <div v-if="isSaveEnabled" class="demo-page__save-area">
+            <div v-if="isSaveEnabled" class="mt-3">
               <UAlert
                 icon="i-lucide-database"
                 color="primary"
@@ -221,7 +221,7 @@ onMounted(() => {
 
           <UCard v-if="savedReports.length > 0">
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-archive" />
                 <span>已保存报告（本地）</span>
                 <UBadge color="neutral" variant="subtle" size="xs">
@@ -230,13 +230,13 @@ onMounted(() => {
               </div>
             </template>
 
-            <div class="demo-page__report-list">
+            <div class="grid gap-2">
               <div
                 v-for="record in savedReports"
                 :key="record.id"
-                class="demo-page__report-item"
+                class="flex items-center justify-between gap-2 py-2.5 px-3 rounded-md bg-white/65 border border-black/5"
               >
-                <div class="demo-page__report-meta">
+                <div class="flex flex-wrap items-center gap-[0.45rem] min-w-0">
                   <UBadge color="primary" variant="soft" size="xs">
                     {{ record.reportType }}
                   </UBadge>
@@ -244,7 +244,7 @@ onMounted(() => {
                     <UIcon name="i-lucide-users" />
                     {{ record.role }}
                   </UBadge>
-                  <span class="demo-page__report-time">
+                  <span class="text-[0.76rem] text-[var(--ui-text-muted)] whitespace-nowrap">
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>
@@ -263,20 +263,20 @@ onMounted(() => {
         <aside class="demo-page__side">
           <UCard>
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-waypoints" />
                 <span>关键代码业务逻辑</span>
               </div>
             </template>
 
-            <ul class="demo-page__logic-list">
-              <li v-for="item in keyLogicItems" :key="item.title" class="demo-page__logic-item">
+            <ul class="grid gap-[0.9rem]">
+              <li v-for="item in keyLogicItems" :key="item.title" class="grid gap-3 grid-cols-[auto,minmax(0,1fr)]">
                 <span class="demo-page__logic-icon">
                   <UIcon :name="item.icon" />
                 </span>
                 <span>
-                  <strong>{{ item.title }}</strong>
-                  <small>{{ item.description }}</small>
+                  <strong class="block text-[var(--ui-text-highlighted)]">{{ item.title }}</strong>
+                  <small class="block mt-0.5 text-[var(--ui-text-muted)] leading-relaxed">{{ item.description }}</small>
                 </span>
               </li>
             </ul>
@@ -284,17 +284,17 @@ onMounted(() => {
 
           <UCard>
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-target" />
                 <span>学习目标</span>
               </div>
             </template>
-            <p class="demo-page__learning-goal">{{ selectedDemo.learningGoal }}</p>
+            <p class="text-[#64748b] leading-relaxed">{{ selectedDemo.learningGoal }}</p>
           </UCard>
 
           <UCard>
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-link" />
                 <span>来源与上下文</span>
               </div>
@@ -309,7 +309,7 @@ onMounted(() => {
 
           <UCard v-if="demoSource" :ui="{ body: 'p-0 sm:p-0' }">
             <template #header>
-              <div class="demo-page__section-title">
+              <div class="flex items-center gap-2 font-extrabold">
                 <UIcon name="i-lucide-file-code-2" />
                 <span>原始源码对照</span>
               </div>
@@ -327,6 +327,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* BEM: complex states/animations exceeding Tailwind 9-class threshold */
 .demo-page {
   --ui-container: 1920px;
   padding-block: 1rem 4rem;
@@ -350,22 +351,6 @@ onMounted(() => {
   animation: spin 900ms linear infinite;
 }
 
-.demo-page__workspace {
-  display: grid;
-  gap: 1rem;
-}
-
-.demo-page__badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.demo-page__learning-goal {
-  color: #64748b;
-  line-height: 1.7;
-}
-
 .demo-page__body {
   display: grid;
   align-items: start;
@@ -378,52 +363,6 @@ onMounted(() => {
   gap: 1rem;
 }
 
-.demo-page__meta-row {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
-}
-
-.demo-page__date-row {
-  display: grid;
-  gap: 0.4rem;
-  margin-bottom: 0.75rem;
-}
-
-.demo-page__date-label {
-  color: #334155;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.demo-page__date-value {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--ui-primary);
-  font-size: 0.9rem;
-  font-weight: 650;
-}
-
-.demo-page__section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 800;
-}
-
-.demo-page__logic-list {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.demo-page__logic-item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
-}
-
 .demo-page__logic-icon {
   display: grid;
   width: 2rem;
@@ -432,21 +371,6 @@ onMounted(() => {
   border-radius: 0.45rem;
   background: color-mix(in oklab, var(--ui-primary) 14%, transparent);
   color: var(--ui-primary);
-}
-
-.demo-page__logic-item strong,
-.demo-page__logic-item small {
-  display: block;
-}
-
-.demo-page__logic-item strong {
-  color: var(--ui-text-highlighted);
-}
-
-.demo-page__logic-item small {
-  margin-top: 0.2rem;
-  color: var(--ui-text-muted);
-  line-height: 1.6;
 }
 
 @media (min-width: 1024px) {
@@ -461,40 +385,6 @@ onMounted(() => {
   .demo-page__side {
     grid-column: span 5;
   }
-}
-
-.demo-page__save-area {
-  margin-top: 0.75rem;
-}
-
-.demo-page__report-list {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.demo-page__report-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: 0.4rem;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(15, 23, 42, 0.06);
-}
-
-.demo-page__report-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.45rem;
-  min-width: 0;
-}
-
-.demo-page__report-time {
-  color: var(--ui-text-muted);
-  font-size: 0.76rem;
-  white-space: nowrap;
 }
 
 @keyframes spin {

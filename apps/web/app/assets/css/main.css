@@ -1,29 +1,34 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+@theme {
+  --color-land-ink: #17211f;
+  --color-land-muted: #5d6b66;
+  --color-land-paper: #f7f4ee;
+  --color-land-grid: rgba(23, 33, 31, 0.08);
+  --color-land-primary: #0f766e;
+  --color-land-accent: #f59e0b;
+}
+
 :root {
   color-scheme: light;
-  --land-ink: #17211f;
-  --land-muted: #5d6b66;
-  --land-paper: #f7f4ee;
-  --land-grid: rgba(23, 33, 31, 0.08);
 }
 
 body {
   min-width: 320px;
   background:
-    linear-gradient(90deg, var(--land-grid) 1px, transparent 1px),
-    linear-gradient(180deg, var(--land-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-land-grid) 1px, transparent 1px),
+    linear-gradient(180deg, var(--color-land-grid) 1px, transparent 1px),
     radial-gradient(circle at 12% 12%, rgba(13, 148, 136, 0.2), transparent 28rem),
     radial-gradient(circle at 88% 20%, rgba(245, 158, 11, 0.16), transparent 24rem),
-    var(--land-paper);
+    var(--color-land-paper);
   background-size:
     28px 28px,
     28px 28px,
     auto,
     auto,
     auto;
-  color: var(--land-ink);
+  color: var(--color-land-ink);
 }
 
 ::selection {

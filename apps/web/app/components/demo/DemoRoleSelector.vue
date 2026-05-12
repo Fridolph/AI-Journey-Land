@@ -11,8 +11,8 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <label class="select-field">
-    <span class="select-field__label">角色</span>
+  <label class="grid gap-1.5 flex-1 min-w-0">
+    <span class="text-[0.82rem] font-bold text-land-ink">角色</span>
     <USelect
       :model-value="modelValue"
       :items="presets"
@@ -22,18 +22,3 @@ const emit = defineEmits<{
     />
   </label>
 </template>
-
-<style scoped>
-.select-field {
-  display: grid;
-  gap: 0.4rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.select-field__label {
-  color: #334155;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-</style>
