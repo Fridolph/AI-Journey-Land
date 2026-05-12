@@ -15,17 +15,17 @@ const keyLogicItems = [
   {
     icon: 'i-lucide-list-checks',
     title: '输入契约',
-    description: '共享 Zod schema 校验表单输入，前端字段和后端 DTO 从同一份类型推导。',
+    description: '共享 Zod schema 校验表单，前端字段和后端 DTO 从同一份类型推导。',
   },
   {
     icon: 'i-lucide-braces',
     title: 'Prompt Template',
-    description: '后端 demo service 将业务字段填入周报模板，生成稳定的模型调用 prompt。',
+    description: '同一套模板结构：填入不同角色和数据，模型输出不同的专业文档。模板是壳，内容是魂。',
   },
   {
     icon: 'i-lucide-radio',
     title: '运行链路',
-    description: '普通运行返回完整文本，流式运行通过 SSE 输出 meta、token、done、error 事件。',
+    description: '普通运行返回完整文档，流式 SSE 逐 token 输出——过程可观测、可对比。',
   },
 ]
 
