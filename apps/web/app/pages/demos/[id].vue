@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { demoSources } from '../../data/demo-sources'
-
 const route = useRoute()
 const demoId = computed(() => String(route.params.id ?? ''))
 
@@ -9,8 +7,6 @@ const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, run
 
 const { records: savedReports, save: saveReport, remove: deleteSavedReport, loadAll: loadSavedReports } =
   useReportStore()
-
-const demoSource = computed(() => demoSources[demoId.value])
 
 const nonMetaFields = computed(() =>
   (selectedDemo.value?.inputFields ?? []).filter(
@@ -50,12 +46,6 @@ async function deleteReport(id: string) {
   await deleteSavedReport(id)
 }
 
-onMounted(() => {
-  void loadCurrentDemo()
-  void loadSavedReports()
-})
-
-const pageErrorMessage = shallowRef('')
 const deletePopoverOpen = shallowRef<string | null>(null)
 
 function closePopover() {
@@ -66,37 +56,39 @@ function confirmDelete(id: string) {
   deleteReport(id)
   closePopover()
 }
+
+onMounted(() => {
+  void loadCurrentDemo()
+  void loadSavedReports()
+})
+
+const pageErrorMessage = shallowRef('')
 const isLoadingDemo = shallowRef(true)
-const keyLogicItems = [
-  {
-    icon: 'i-lucide-list-checks',
-    title: '输入契约',
-    description: '共享 Zod schema 校验表单，前端字段和后端 DTO 从同一份类型推导。',
-  },
-  {
-    icon: 'i-lucide-braces',
-    title: 'Prompt Template',
-    description: '模板是壳——同一套结构，填入不同角色和数据，AI 输出截然不同的专业文档。',
-  },
-  {
-    icon: 'i-lucide-users',
-    title: 'Role Injection',
-    description: '角色是魂——技术 Leader、产品经理、CEO、实习生……同一份数据，四种视角。',
-  },
-  {
-    icon: 'i-lucide-radio',
-    title: '运行链路',
-    description: '普通 run 返回完整文档，SSE stream 逐 token 输出——过程可观测、可对比。',
-  },
+
+const pipelineSteps = [
+  { icon: 'i-lucide-form-input', label: '输入数据', desc: 'role × reportType × data', color: '#0f766e' },
+  { icon: 'i-lucide-braces', label: 'Prompt Template', desc: '变量填充 + FewShot 注入', color: '#0d9488' },
+  { icon: 'i-lucide-link-2', label: 'LangChain', desc: 'PromptTemplate → ChatOpenAI', color: '#6366f1' },
+  { icon: 'i-lucide-cpu', label: 'AI 模型', desc: 'OpenAI-compatible API', color: '#f59e0b' },
+  { icon: 'i-lucide-radio', label: '输出', desc: '普通 / SSE Stream', color: '#0891b2' },
 ]
 
-const sourceFilename = computed(() => {
-  if (!selectedDemo.value?.sourceUrl) {
-    return 'source'
-  }
+const codeAnalysisItems = [
+  { file: 'schema.ts', title: '校验层', desc: 'Zod enum 限定 role 3 种、reportType 6 种；devActivities ≥15 字强校验' },
+  { file: 'prompts/report-template.ts', title: 'Prompt 模板', desc: '支持 {role}/{reportType}/{dateRange} 变量注入，可选 FewShot 示例' },
+  { file: 'service.ts', title: '组装层', desc: 'GUIDE+PERSPECTIVE 映射注入，reportTemplate → FewShot；双重 Zod 校验' },
+  { file: 'useDemoRunner.ts', title: '运行状态机', desc: 'idle→loading→done/error；SSE 帧解析，Stream 逐 token 实时渲染' },
+  { file: 'useReportStore.ts', title: '本地持久化', desc: 'IndexedDB CRUD，离线可用，按时间倒序' },
+]
 
-  return selectedDemo.value.sourceUrl.split('/').at(-1) ?? 'source'
-})
+const techTags = [
+  { name: 'PromptTemplate', desc: '变量填充' },
+  { name: 'Role Injection', desc: '角色注入' },
+  { name: 'LangChain', desc: '调用链封装' },
+  { name: 'SSE Streaming', desc: '流式输出' },
+  { name: 'Few-Shot', desc: '示例引导' },
+  { name: 'Zod', desc: 'Schema 校验' },
+]
 
 function reportTypeColor(type: string): 'primary' | 'info' | 'success' | 'warning' | 'secondary' | 'error' | 'neutral' {
   switch (type) {
@@ -303,32 +295,68 @@ onMounted(() => {
           <UCard>
             <template #header>
               <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-waypoints" />
-                <span>关键代码业务逻辑</span>
+                <UIcon name="i-lucide-target" />
+                <span>学习目标</span>
               </div>
             </template>
+            <p class="text-[#64748b] leading-relaxed text-sm">{{ selectedDemo.learningGoal }}</p>
 
-            <ul class="grid gap-[0.9rem]">
-              <li v-for="item in keyLogicItems" :key="item.title" class="grid gap-3 grid-cols-[auto,minmax(0,1fr)]">
-                <span class="demo-page__logic-icon">
-                  <UIcon :name="item.icon" />
-                </span>
-                <span>
-                  <strong class="block text-[var(--ui-text-highlighted)]">{{ item.title }}</strong>
-                  <small class="block mt-0.5 text-[var(--ui-text-muted)] leading-relaxed">{{ item.description }}</small>
-                </span>
-              </li>
-            </ul>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span
+                v-for="tag in techTags"
+                :key="tag.name"
+                class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.04em] bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
           </UCard>
 
           <UCard>
             <template #header>
               <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-target" />
-                <span>学习目标</span>
+                <UIcon name="i-lucide-git-branch" />
+                <span>AI 技术架构</span>
               </div>
             </template>
-            <p class="text-[#64748b] leading-relaxed">{{ selectedDemo.learningGoal }}</p>
+
+            <div class="grid gap-0 pipeline">
+              <div
+                v-for="(step, i) in pipelineSteps"
+                :key="step.label"
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="flex-shrink-0 grid w-8 h-8 place-items-center rounded-lg text-white text-sm"
+                  :style="{ background: step.color }"
+                >
+                  <UIcon :name="step.icon" />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-bold text-[var(--ui-text-highlighted)]">{{ step.label }}</p>
+                  <p class="text-xs text-[var(--ui-text-muted)]">{{ step.desc }}</p>
+                </div>
+              </div>
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2 font-extrabold">
+                <UIcon name="i-lucide-layers" />
+                <span>核心逻辑拆解</span>
+              </div>
+            </template>
+
+            <div class="grid gap-3">
+              <div v-for="item in codeAnalysisItems" :key="item.file" class="grid gap-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[0.65rem] font-mono font-bold uppercase tracking-[0.06em] text-[var(--ui-primary)]">{{ item.file }}</span>
+                  <span class="text-xs font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
+                </div>
+                <p class="text-xs text-[var(--ui-text-muted)] leading-relaxed">{{ item.desc }}</p>
+              </div>
+            </div>
           </UCard>
 
           <UCard>
@@ -343,20 +371,6 @@ onMounted(() => {
               :docs-url="selectedDemo.docsUrl"
               :draft-url="selectedDemo.draftUrl"
               :known-limits="selectedDemo.knownLimits"
-            />
-          </UCard>
-
-          <UCard v-if="demoSource" :ui="{ body: 'p-0 sm:p-0' }">
-            <template #header>
-              <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-file-code-2" />
-                <span>原始源码对照</span>
-              </div>
-            </template>
-            <DemoSourceCode
-              :code="demoSource.code"
-              :language="demoSource.language"
-              :filename="sourceFilename"
             />
           </UCard>
         </aside>
@@ -410,6 +424,24 @@ onMounted(() => {
   border-radius: 0.45rem;
   background: color-mix(in oklab, var(--ui-primary) 14%, transparent);
   color: var(--ui-primary);
+}
+
+.pipeline {
+  gap: 0;
+}
+
+.pipeline > * + * {
+  margin-top: 0.75rem;
+}
+
+.pipeline > * + *::before {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 0.75rem;
+  margin-left: 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(15, 23, 42, 0.12);
 }
 
 @media (min-width: 1024px) {

@@ -4,7 +4,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   id: 'prompt-template-weekly-report',
   title: 'Role-Driven Document Generator',
   description: '同一份业务数据 × 不同角色设定 → 完全不同的专业文档。',
-  learningGoal: '理解 Role-Driven Template：模板是壳，角色是魂，数据是血肉。同一套 prompt 结构 + 不同角色注入 → 输出风格和视角截然不同。同时支持 FewShot 示例注入，观察示例如何引导 AI 输出风格。',
+  learningGoal: '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式：模板是壳，角色是魂，数据是血肉。核心技术栈：LangChain、Zod、SSE Streaming、IndexedDB。',
   category: 'Prompt Engineering',
   tags: ['Prompt Template', 'Role Injection', 'LangChain', 'Streaming', 'Few-Shot'],
   routePath: '/demos/prompt-template-weekly-report',
