@@ -59,7 +59,12 @@ const displayModeLabel = computed(() =>
             class="catalog-card__tech-tag"
           >
             <UIcon
-              :name="tag === 'Streaming' ? 'i-lucide-radio' : tag === 'LangChain' ? 'i-lucide-link-2' : 'i-lucide-file-text'"
+              :name="
+                tag === 'Streaming' ? 'i-lucide-radio'
+                : tag === 'LangChain' ? 'i-lucide-link-2'
+                : tag === 'Role Injection' ? 'i-lucide-users'
+                : 'i-lucide-file-text'
+              "
               class="catalog-card__tech-icon"
             />
             {{ tag }}

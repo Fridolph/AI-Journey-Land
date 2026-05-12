@@ -2,17 +2,24 @@ import type { DemoMeta } from '@ai-journey-land/shared'
 
 export const promptTemplateWeeklyReportDemo: DemoMeta = {
   id: 'prompt-template-weekly-report',
-  title: 'Prompt Template 智能内容生成',
-  description: '输入业务数据和角色上下文，同一个 Prompt Template 为你生成不同场景的专业文档——周报、项目总结、客户回复……模板不变，输出随你而定。',
-  learningGoal: '理解 Prompt Template 的核心范式：将业务字段填入模板，让同一套 prompt 结构在不同上下文中稳定产出不同内容。同时观察普通输出与流式输出的差异。',
+  title: 'Role-Driven Document Generator',
+  description: '同一份业务数据 × 不同角色设定 → 完全不同的专业文档。Prompt Template 不是写死周报，而是让数据穿上角色的魂。',
+  learningGoal: '理解 Role-Driven Template 的核心范式：模板是壳，角色是魂，数据是血肉。同一套 prompt 结构 + 不同角色注入 → 输出风格和视角截然不同。同时观察普通输出与流式输出的差异。',
   category: 'Prompt Engineering',
-  tags: ['Prompt Template', 'LangChain', 'Streaming'],
+  tags: ['Prompt Template', 'Role Injection', 'LangChain', 'Streaming'],
   routePath: '/demos/prompt-template-weekly-report',
   apiNamespace: '/api/demos/prompt-template-weekly-report',
   displayMode: 'custom-page',
   ownerPackage: '@ai-journey-land/api',
   supportsStreaming: true,
   inputFields: [
+    {
+      name: 'role',
+      label: '角色设定',
+      component: 'input',
+      placeholder: '例如：技术 Leader / 产品经理 / CEO / 实习生',
+      defaultValue: '技术 Leader',
+    },
     {
       name: 'companyName',
       label: '公司名称',
@@ -45,7 +52,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
       name: 'teamGoal',
       label: '核心目标',
       component: 'textarea',
-      placeholder: '描述这段时间团队最重要的目标',
+      placeholder: '描述这段时间最重要的目标',
       defaultValue: '本周以稳定性为主，集中清理历史技术债和高频告警。',
     },
     {
@@ -62,5 +69,5 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   ],
   sourceUrl:
     'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
-  knownLimits: ['第一版使用单一 Prompt Template，不包含 Few-shot 与 Example Selector。'],
+  knownLimits: ['第一版使用单一 Prompt Template，角色通过文本输入自由设定，尚未提供预设角色快捷切换。'],
 }

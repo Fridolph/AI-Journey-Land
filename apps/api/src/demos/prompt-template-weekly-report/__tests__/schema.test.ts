@@ -2,8 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { promptTemplateWeeklyReportInputSchema } from '../schema'
 
 describe('promptTemplateWeeklyReportInputSchema', () => {
-  it('accepts valid input', () => {
+  it('accepts valid input with role', () => {
     const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      role: '技术 Leader',
       companyName: '极光云科技',
       teamName: '订单结算后端组',
       managerName: '陈总',
@@ -14,8 +15,34 @@ describe('promptTemplateWeeklyReportInputSchema', () => {
     expect(result.success).toBe(true)
   })
 
+  it('rejects empty role', () => {
+    const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      role: '',
+      companyName: '极光云科技',
+      teamName: '订单结算后端组',
+      managerName: '陈总',
+      weekRange: '2026-05-04 ~ 2026-05-08',
+      teamGoal: '稳定',
+      devActivities: '修复 Bug',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects missing role', () => {
+    const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      companyName: '极光云科技',
+      teamName: '订单结算后端组',
+      managerName: '陈总',
+      weekRange: '2026-05-04 ~ 2026-05-08',
+      teamGoal: '稳定',
+      devActivities: '修复 Bug',
+    })
+    expect(result.success).toBe(false)
+  })
+
   it('rejects empty companyName', () => {
     const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      role: '技术 Leader',
       companyName: '',
       teamName: '订单结算后端组',
       managerName: '陈总',
@@ -26,15 +53,9 @@ describe('promptTemplateWeeklyReportInputSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects missing fields', () => {
-    const result = promptTemplateWeeklyReportInputSchema.safeParse({
-      companyName: '极光云科技',
-    })
-    expect(result.success).toBe(false)
-  })
-
   it('rejects empty teamName', () => {
     const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      role: '技术 Leader',
       companyName: '极光云科技',
       teamName: '',
       managerName: '陈总',
@@ -47,6 +68,7 @@ describe('promptTemplateWeeklyReportInputSchema', () => {
 
   it('rejects empty devActivities', () => {
     const result = promptTemplateWeeklyReportInputSchema.safeParse({
+      role: '技术 Leader',
       companyName: '极光云科技',
       teamName: '订单结算后端组',
       managerName: '陈总',

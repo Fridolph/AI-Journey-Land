@@ -4,6 +4,7 @@ import { z } from 'zod'
  * Prompt Template 周报生成 demo 的输入校验 schema。
  */
 export const promptTemplateWeeklyReportInputSchema = z.object({
+  role: z.string().min(1, '角色不能为空'),
   companyName: z.string().min(1, '公司名称不能为空'),
   teamName: z.string().min(1, '部门名称不能为空'),
   managerName: z.string().min(1, '汇报对象不能为空'),

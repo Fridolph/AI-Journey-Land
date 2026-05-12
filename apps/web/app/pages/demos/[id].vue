@@ -20,12 +20,17 @@ const keyLogicItems = [
   {
     icon: 'i-lucide-braces',
     title: 'Prompt Template',
-    description: '同一套模板结构：填入不同角色和数据，模型输出不同的专业文档。模板是壳，内容是魂。',
+    description: '模板是壳——同一套结构，填入不同角色和数据，AI 输出截然不同的专业文档。',
+  },
+  {
+    icon: 'i-lucide-users',
+    title: 'Role Injection',
+    description: '角色是魂——技术 Leader、产品经理、CEO、实习生……同一份数据，四种视角。',
   },
   {
     icon: 'i-lucide-radio',
     title: '运行链路',
-    description: '普通运行返回完整文档，流式 SSE 逐 token 输出——过程可观测、可对比。',
+    description: '普通 run 返回完整文档，SSE stream 逐 token 输出——过程可观测、可对比。',
   },
 ]
 

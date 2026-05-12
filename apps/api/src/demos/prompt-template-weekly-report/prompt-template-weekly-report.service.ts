@@ -7,24 +7,24 @@ import { AiService } from '../../ai/ai.service'
 import type { DemoRunner } from '../demo-runner'
 
 const weeklyReportTemplate = `
-你是一名严谨但不失人情味的工程团队负责人，需要根据本周数据写一份周报。
+你是一名{role}，请根据以下数据生成一份专业的 Markdown 文档。
 
 公司名称：{companyName}
 部门名称：{teamName}
 直接汇报对象：{managerName}
-本周时间范围：{weekRange}
+时间范围：{weekRange}
 
-本周团队核心目标：
+核心目标：
 {teamGoal}
 
-本周开发数据（Git 提交 / Jira 任务）：
+关键数据：
 {devActivities}
 
-请根据以上信息生成一份【Markdown 周报】，要求：
+请根据以上信息，以【{role}】的视角和语气生成一份 Markdown 文档，要求：
 - 有简短的整体 summary（两三句话）
 - 有按模块/项目拆分的小结
-- 用一个 Markdown 表格列出关键指标（字段示例：模块 / 亮点 / 风险 / 下周计划）
-- 语气专业但有一点人情味，适合作为给老板和团队抄送的周报。
+- 用一个 Markdown 表格列出关键指标（字段示例：模块 / 亮点 / 风险 / 下步计划）
+- 语气和视角贴合{role}的身份定位。
 `.trim()
 
 @Injectable()
