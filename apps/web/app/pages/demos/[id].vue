@@ -56,6 +56,16 @@ onMounted(() => {
 })
 
 const pageErrorMessage = shallowRef('')
+const deletePopoverOpen = shallowRef<string | null>(null)
+
+function closePopover() {
+  deletePopoverOpen.value = null
+}
+
+function confirmDelete(id: string) {
+  deleteReport(id)
+  closePopover()
+}
 const isLoadingDemo = shallowRef(true)
 const keyLogicItems = [
   {
@@ -181,8 +191,8 @@ onMounted(() => {
               </div>
             </template>
 
-            <div class="flex gap-2 flex-wrap mb-3">
-              <label class="grid gap-1.5 flex-1 min-w-[100px] max-w-[180px]">
+            <div class="grid gap-2 grid-cols-2 mb-3">
+              <label class="grid gap-1.5 min-w-0">
                 <span class="text-[0.82rem] font-bold text-[#334155]">姓名</span>
                 <UInput
                   :model-value="form.authorName ?? ''"
@@ -265,21 +275,21 @@ onMounted(() => {
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>
-                <UPopover placement="bottom-end">
+                <UPopover :open="deletePopoverOpen === record.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
                   <UButton
                     icon="i-lucide-trash-2"
                     color="error"
                     variant="ghost"
                     size="xs"
+                    @click="deletePopoverOpen = record.id"
                   />
 
                   <template #content>
                     <div class="grid gap-3 p-2">
                       <p class="text-sm whitespace-nowrap">确定要删除这份报告吗？</p>
                       <div class="flex gap-2 justify-end">
-                        <UButton color="error" variant="solid" size="xs" @click="deleteReport(record.id)">
-                          删除
-                        </UButton>
+                        <UButton color="neutral" variant="ghost" size="xs" @click="closePopover">否</UButton>
+                        <UButton color="error" variant="solid" size="xs" @click="confirmDelete(record.id)">是</UButton>
                       </div>
                     </div>
                   </template>
