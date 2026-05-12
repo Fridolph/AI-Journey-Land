@@ -7,11 +7,53 @@ const demoId = computed(() => String(route.params.id ?? ''))
 const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, runDemo, streamDemo } =
   useDemoRunner()
 
+const { records: savedReports, save: saveReport, remove: deleteSavedReport, loadAll: loadSavedReports } =
+  useReportStore()
+
 const demoSource = computed(() => demoSources[demoId.value])
 
-const nonRoleFields = computed(() =>
-  (selectedDemo.value?.inputFields ?? []).filter((f) => f.name !== 'role'),
+const nonMetaFields = computed(() =>
+  (selectedDemo.value?.inputFields ?? []).filter(
+    (f) => f.name !== 'role' && f.name !== 'reportType',
+  ),
 )
+
+const isSaveEnabled = computed(() => mode.value === 'done' && output.value.length > 0)
+
+async function handleRun() {
+  await runDemo()
+  if (mode.value === 'done') {
+    await saveCurrentResult()
+  }
+}
+
+async function handleStream() {
+  await streamDemo()
+  if (mode.value === 'done') {
+    await saveCurrentResult()
+  }
+}
+
+async function saveCurrentResult() {
+  if (!selectedDemo.value || !output.value) return
+
+  await saveReport({
+    demoId: selectedDemo.value.id,
+    reportType: form.reportType ?? '',
+    role: form.role ?? '',
+    input: { ...form },
+    output: output.value,
+  })
+}
+
+async function deleteReport(id: string) {
+  await deleteSavedReport(id)
+}
+
+onMounted(() => {
+  void loadCurrentDemo()
+  void loadSavedReports()
+})
 
 const pageErrorMessage = shallowRef('')
 const isLoadingDemo = shallowRef(true)
@@ -127,25 +169,83 @@ onMounted(() => {
             @update:model-value="form.role = $event"
           />
 
+          <ReportTypeSelector
+            v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
+            :model-value="form.reportType ?? ''"
+            :presets="selectedDemo.reportTypePresets"
+            :is-running="isRunning"
+            @update:model-value="form.reportType = $event"
+          />
+
           <UCard>
             <template #header>
               <div class="demo-page__section-title">
                 <UIcon name="i-lucide-file-input" />
-                <span>输入参数</span>
+                <span>输入数据</span>
               </div>
             </template>
             <DemoInputForm
               :model-value="form"
-              :fields="nonRoleFields"
+              :fields="nonMetaFields"
               :is-running="isRunning"
               @update:model-value="Object.assign(form, $event)"
-              @run="runDemo"
-              @stream="streamDemo"
+              @run="handleRun"
+              @stream="handleStream"
             />
+
+            <div v-if="isSaveEnabled" class="demo-page__save-area">
+              <UAlert
+                icon="i-lucide-database"
+                color="primary"
+                variant="soft"
+                title="已自动保存到本地"
+                description="生成结果已存入浏览器 IndexedDB，可随时查看和删除。"
+              />
+            </div>
           </UCard>
 
           <UCard>
             <DemoOutputPanel :mode="mode" :output="output" :error-message="errorMessage" />
+          </UCard>
+
+          <UCard v-if="savedReports.length > 0">
+            <template #header>
+              <div class="demo-page__section-title">
+                <UIcon name="i-lucide-archive" />
+                <span>已保存报告（本地）</span>
+                <UBadge color="neutral" variant="subtle" size="xs">
+                  {{ savedReports.length }}
+                </UBadge>
+              </div>
+            </template>
+
+            <div class="demo-page__report-list">
+              <div
+                v-for="record in savedReports"
+                :key="record.id"
+                class="demo-page__report-item"
+              >
+                <div class="demo-page__report-meta">
+                  <UBadge color="primary" variant="soft" size="xs">
+                    {{ record.reportType }}
+                  </UBadge>
+                  <UBadge color="neutral" variant="subtle" size="xs">
+                    <UIcon name="i-lucide-users" />
+                    {{ record.role }}
+                  </UBadge>
+                  <span class="demo-page__report-time">
+                    {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
+                  </span>
+                </div>
+                <UButton
+                  icon="i-lucide-trash-2"
+                  color="error"
+                  variant="ghost"
+                  size="xs"
+                  @click="deleteReport(record.id)"
+                />
+              </div>
+            </div>
           </UCard>
         </div>
 
@@ -322,6 +422,40 @@ onMounted(() => {
   .demo-page__side {
     grid-column: span 5;
   }
+}
+
+.demo-page__save-area {
+  margin-top: 0.75rem;
+}
+
+.demo-page__report-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.demo-page__report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.demo-page__report-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.demo-page__report-time {
+  color: var(--ui-text-muted);
+  font-size: 0.76rem;
+  white-space: nowrap;
 }
 
 @keyframes spin {

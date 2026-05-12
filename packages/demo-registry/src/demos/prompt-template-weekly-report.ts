@@ -13,6 +13,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   ownerPackage: '@ai-journey-land/api',
   supportsStreaming: true,
   rolePresets: ['技术 Leader', '产品经理', 'CEO 视角', '实习生'],
+  reportTypePresets: ['日报', '周报', '月报', '季度总结', '年度总结'],
   inputFields: [
     {
       name: 'role',
@@ -20,6 +21,13 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
       component: 'input',
       placeholder: '例如：技术 Leader / 产品经理 / CEO / 实习生',
       defaultValue: '技术 Leader',
+    },
+    {
+      name: 'reportType',
+      label: '报告类型',
+      component: 'input',
+      placeholder: '日报 / 周报 / 月报 / 季度总结 / 年度总结',
+      defaultValue: '周报',
     },
     {
       name: 'companyName',

@@ -20,6 +20,7 @@ export function listDemoItems(): DemoListItem[] {
       ownerPackage,
       supportsStreaming,
       rolePresets,
+      reportTypePresets,
       sourceUrl,
       knownLimits,
     }) => ({
@@ -37,6 +38,7 @@ export function listDemoItems(): DemoListItem[] {
       ownerPackage,
       supportsStreaming,
       rolePresets,
+      reportTypePresets,
       sourceUrl,
       knownLimits,
     }),
