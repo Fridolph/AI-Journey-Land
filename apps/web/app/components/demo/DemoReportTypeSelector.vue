@@ -65,21 +65,27 @@ function onTypeChange(type: string) {
 </script>
 
 <template>
-  <label class="grid gap-1.5 flex-1 min-w-0">
-    <span class="text-[0.82rem] font-bold text-[#334155]">报告类型</span>
-    <div class="flex items-center gap-2 flex-wrap">
+  <div class="grid gap-2 grid-cols-2">
+    <label class="grid gap-1.5 min-w-0">
+      <span class="text-[0.82rem] font-bold text-[#334155]">报告类型</span>
       <USelect
         :model-value="modelValue"
         :items="presets"
         :disabled="isRunning"
         size="sm"
-        class="min-w-[140px] max-w-[200px]"
         @update:model-value="onTypeChange(String($event))"
       />
-      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-[var(--ui-primary)] font-semibold">
+    </label>
+
+    <label class="grid gap-1.5 min-w-0">
+      <span class="text-[0.82rem] font-bold text-[#334155]">汇报时间</span>
+      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-[var(--ui-primary)] font-semibold min-h-[36px]">
         <UIcon name="i-lucide-calendar-range" />
         {{ dateRange }}
       </span>
-    </div>
-  </label>
+      <span v-else class="text-sm text-[var(--ui-text-muted)] min-h-[36px] flex items-center">
+        选择报告类型后自动填入
+      </span>
+    </label>
+  </div>
 </template>

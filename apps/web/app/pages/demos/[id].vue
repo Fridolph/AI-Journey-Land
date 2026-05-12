@@ -182,6 +182,17 @@ onMounted(() => {
             </template>
 
             <div class="flex gap-2 flex-wrap mb-3">
+              <label class="grid gap-1.5 flex-1 min-w-[100px] max-w-[180px]">
+                <span class="text-[0.82rem] font-bold text-[#334155]">姓名</span>
+                <UInput
+                  :model-value="form.authorName ?? ''"
+                  placeholder="你的名字"
+                  size="sm"
+                  :disabled="isRunning"
+                  @update:model-value="form.authorName = String($event ?? '')"
+                />
+              </label>
+
               <DemoRoleSelector
                 v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
                 :model-value="form.role ?? ''"
@@ -189,16 +200,17 @@ onMounted(() => {
                 :is-running="isRunning"
                 @update:model-value="form.role = $event"
               />
-              <DemoReportTypeSelector
-                v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
-                :model-value="form.reportType ?? ''"
-                :date-range="form.dateRange ?? ''"
-                :presets="selectedDemo.reportTypePresets"
-                :is-running="isRunning"
-                @update:model-value="form.reportType = $event"
-                @update:date-range="form.dateRange = $event"
-              />
             </div>
+
+            <DemoReportTypeSelector
+              v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
+              :model-value="form.reportType ?? ''"
+              :date-range="form.dateRange ?? ''"
+              :presets="selectedDemo.reportTypePresets"
+              :is-running="isRunning"
+              @update:model-value="form.reportType = $event"
+              @update:date-range="form.dateRange = $event"
+            />
 
             <DemoInputForm
               :model-value="form"
@@ -253,13 +265,25 @@ onMounted(() => {
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>
-                <UButton
-                  icon="i-lucide-trash-2"
-                  color="error"
-                  variant="ghost"
-                  size="xs"
-                  @click="deleteReport(record.id)"
-                />
+                <UPopover placement="bottom-end">
+                  <UButton
+                    icon="i-lucide-trash-2"
+                    color="error"
+                    variant="ghost"
+                    size="xs"
+                  />
+
+                  <template #content>
+                    <div class="grid gap-3 p-2">
+                      <p class="text-sm whitespace-nowrap">确定要删除这份报告吗？</p>
+                      <div class="flex gap-2 justify-end">
+                        <UButton color="error" variant="solid" size="xs" @click="deleteReport(record.id)">
+                          删除
+                        </UButton>
+                      </div>
+                    </div>
+                  </template>
+                </UPopover>
               </div>
             </div>
           </UCard>
