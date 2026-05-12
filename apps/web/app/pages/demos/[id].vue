@@ -66,19 +66,70 @@ const pageErrorMessage = shallowRef('')
 const isLoadingDemo = shallowRef(true)
 
 const pipelineSteps = [
-  { icon: 'i-lucide-form-input', label: '输入数据', desc: 'role × reportType × data', color: '#0f766e' },
-  { icon: 'i-lucide-braces', label: 'Prompt Template', desc: '变量填充 + FewShot 注入', color: '#0d9488' },
-  { icon: 'i-lucide-link-2', label: 'LangChain', desc: 'PromptTemplate → ChatOpenAI', color: '#6366f1' },
-  { icon: 'i-lucide-cpu', label: 'AI 模型', desc: 'OpenAI-compatible API', color: '#f59e0b' },
-  { icon: 'i-lucide-radio', label: '输出', desc: '普通 / SSE Stream', color: '#0891b2' },
+  {
+    icon: 'i-lucide-form-input',
+    label: '用户输入层',
+    detail: 'UI Form 收集 role/reportType/dateRange/companyName/devActivities 等字段，Zod Schema 前端预校验 ≥15 字，通过后 POST /api/demos/:id/run（或 /stream）',
+    color: '#0f766e',
+  },
+  {
+    icon: 'i-lucide-shield-check',
+    label: 'Schema 校验层',
+    detail: '后端 NestJS Controller 接收 JSON body → DemosService 路由到对应 DemoRunner → parseRunRequest() 先走通用 demoRunRequestSchema，再走 demo 专属 schema（z.enum + min/max）',
+    color: '#0891b2',
+  },
+  {
+    icon: 'i-lucide-braces',
+    label: 'Prompt 组装层',
+    detail: 'formatPrompt() 从 prompts/ 目录加载模板 → 注入 role/reportType/dateRange → REPORT_TYPE_GUIDE 映射结构指引 → ROLE_PERSPECTIVE 映射角色视角 → 可选 FewShot 示例注入 → 返回完整 prompt 字符串',
+    color: '#0d9488',
+  },
+  {
+    icon: 'i-lucide-link-2',
+    label: 'LangChain 调用层',
+    detail: 'PromptTemplate.fromTemplate() 解析变量占位 → model.invoke(prompt) 普通调用 或 model.stream(prompt) 流式调用 → ChatOpenAI 底层走 OpenAI-compatible API（DashScope / DeepSeek）',
+    color: '#6366f1',
+  },
+  {
+    icon: 'i-lucide-cpu',
+    label: 'AI 模型层',
+    detail: 'AiService 统一管理 Provider 配置 → OpenAI / DeepSeek Adapter → ChatOpenAI 实例化 → 支持 temperature 调节输出随机性',
+    color: '#f59e0b',
+  },
+  {
+    icon: 'i-lucide-radio',
+    label: '输出 & 持久化层',
+    detail: '普通输出：等待完整 result → 前端展示 Markdown。流式输出：SSE event:meta/token/done/error → useDemoRunner 解析 SSE 帧 → 实时渲染 → 生成完成后自动写入 IndexedDB',
+    color: '#dc2626',
+  },
 ]
 
 const codeAnalysisItems = [
-  { file: 'schema.ts', title: '校验层', desc: 'Zod enum 限定 role 3 种、reportType 6 种；devActivities ≥15 字强校验' },
-  { file: 'prompts/report-template.ts', title: 'Prompt 模板', desc: '支持 {role}/{reportType}/{dateRange} 变量注入，可选 FewShot 示例' },
-  { file: 'service.ts', title: '组装层', desc: 'GUIDE+PERSPECTIVE 映射注入，reportTemplate → FewShot；双重 Zod 校验' },
-  { file: 'useDemoRunner.ts', title: '运行状态机', desc: 'idle→loading→done/error；SSE 帧解析，Stream 逐 token 实时渲染' },
-  { file: 'useReportStore.ts', title: '本地持久化', desc: 'IndexedDB CRUD，离线可用，按时间倒序' },
+  {
+    file: 'schema.ts',
+    title: 'Zod Schema 约束设计',
+    desc: '定义 REPORT_ROLES（部门Leader/技术研发/老板）和 REPORT_TYPES（日报~年度总结）两组 const enum，导出类型供前端复用。devActivities 用 z.string().min(15) 强校验，其余字段可选（z.optional().default("")）。reportTemplate 为 Few-Shot 入口。',
+  },
+  {
+    file: 'prompts/',
+    title: 'Prompt 模板维护与管理',
+    desc: '按职责拆分为 guides.ts（REPORT_TYPE_GUIDE 结构指引）、perspectives.ts（ROLE_PERSPECTIVE 角色视角）、report-template.ts（主模板）。通过 index.ts barrel 统一导出。新增 demo 参照此模式建 prompts/ 目录。',
+  },
+  {
+    file: 'service.ts',
+    title: '组装、校验与调度',
+    desc: 'parseRunRequest() 双重检验：先走共享 demoRunRequestSchema（通用 Record<string,string>），再走 demo 专属 schema（enum + min）。formatPrompt() 注入 GUIDE+PERSPECTIVE+FewShot，按需拼接可选字段避免空行。run() 和 stream() 共享同一套 prompt 逻辑。',
+  },
+  {
+    file: 'useDemoRunner.ts',
+    title: '前端运行状态机',
+    desc: '管理 mode: idle→loading/streaming→done/error 五种状态。runDemo() 通过 $fetch POST 普通运行并解包 ApiResponse<T>。streamDemo() 通过原生 fetch + ReadableStream 逐帧解析 SSE（event:/data: 分隔），累积 buffer 处理粘包。滚动策略：streaming 时每 3s 自动滚底。',
+  },
+  {
+    file: 'useReportStore.ts',
+    title: 'IndexedDB 本地持久化',
+    desc: '封装 openDB() 初始化 idb（keyPath: id，索引：demoId/reportType/createdAt）。save() 自动生成 crypto.randomUUID() + ISO 时间戳。loadAll() 按 createdAt 倒序排列。remove()/removeAll() 支持单条和批量删除。浏览器端离线可用，无需后端数据库。',
+  },
 ]
 
 const techTags = [
@@ -292,87 +343,61 @@ onMounted(() => {
         </div>
 
         <aside class="demo-page__side">
-          <UCard>
-            <template #header>
-              <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-target" />
-                <span>学习目标</span>
-              </div>
-            </template>
+          <DemoCollapsibleCard title="学习目标" icon="i-lucide-target">
             <p class="text-[#64748b] leading-relaxed text-sm">{{ selectedDemo.learningGoal }}</p>
 
             <div class="mt-3 flex flex-wrap gap-1.5">
               <span
                 v-for="tag in techTags"
                 :key="tag.name"
-                class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.7rem] font-bold uppercase tracking-[0.04em] bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
+                class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.7rem] font-semibold bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
               >
                 {{ tag.name }}
               </span>
             </div>
-          </UCard>
+          </DemoCollapsibleCard>
 
-          <UCard>
-            <template #header>
-              <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-git-branch" />
-                <span>AI 技术架构</span>
-              </div>
-            </template>
-
+          <DemoCollapsibleCard title="AI 技术架构" icon="i-lucide-git-branch">
             <div class="grid gap-0 pipeline">
               <div
                 v-for="(step, i) in pipelineSteps"
                 :key="step.label"
-                class="flex items-center gap-3"
+                class="flex items-start gap-3"
               >
                 <div
-                  class="flex-shrink-0 grid w-8 h-8 place-items-center rounded-lg text-white text-sm"
+                  class="flex-shrink-0 grid w-7 h-7 place-items-center rounded-lg text-white text-xs mt-0.5"
                   :style="{ background: step.color }"
                 >
-                  <UIcon :name="step.icon" />
+                  <span class="text-[0.6rem] font-bold">{{ i + 1 }}</span>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-bold text-[var(--ui-text-highlighted)]">{{ step.label }}</p>
-                  <p class="text-xs text-[var(--ui-text-muted)]">{{ step.desc }}</p>
+                  <p class="text-xs text-[var(--ui-text-muted)] leading-relaxed mt-0.5">{{ step.detail }}</p>
                 </div>
               </div>
             </div>
-          </UCard>
+          </DemoCollapsibleCard>
 
-          <UCard>
-            <template #header>
-              <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-layers" />
-                <span>核心逻辑拆解</span>
-              </div>
-            </template>
-
-            <div class="grid gap-3">
-              <div v-for="item in codeAnalysisItems" :key="item.file" class="grid gap-0.5">
+          <DemoCollapsibleCard title="核心逻辑详解" icon="i-lucide-layers">
+            <div class="grid gap-4">
+              <div v-for="item in codeAnalysisItems" :key="item.file" class="grid gap-1">
                 <div class="flex items-center gap-1.5">
-                  <span class="text-[0.65rem] font-mono font-bold uppercase tracking-[0.06em] text-[var(--ui-primary)]">{{ item.file }}</span>
-                  <span class="text-xs font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
+                  <span class="text-[0.65rem] font-mono font-bold text-[var(--ui-primary)] bg-[var(--ui-bg-muted)] rounded px-1 py-px">{{ item.file }}</span>
+                  <span class="text-sm font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
                 </div>
                 <p class="text-xs text-[var(--ui-text-muted)] leading-relaxed">{{ item.desc }}</p>
               </div>
             </div>
-          </UCard>
+          </DemoCollapsibleCard>
 
-          <UCard>
-            <template #header>
-              <div class="flex items-center gap-2 font-extrabold">
-                <UIcon name="i-lucide-link" />
-                <span>来源与上下文</span>
-              </div>
-            </template>
+          <DemoCollapsibleCard title="来源与上下文" icon="i-lucide-link">
             <DemoSourceLinks
               :source-url="selectedDemo.sourceUrl"
               :docs-url="selectedDemo.docsUrl"
               :draft-url="selectedDemo.draftUrl"
               :known-limits="selectedDemo.knownLimits"
             />
-          </UCard>
+          </DemoCollapsibleCard>
         </aside>
       </section>
     </section>
@@ -430,18 +455,23 @@ onMounted(() => {
   gap: 0;
 }
 
+.pipeline > * {
+  position: relative;
+}
+
 .pipeline > * + * {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 .pipeline > * + *::before {
   content: '';
   display: block;
+  position: absolute;
+  left: 0.85rem;
+  top: -0.55rem;
   width: 1px;
-  height: 0.75rem;
-  margin-left: 1rem;
-  margin-bottom: 0.75rem;
-  background: rgba(15, 23, 42, 0.12);
+  height: 0.55rem;
+  background: rgba(15, 23, 42, 0.15);
 }
 
 @media (min-width: 1024px) {
