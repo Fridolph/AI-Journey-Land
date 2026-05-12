@@ -161,26 +161,6 @@ onMounted(() => {
 
       <section class="demo-page__body">
         <div class="demo-page__primary">
-          <div class="demo-page__meta-row">
-            <DemoRoleSelector
-              v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
-              :model-value="form.role ?? ''"
-              :presets="selectedDemo.rolePresets"
-              :is-running="isRunning"
-              @update:model-value="form.role = $event"
-            />
-
-            <DemoReportTypeSelector
-              v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
-              :model-value="form.reportType ?? ''"
-              :date-range="form.dateRange ?? ''"
-              :presets="selectedDemo.reportTypePresets"
-              :is-running="isRunning"
-              @update:model-value="form.reportType = $event"
-              @update:date-range="form.dateRange = $event"
-            />
-          </div>
-
           <UCard>
             <template #header>
               <div class="demo-page__section-title">
@@ -188,6 +168,32 @@ onMounted(() => {
                 <span>输入数据</span>
               </div>
             </template>
+
+            <div class="demo-page__meta-row">
+              <DemoRoleSelector
+                v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
+                :model-value="form.role ?? ''"
+                :presets="selectedDemo.rolePresets"
+                :is-running="isRunning"
+                @update:model-value="form.role = $event"
+              />
+              <DemoReportTypeSelector
+                v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
+                :model-value="form.reportType ?? ''"
+                :date-range="form.dateRange ?? ''"
+                :presets="selectedDemo.reportTypePresets"
+                :is-running="isRunning"
+                @update:model-value="form.reportType = $event"
+                @update:date-range="form.dateRange = $event"
+              />
+            </div>
+
+            <div v-if="form.dateRange" class="demo-page__date-row">
+              <UIcon name="i-lucide-calendar-range" />
+              <span class="demo-page__date-label">汇报时间</span>
+              <span class="demo-page__date-value">{{ form.dateRange }}</span>
+            </div>
+
             <DemoInputForm
               :model-value="form"
               :fields="nonMetaFields"
@@ -375,6 +381,26 @@ onMounted(() => {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.demo-page__date-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+  color: var(--ui-text-muted);
+  font-size: 0.82rem;
+}
+
+.demo-page__date-label {
+  color: var(--ui-text-highlighted);
+  font-weight: 700;
+}
+
+.demo-page__date-value {
+  color: var(--ui-primary);
+  font-weight: 650;
 }
 
 .demo-page__section-title {

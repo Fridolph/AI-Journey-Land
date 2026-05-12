@@ -60,7 +60,7 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
     {
       name: 'teamGoal',
       label: '当前目标（可选）',
-      component: 'textarea',
+      component: 'input',
       placeholder: '有需要AI结合这块内容，没写就参考下面的主要内容',
       defaultValue: '',
     },
