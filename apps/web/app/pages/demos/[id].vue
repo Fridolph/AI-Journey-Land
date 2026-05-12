@@ -161,7 +161,7 @@ onMounted(() => {
 
       <section class="demo-page__body">
         <div class="demo-page__primary">
-          <RoleSelector
+          <DemoRoleSelector
             v-if="selectedDemo.rolePresets && selectedDemo.rolePresets.length > 0"
             :model-value="form.role ?? ''"
             :presets="selectedDemo.rolePresets"
@@ -169,7 +169,7 @@ onMounted(() => {
             @update:model-value="form.role = $event"
           />
 
-          <ReportTypeSelector
+          <DemoReportTypeSelector
             v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
             :model-value="form.reportType ?? ''"
             :presets="selectedDemo.reportTypePresets"
