@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string
-  dateRange: string
   presets: string[]
   isRunning: boolean
 }>()
@@ -65,51 +64,29 @@ function onTypeChange(type: string) {
 </script>
 
 <template>
-  <div class="meta-bar">
-    <span class="meta-bar__label">报告类型</span>
+  <label class="select-field">
+    <span class="select-field__label">报告类型</span>
     <USelect
       :model-value="modelValue"
       :items="presets"
       :disabled="isRunning"
       size="sm"
-      class="meta-bar__select"
       @update:model-value="onTypeChange(String($event))"
     />
-    <div v-if="dateRange" class="meta-bar__date">
-      <UIcon name="i-lucide-calendar-range" />
-      <span>{{ dateRange }}</span>
-    </div>
-  </div>
+  </label>
 </template>
 
 <style scoped>
-.meta-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.select-field {
+  display: grid;
+  gap: 0.4rem;
   flex: 1;
   min-width: 0;
 }
 
-.meta-bar__label {
-  color: var(--ui-text-highlighted);
+.select-field__label {
+  color: #334155;
   font-size: 0.82rem;
   font-weight: 700;
-  flex-shrink: 0;
-}
-
-.meta-bar__select {
-  min-width: 140px;
-  max-width: 200px;
-}
-
-.meta-bar__date {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-left: 0.5rem;
-  color: var(--ui-text-muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
 }
 </style>

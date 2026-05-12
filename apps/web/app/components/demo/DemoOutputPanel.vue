@@ -7,6 +7,17 @@ const props = defineProps<{
 
 const outputContentRef = useTemplateRef<HTMLElement>('outputContent')
 
+const copied = ref(false)
+
+async function copyOutput() {
+  if (!props.output) return
+  await navigator.clipboard.writeText(props.output)
+  copied.value = true
+  setTimeout(() => {
+    copied.value = false
+  }, 1800)
+}
+
 let streamScrollTimer: ReturnType<typeof setInterval> | undefined
 let lastStreamScrollAt = 0
 
@@ -121,8 +132,15 @@ onBeforeUnmount(() => {
         <span />
       </div>
     </div>
-    <pre v-else-if="output" ref="outputContent" class="output-panel__content">{{ output }}</pre>
-    <div v-else class="output-panel__empty">
+    <div v-if="output" class="output-panel__content-area">
+      <button
+        class="output-panel__copy-btn"
+        :class="{ 'output-panel__copy-btn--done': copied }"
+        @click="copyOutput"
+      >
+        <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" />
+      </button>
+      <pre ref="outputContent" class="output-panel__content">{{ output }}<div v-else class="output-panel__empty">
       <UIcon name="i-lucide-terminal-square" class="output-panel__empty-icon" />
       <span>等待一次真实模型调用。</span>
     </div>
@@ -154,6 +172,47 @@ onBeforeUnmount(() => {
   margin-top: 0.2rem;
   font-size: 1.2rem;
   font-weight: 800;
+}
+
+.output-panel__content-area {
+  position: relative;
+}
+
+.output-panel__copy-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(215, 255, 244, 0.18);
+  border-radius: 0.35rem;
+  background: rgba(215, 255, 244, 0.06);
+  color: rgba(215, 255, 244, 0.6);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 140ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.output-panel__content-area:hover .output-panel__copy-btn {
+  opacity: 1;
+}
+
+.output-panel__copy-btn:hover {
+  background: rgba(215, 255, 244, 0.15);
+  color: #d7fff4;
+}
+
+.output-panel__copy-btn--done {
+  background: color-mix(in oklab, var(--ui-primary) 28%, transparent);
+  border-color: var(--ui-primary);
+  color: var(--ui-primary);
+  opacity: 1;
 }
 
 .output-panel__content {

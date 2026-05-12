@@ -180,7 +180,6 @@ onMounted(() => {
               <DemoReportTypeSelector
                 v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
                 :model-value="form.reportType ?? ''"
-                :date-range="form.dateRange ?? ''"
                 :presets="selectedDemo.reportTypePresets"
                 :is-running="isRunning"
                 @update:model-value="form.reportType = $event"
@@ -189,9 +188,11 @@ onMounted(() => {
             </div>
 
             <div v-if="form.dateRange" class="demo-page__date-row">
-              <UIcon name="i-lucide-calendar-range" />
               <span class="demo-page__date-label">汇报时间</span>
-              <span class="demo-page__date-value">{{ form.dateRange }}</span>
+              <span class="demo-page__date-value">
+                <UIcon name="i-lucide-calendar-range" />
+                {{ form.dateRange }}
+              </span>
             </div>
 
             <DemoInputForm
@@ -385,21 +386,23 @@ onMounted(() => {
 }
 
 .demo-page__date-row {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
+  display: grid;
+  gap: 0.4rem;
   margin-bottom: 0.75rem;
-  color: var(--ui-text-muted);
-  font-size: 0.82rem;
 }
 
 .demo-page__date-label {
-  color: var(--ui-text-highlighted);
+  color: #334155;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .demo-page__date-value {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--ui-primary);
+  font-size: 0.9rem;
   font-weight: 650;
 }
 

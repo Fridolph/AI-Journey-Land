@@ -11,37 +11,29 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="meta-bar">
-    <span class="meta-bar__label">角色</span>
+  <label class="select-field">
+    <span class="select-field__label">角色</span>
     <USelect
       :model-value="modelValue"
       :items="presets"
       :disabled="isRunning"
       size="sm"
-      class="meta-bar__select"
       @update:model-value="emit('update:modelValue', String($event))"
     />
-  </div>
+  </label>
 </template>
 
 <style scoped>
-.meta-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.select-field {
+  display: grid;
+  gap: 0.4rem;
   flex: 1;
   min-width: 0;
 }
 
-.meta-bar__label {
-  color: var(--ui-text-highlighted);
+.select-field__label {
+  color: #334155;
   font-size: 0.82rem;
   font-weight: 700;
-  flex-shrink: 0;
-}
-
-.meta-bar__select {
-  min-width: 140px;
-  max-width: 200px;
 }
 </style>

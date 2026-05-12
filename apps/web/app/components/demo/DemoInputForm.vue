@@ -24,7 +24,12 @@ function updateField(name: string, value: string) {
 <template>
   <form class="demo-form" @submit.prevent="emit('run')">
     <div class="demo-form__grid">
-      <label v-for="field in fields" :key="field.name" class="demo-form__field">
+      <label
+          v-for="field in fields"
+          :key="field.name"
+          class="demo-form__field"
+          :class="{ 'demo-form__field--full': field.name === 'teamGoal' }"
+        >
         <span class="demo-form__label">{{ field.label }}</span>
         <UTextarea
           v-if="field.component === 'textarea'"
@@ -88,6 +93,10 @@ function updateField(name: string, value: string) {
 }
 
 .demo-form__field:nth-last-child(-n + 2) {
+  grid-column: 1 / -1;
+}
+
+.demo-form__field--full {
   grid-column: 1 / -1;
 }
 
