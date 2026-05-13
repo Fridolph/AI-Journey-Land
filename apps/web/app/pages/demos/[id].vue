@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ReportRecord } from '~/composables/useReportStore'
+
 const route = useRoute()
 const demoId = computed(() => String(route.params.id ?? ''))
 
@@ -70,6 +72,20 @@ async function saveCurrentResult() {
 
 async function deleteReport(id: string) {
   await deleteSavedReport(id)
+}
+
+function viewReport(record: ReportRecord) {
+  Object.keys(form).forEach((k) => delete form[k])
+  Object.assign(form, record.input)
+
+  const savedPrompt = typeof record.input === 'object' && record.input !== null && 'customPrompt' in record.input
+    ? String((record.input as Record<string, string>).customPrompt ?? DEFAULT_PROMPT)
+    : DEFAULT_PROMPT
+  customPrompt.value = savedPrompt
+
+  output.value = record.output
+  errorMessage.value = ''
+  mode.value = 'done'
 }
 
 const deletePopoverOpen = shallowRef<string | null>(null)
@@ -154,7 +170,7 @@ const codeAnalysisItems = [
   {
     file: 'useReportStore.ts',
     title: 'IndexedDB 本地持久化',
-    desc: '封装 openDB() 初始化 idb（keyPath: id，索引：demoId / reportType / createdAt）。save() 自动生成 crypto.randomUUID() + ISO 时间戳。loadAll() 按 createdAt 倒序排列。remove() / removeAll() 支持单条和批量删除。\n\n浏览器端离线可用，无需后端数据库，数据完全由用户掌控。',
+    desc: '封装 openDB() 初始化 idb（keyPath: id，索引：demoId / reportType / createdAt）。save() 自动生成 crypto.randomUUID() + ISO 时间戳，input 中携带 customPrompt。loadAll() 按 createdAt 倒序排列。remove() / removeAll() 支持单条和批量删除。\n\nviewReport() 回填：从 record.input 恢复全部表单字段 + customPrompt，设置 output 和 mode="done"，让用户无缝切换查看历史报告。\n\n浏览器端离线可用，无需后端数据库，数据完全由用户掌控。',
   },
 ]
 
@@ -369,7 +385,15 @@ onMounted(() => {
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>
-                <UPopover :open="deletePopoverOpen === record.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
+                <div class="flex items-center gap-0.5">
+                  <UButton
+                    icon="i-lucide-eye"
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    @click="viewReport(record)"
+                  />
+                  <UPopover :open="deletePopoverOpen === record.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
                   <UButton
                     icon="i-lucide-trash-2"
                     color="error"
