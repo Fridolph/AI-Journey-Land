@@ -99,9 +99,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@ai-journey-land/demo-registry':
-        specifier: workspace:*
-        version: link:../../packages/demo-registry
       '@ai-journey-land/shared':
         specifier: workspace:*
         version: link:../../packages/shared
