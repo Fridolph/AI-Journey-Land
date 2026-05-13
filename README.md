@@ -123,12 +123,10 @@ pnpm dev
 ## 常用脚本
 
 ```bash
-pnpm build          # 构建所有 package
-pnpm lint           # oxlint 检查
-pnpm format         # oxfmt 格式化
-pnpm format:check   # 校验格式
-pnpm typecheck      # TypeScript 类型检查
-pnpm test           # 运行全部测试单元
+pnpm build          # 构建所有 package（使用缓存）
+pnpm build:fresh    # 强制重新构建（清除 turbo 缓存）
+pnpm clean          # 清除所有构建产物和缓存
+pnpm dev:fresh      # 清除 + 重构 + 启动开发服务（改多包后首选）
 ```
 
 单个 package 测试：
