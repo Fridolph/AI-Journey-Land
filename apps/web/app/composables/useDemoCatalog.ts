@@ -5,7 +5,7 @@ export function useDemoCatalog() {
   const config = useRuntimeConfig()
   const apiBase = computed(() => config.public.apiBase)
   const demos = shallowRef<DemoListItem[]>([])
-  const isLoading = shallowRef(false)
+  const isLoading = shallowRef(true)
   const errorMessage = shallowRef('')
 
   async function loadCatalog() {
