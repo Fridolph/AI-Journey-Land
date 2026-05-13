@@ -287,6 +287,7 @@ onMounted(() => {
               :date-range="form.dateRange ?? ''"
               :presets="selectedDemo.reportTypePresets"
               :is-running="isRunning"
+              class="mb-3"
               @update:model-value="form.reportType = $event"
               @update:date-range="form.dateRange = $event"
             />

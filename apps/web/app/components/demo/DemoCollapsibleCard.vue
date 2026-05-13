@@ -12,7 +12,7 @@ const isOpen = ref(props.defaultOpen)
 </script>
 
 <template>
-  <UCard :ui="isOpen ? { body: 'p-0 sm:p-0' } : { body: 'hidden' }">
+  <UCard :ui="{ body: isOpen ? undefined : 'hidden' }">
     <template #header>
       <button
         type="button"
