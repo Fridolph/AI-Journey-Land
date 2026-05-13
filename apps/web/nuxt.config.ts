@@ -39,4 +39,13 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: true,
   },
+  vite: {
+    build: {
+      rollupOptions: {
+        onLog(_level: string, log: { message?: string }) {
+          if (log.message?.includes('Sourcemap')) return
+        },
+      },
+    },
+  },
 })
