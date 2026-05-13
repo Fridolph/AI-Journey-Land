@@ -48,9 +48,19 @@ onMounted(() => {
       :description="errorMessage"
     />
 
-    <section v-else-if="isLoading" class="catalog-page__loading" aria-label="正在加载">
-      <UIcon name="i-lucide-loader-circle" class="catalog-page__loading-icon" />
-      <span>正在读取 demo registry...</span>
+    <section v-else-if="isLoading" class="catalog-page__grid" aria-label="正在加载">
+      <div v-for="n in 4" :key="n" class="catalog-card-skeleton">
+        <USkeleton class="catalog-card-skeleton__media" />
+        <div class="catalog-card-skeleton__body">
+          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
+          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--lg" />
+          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
+          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
+        </div>
+        <div class="catalog-card-skeleton__footer">
+          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
+        </div>
+      </div>
     </section>
 
     <section v-else class="catalog-page__grid" aria-label="Demo 列表">
@@ -132,22 +142,46 @@ onMounted(() => {
   grid-template-columns: 1fr;
 }
 
-.catalog-page__loading {
+.catalog-card-skeleton {
   display: grid;
-  min-height: 18rem;
-  place-items: center;
-  border: 1px dashed rgba(15, 23, 42, 0.18);
+  gap: 0;
   border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.58);
-  color: #64748b;
-  gap: 0.65rem;
-  text-align: center;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.catalog-page__loading-icon {
-  color: #0f766e;
-  font-size: 2rem;
-  animation: spin 900ms linear infinite;
+.catalog-card-skeleton__media {
+  height: 6.5rem;
+  border-radius: 0;
+}
+
+.catalog-card-skeleton__body {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.catalog-card-skeleton__footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.catalog-card-skeleton__line {
+  height: 0.85rem;
+}
+
+.catalog-card-skeleton__line--sm {
+  width: 6rem;
+}
+
+.catalog-card-skeleton__line--lg {
+  width: 70%;
+  height: 1.1rem;
+}
+
+.catalog-card-skeleton__line--md {
+  width: 90%;
 }
 
 @media (max-width: 960px) {
