@@ -20,6 +20,13 @@ export interface DemoInputField {
   defaultValue: string
 }
 
+export interface DemoSourceFiles {
+  apiDir: string
+  apiFiles: string[]
+  webDir: string
+  webFiles: string[]
+}
+
 export interface DemoMeta {
   id: string
   title: string
@@ -37,6 +44,7 @@ export interface DemoMeta {
   inputFields: DemoInputField[]
   rolePresets?: string[]
   reportTypePresets?: string[]
+  sourceFiles?: DemoSourceFiles
   sourceUrl?: string
   docsUrl?: string
   draftUrl?: string
@@ -59,6 +67,7 @@ export interface DemoListItem {
   supportsStreaming: boolean
   rolePresets?: string[]
   reportTypePresets?: string[]
+  sourceFiles?: DemoSourceFiles
   sourceUrl?: string
   knownLimits: string[]
 }

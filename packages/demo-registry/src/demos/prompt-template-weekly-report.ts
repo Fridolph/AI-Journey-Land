@@ -92,6 +92,27 @@ export const promptTemplateWeeklyReportDemo: DemoMeta = {
   ],
   sourceUrl:
     'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
+  sourceFiles: {
+    apiDir: 'apps/api/src/demos/prompt-template-weekly-report/',
+    apiFiles: [
+      'schema.ts',
+      'prompt-template-weekly-report.service.ts',
+      'prompt-template-weekly-report.module.ts',
+      'prompts/guides.ts',
+      'prompts/perspectives.ts',
+      'prompts/report-template.ts',
+    ],
+    webDir: 'apps/web/app/',
+    webFiles: [
+      'pages/demos/[id].vue',
+      'components/demo/DemoInputForm.vue',
+      'components/demo/DemoRoleSelector.vue',
+      'components/demo/DemoReportTypeSelector.vue',
+      'components/demo/DemoOutputPanel.vue',
+      'composables/useDemoRunner.ts',
+      'composables/useReportStore.ts',
+    ],
+  },
   knownLimits: ['Few-Shot 示例通过文本输入自由设定，尚未提供预设模板快捷选择。'],
 }
 
