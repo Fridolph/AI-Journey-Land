@@ -312,7 +312,7 @@ onMounted(() => {
             </div>
           </UCard>
 
-          <UCard>
+          <UCard :ui="{ body: showPrompt ? undefined : 'hidden' }">
             <template #header>
               <button type="button" class="flex items-center justify-between gap-2 w-full cursor-pointer" @click="showPrompt = !showPrompt">
                 <div class="flex items-center gap-2 font-extrabold">
