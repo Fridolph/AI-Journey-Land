@@ -298,8 +298,7 @@ const demoMeta = {
 .chat-card {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  height: calc(100vh - 16rem);
+  min-height: calc(100vh - 80px);
   max-height: 640px;
   width: 100%;
 }
