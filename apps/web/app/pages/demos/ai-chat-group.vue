@@ -90,9 +90,10 @@ watch(messages, async () => {
   chatContainer.value?.scrollTo({ top: chatContainer.value.scrollHeight, behavior: 'smooth' })
 }, { deep: true })
 
-const estimatedTokens = computed(() =>
-  messages.value.reduce((sum, m) => sum + Math.ceil((m.content ?? '').length / 2), 0),
-)
+const estimatedTokens = computed(() => {
+  const total = messages.value.reduce((sum, m) => sum + Math.ceil((m.content ?? '').length / 1.8), 0)
+  return total
+})
 
 const pipelineSteps = [
   { icon: 'i-lucide-message-square', label: '用户输入', detail: 'Vue v-model 绑定输入框 → Enter/点击发送 → useChat.sendMessage() 触发', color: '#0f766e' },
@@ -182,13 +183,13 @@ const demoMeta = {
             <form class="flex gap-2 p-4" @submit.prevent="handleSend">
               <UTextarea
                 v-model="inputMessage"
-                placeholder="输入消息，Enter 发送..."
+                placeholder="输入消息，Ctrl+Enter 发送..."
                 :disabled="isRunning"
-                :rows="2"
-                :max-rows="8"
+                :rows="1"
                 autoresize
                 size="sm"
-                class="flex-1"
+                class="flex-1 chat-textarea"
+                @keydown.ctrl.enter="handleSend"
               />
               <UButton type="submit" icon="i-lucide-send" color="primary" :disabled="isRunning || !inputMessage.trim()" size="sm" class="self-end">
                 发送
@@ -229,14 +230,18 @@ const demoMeta = {
 <style scoped>
 .demo-page { --ui-container: 1920px; padding-block: 1rem 4rem; }
 .demo-page__body { display: grid; align-items: start; gap: 1rem; }
-.demo-page__primary { display: grid; gap: 1rem; }
+.demo-page__primary { display: grid; gap: 1rem; grid-template-rows: auto minmax(0, 1fr); }
 .demo-page__side { display: grid; gap: 1rem; }
 
 .chat-card {
   display: flex;
-  flex: 1;
+  flex-direction: column;
   min-height: 0;
-  max-height: calc(100vh - 10rem);
+  height: calc(100vh - 16rem);
+}
+
+.chat-textarea {
+  max-height: 14rem;
 }
 
 @media (min-width: 1024px) {
