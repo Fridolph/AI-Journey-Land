@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "dev:fresh": "pnpm clean && pnpm build:fresh && pnpm dev",
+    "dev": "pnpm clean && pnpm build:fresh && turbo run dev --parallel",
     "build": "turbo run build",
     "build:fresh": "turbo run build --force",
     "clean": "rm -rf .turbo apps/api/dist apps/web/.nuxt apps/web/.output packages/*/dist",
