@@ -33,41 +33,39 @@ function fmtNum(n: number): string {
 </script>
 
 <template>
-  <DemoCollapsibleCard title="AI 运行信息" icon="i-lucide-info" :default-open="true">
-    <div class="grid gap-3">
-      <div class="grid grid-cols-3 gap-x-4 gap-y-2">
-        <div>
-          <span class="text-xs text-muted">模型</span>
-          <p class="text-sm font-semibold">{{ modelName || '-' }}</p>
-        </div>
-        <div>
-          <span class="text-xs text-muted">上下文窗口</span>
-          <p class="text-sm font-semibold">{{ fmtNum(maxTokens) }}</p>
-        </div>
-        <div>
-          <span class="text-xs text-muted">消息数</span>
-          <p class="text-sm font-semibold">{{ messageCount }}</p>
-        </div>
-        <div>
-          <span class="text-xs text-muted">预估 Tokens</span>
-          <p class="text-sm font-semibold">~{{ fmtNum(estimatedTokens) }}</p>
-        </div>
-        <div>
-          <span class="text-xs text-muted">剩余 Tokens</span>
-          <p class="text-sm font-semibold">~{{ fmtNum(remainingTokens) }}</p>
-        </div>
-        <div>
-          <span class="text-xs text-muted">用量</span>
-          <p class="text-sm font-semibold">{{ usagePct }}%</p>
-        </div>
+  <div class="grid gap-3">
+    <div class="grid grid-cols-3 gap-x-4 gap-y-2">
+      <div>
+        <span class="text-xs text-muted">模型</span>
+        <p class="text-sm font-semibold">{{ modelName || '-' }}</p>
       </div>
-
-      <div class="w-full h-1.5 rounded-full bg-muted overflow-hidden">
-        <div
-          class="h-full rounded-full transition-all duration-300"
-          :style="{ width: `${usagePct}%`, background: usageColor }"
-        />
+      <div>
+        <span class="text-xs text-muted">上下文窗口</span>
+        <p class="text-sm font-semibold">{{ fmtNum(maxTokens) }}</p>
+      </div>
+      <div>
+        <span class="text-xs text-muted">消息数</span>
+        <p class="text-sm font-semibold">{{ messageCount }}</p>
+      </div>
+      <div>
+        <span class="text-xs text-muted">预估 Tokens</span>
+        <p class="text-sm font-semibold">~{{ fmtNum(estimatedTokens) }}</p>
+      </div>
+      <div>
+        <span class="text-xs text-muted">剩余 Tokens</span>
+        <p class="text-sm font-semibold">~{{ fmtNum(remainingTokens) }}</p>
+      </div>
+      <div>
+        <span class="text-xs text-muted">用量</span>
+        <p class="text-sm font-semibold">{{ usagePct }}%</p>
       </div>
     </div>
-  </DemoCollapsibleCard>
+
+    <div class="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+      <div
+        class="h-full rounded-full transition-all duration-300"
+        :style="{ width: `${usagePct}%`, background: usageColor }"
+      />
+    </div>
+  </div>
 </template>

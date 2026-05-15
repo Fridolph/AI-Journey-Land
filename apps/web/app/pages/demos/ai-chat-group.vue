@@ -17,6 +17,8 @@ const quotedContent = ref('')
 const quotedRole = ref('')
 const copyNotice = ref(false)
 let copyNoticeTimer: ReturnType<typeof setTimeout> | undefined
+const sessionTitle = ref('新对话')
+const editingTitle = ref(false)
 
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
@@ -67,6 +69,8 @@ async function handleNewSession() {
 
 async function handleSelectSession(sid: string) {
   await loadHistory(sid)
+  const s = chatStore.sessions.value.find(x => x.id === sid)
+  if (s) sessionTitle.value = s.title
 }
 
 async function handleDeleteSession(sid: string) {
@@ -110,9 +114,11 @@ async function handleSend() {
   await sendMessage(msg, quoted)
   if (sessionId.value) {
     const firstUserMsg = messages.value.find(m => m.role === 'user')
+    const newTitle = firstUserMsg?.content?.slice(0, 30) || '新对话'
+    sessionTitle.value = newTitle
     await chatStore.save({
       id: sessionId.value,
-      title: firstUserMsg?.content?.slice(0, 30) || '新对话',
+      title: newTitle,
       createdAt: new Date().toISOString(),
       lastActiveAt: new Date().toISOString(),
     })
@@ -187,7 +193,59 @@ const demoMeta = {
           @create="handleNewSession"
         />
 
+        <ChatConfigCard
+          :model-value="systemPrompt"
+          :disabled="isRunning"
+          @update:model-value="systemPrompt = $event"
+          @update:advanced-enabled="advancedEnabled = $event"
+          @update:show-avatar="showAvatar = $event"
+        />
+
         <UCard class="chat-card" :ui="{ body: 'p-0 sm:p-0 flex flex-col h-full' }">
+          <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-black/5">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+              <div
+                v-if="!editingTitle"
+                class="text-sm font-semibold truncate cursor-pointer hover:text-primary"
+                @dblclick="editingTitle = true"
+              >
+                {{ sessionTitle }}
+              </div>
+              <UInput
+                v-else
+                :model-value="sessionTitle"
+                size="xs"
+                class="flex-1"
+                autofocus
+                @blur="editingTitle = false"
+                @keydown.enter="editingTitle = false"
+                @update:model-value="(v: string) => sessionTitle = v"
+              />
+              <UButton
+                v-if="!editingTitle"
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="editingTitle = true"
+              />
+            </div>
+
+            <UPopover placement="bottom-end">
+              <UButton icon="i-lucide-info" color="neutral" variant="ghost" size="xs" />
+
+              <template #content>
+                <div class="w-64 p-2">
+                  <ChatAiInfoCard
+                    :model-name="modelName || 'loading...'"
+                    :message-count="messages.length"
+                    :estimated-tokens="estimatedTokens"
+                    :provider="modelProvider || 'loading...'"
+                  />
+                </div>
+              </template>
+            </UPopover>
+          </div>
           <div ref="chatContainer" class="flex-1 overflow-auto p-4 grid gap-3 content-start">
             <div v-if="messages.length === 0" class="text-center text-muted py-8">
               <UIcon name="i-lucide-message-circle" class="text-3xl mb-2 opacity-30" />
