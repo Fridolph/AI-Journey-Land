@@ -12,6 +12,7 @@ const chatContainer = useTemplateRef<HTMLElement>('chatContainer')
 const modelName = ref('')
 const advancedEnabled = ref(false)
 const showAvatar = ref(false)
+const customEnabled = ref(false)
 const quotedContent = ref('')
 const quotedRole = ref('')
 const copyNotice = ref(false)
@@ -60,9 +61,12 @@ watch(messages, () => {
 }, { deep: true })
 
 // 当前会话配置变化时自动持久化
-watch(systemPrompt, () => {
+watch([systemPrompt, customEnabled], () => {
   if (sessionId.value) {
-    chatStore.saveSessionConfig(sessionId.value, systemPrompt.value)
+    chatStore.saveSessionConfig(sessionId.value, {
+      systemPrompt: systemPrompt.value,
+      customEnabled: customEnabled.value,
+    })
   }
 }, { immediate: false })
 
@@ -83,7 +87,13 @@ async function handleSelectSession(sid: string) {
     messages.value = []
   }
   const savedPrompt = await chatStore.loadSessionConfig(sid)
-  systemPrompt.value = savedPrompt ?? ''
+  if (savedPrompt) {
+    systemPrompt.value = (savedPrompt as Record<string, string>).systemPrompt ?? ''
+    customEnabled.value = (savedPrompt as Record<string, boolean>).customEnabled ?? false
+  } else {
+    systemPrompt.value = ''
+    customEnabled.value = false
+  }
 }
 
 async function handleDeleteSession(sid: string) {
@@ -338,8 +348,10 @@ const demoMeta = {
         <ChatConfigCard
           variant="session"
           :model-value="systemPrompt"
+          :custom-enabled="customEnabled"
           :disabled="isRunning"
           @update:model-value="systemPrompt = $event"
+          @update:custom-enabled="customEnabled = $event"
         />
       </div>
 

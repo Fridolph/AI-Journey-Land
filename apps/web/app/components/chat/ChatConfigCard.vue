@@ -1,12 +1,14 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string
+  customEnabled?: boolean
   disabled: boolean
   variant: 'global' | 'session'
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'update:customEnabled': [value: boolean]
   'update:advancedEnabled': [value: boolean]
   'update:showAvatar': [value: boolean]
 }>()
@@ -23,13 +25,8 @@ function useLocalBool(key: string, def: boolean) {
   return val
 }
 
-const enableCustom = useLocalBool('chat-config-custom-prompt', false)
 const advancedEnabled = useLocalBool('chat-config-advanced', false)
 const showAvatar = useLocalBool('chat-config-avatar', false)
-
-watch(enableCustom, (v) => {
-  if (!v) emit('update:modelValue', '')
-})
 
 watch(advancedEnabled, (v) => {
   emit('update:advancedEnabled', v)
@@ -46,10 +43,9 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
   <DemoCollapsibleCard
     :title="variant === 'global' ? '公共配置' : '当前对话配置'"
     icon="i-lucide-settings-2"
-    :default-open="variant === 'session' ? true : false"
+    :default-open="variant === 'session'"
   >
     <div class="grid gap-3">
-      <!-- Global: 高级功能 + 编辑扩展 -->
       <template v-if="variant === 'global'">
         <label class="flex items-center justify-between gap-2 cursor-pointer pt-2 border-t border-black/5">
           <span class="text-sm font-semibold text-highlighted">启用高级功能</span>
@@ -76,21 +72,20 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
         </label>
       </template>
 
-      <!-- Session: AI 人设 -->
       <template v-if="variant === 'session'">
         <label class="flex items-center justify-between gap-2 cursor-pointer">
           <span class="text-sm font-semibold text-highlighted">自定义 AI 人设</span>
           <UButton
-            :icon="enableCustom ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
-            :color="enableCustom ? 'primary' : 'neutral'"
+            :icon="customEnabled ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
+            :color="customEnabled ? 'primary' : 'neutral'"
             variant="ghost"
             size="sm"
             :disabled="disabled"
-            @click="enableCustom = !enableCustom"
+            @click="emit('update:customEnabled', !customEnabled)"
           />
         </label>
 
-        <div v-if="enableCustom" class="grid gap-1.5">
+        <div v-if="customEnabled" class="grid gap-1.5">
           <span class="text-xs text-muted">
             修改 System Prompt，AI 将在当前会话中遵循新的人设回答问题
           </span>

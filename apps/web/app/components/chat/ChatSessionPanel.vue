@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   sessions: { id: string; title: string; createdAt: string; lastActiveAt: string }[]
   currentSessionId: string | null
   isLoading: boolean
@@ -10,6 +10,9 @@ const emit = defineEmits<{
   delete: [id: string]
   create: []
 }>()
+
+const MAX_SESSIONS = 10
+const atLimit = computed(() => props.sessions.length >= MAX_SESSIONS)
 
 const deletePopoverOpen = ref<string | null>(null)
 
@@ -61,9 +64,10 @@ function confirmDelete(id: string) {
         size="xs"
         variant="ghost"
         color="neutral"
+        :disabled="atLimit"
         @click="emit('create')"
       >
-        新会话
+        {{ atLimit ? '暂只支持 10 个会话' : '新会话' }}
       </UButton>
     </div>
   </DemoCollapsibleCard>

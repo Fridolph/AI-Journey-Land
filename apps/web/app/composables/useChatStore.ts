@@ -4,7 +4,7 @@ import type { ChatMessage } from './useChat'
 export interface ChatSessionRecord {
   id: string
   title: string
-  systemPrompt?: string
+  config?: Record<string, unknown>
   createdAt: string
   lastActiveAt: string
 }
@@ -122,7 +122,7 @@ export function useChatStore() {
     return record?.messages ?? []
   }
 
-  async function loadSessionConfig(sessionId: string): Promise<string | undefined> {
+  async function loadSessionConfig(sessionId: string): Promise<Record<string, unknown> | undefined> {
     const db = await openDB()
     const tx = db.transaction(SESSION_STORE, 'readonly')
     const store = tx.objectStore(SESSION_STORE)
@@ -131,10 +131,10 @@ export function useChatStore() {
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
     })
-    return record?.systemPrompt
+    return record?.config as Record<string, unknown> | undefined
   }
 
-  async function saveSessionConfig(sessionId: string, systemPrompt: string): Promise<void> {
+  async function saveSessionConfig(sessionId: string, config: Record<string, unknown>): Promise<void> {
     const db = await openDB()
     const tx = db.transaction(SESSION_STORE, 'readwrite')
     const store = tx.objectStore(SESSION_STORE)
@@ -146,7 +146,7 @@ export function useChatStore() {
     const record: ChatSessionRecord = {
       id: sessionId,
       title: existing?.title ?? '新对话',
-      systemPrompt,
+      config,
       createdAt: existing?.createdAt ?? new Date().toISOString(),
       lastActiveAt: new Date().toISOString(),
     }
