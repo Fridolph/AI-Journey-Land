@@ -15,6 +15,8 @@ const advancedEnabled = ref(false)
 const showAvatar = ref(false)
 const quotedContent = ref('')
 const quotedRole = ref('')
+const copyNotice = ref(false)
+let copyNoticeTimer: ReturnType<typeof setTimeout> | undefined
 
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
@@ -85,8 +87,6 @@ function startEditMessage() {
   const msg = messages.value[idx]
   if (!msg) return
   inputMessage.value = msg.content
-  // Remove this message so it gets replaced on send
-  messages.value.splice(idx, 1)
 }
 
 function deleteMessage(idx: number) {
@@ -95,6 +95,9 @@ function deleteMessage(idx: number) {
 
 async function copyMessage(content: string) {
   await navigator.clipboard.writeText(content)
+  copyNotice.value = true
+  clearTimeout(copyNoticeTimer)
+  copyNoticeTimer = setTimeout(() => { copyNotice.value = false }, 2500)
 }
 
 async function handleSend() {
@@ -215,7 +218,7 @@ const demoMeta = {
           <div class="border-t border-black/5">
             <div v-if="quotedContent" class="flex items-start gap-2 px-4 pt-3 pb-1 border-t border-amber-200 bg-amber-50/80">
               <UIcon name="i-lucide-quote" class="text-amber-600 text-sm mt-0.5 flex-shrink-0" />
-              <UTooltip :text="quotedContent" :content="{ align: 'start' }" class="flex-1 min-w-0">
+              <UTooltip :text="quotedContent" :ui="{ content: 'max-w-[min(500px,calc(100vw-4rem))]' }" class="flex-1 min-w-0">
                 <span class="text-xs text-amber-800 line-clamp-2">{{ quotedContent }}</span>
               </UTooltip>
               <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" class="flex-shrink-0 -mt-0.5" @click="quotedContent = ''" />
@@ -269,6 +272,15 @@ const demoMeta = {
         />
       </aside>
     </section>
+    <Teleport to="body">
+      <div
+        v-if="copyNotice"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-gray-900 text-white text-sm rounded-lg px-4 py-2.5 shadow-lg transition-all"
+      >
+        <UIcon name="i-lucide-check" class="text-green-400" />
+        已复制到剪贴板
+      </div>
+    </Teleport>
   </UContainer>
 </template>
 
