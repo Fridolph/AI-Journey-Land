@@ -7,10 +7,12 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'update:advancedEnabled': [value: boolean]
+  'update:showAvatar': [value: boolean]
 }>()
 
 const enableCustom = ref(false)
 const advancedEnabled = ref(false)
+const showAvatar = ref(false)
 
 watch(enableCustom, (v) => {
   if (!v) emit('update:modelValue', '')
@@ -18,6 +20,10 @@ watch(enableCustom, (v) => {
 
 watch(advancedEnabled, (v) => {
   emit('update:advancedEnabled', v)
+})
+
+watch(showAvatar, (v) => {
+  emit('update:showAvatar', v)
 })
 
 const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各种问题。`
@@ -62,6 +68,18 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
           size="sm"
           :disabled="disabled"
           @click="advancedEnabled = !advancedEnabled"
+        />
+      </label>
+
+      <label class="flex items-center justify-between gap-2 cursor-pointer">
+        <span class="text-sm font-semibold text-highlighted">显示头像</span>
+        <UButton
+          :icon="showAvatar ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
+          :color="showAvatar ? 'primary' : 'neutral'"
+          variant="ghost"
+          size="sm"
+          :disabled="disabled"
+          @click="showAvatar = !showAvatar"
         />
       </label>
     </div>

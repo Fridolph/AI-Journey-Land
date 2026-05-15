@@ -12,6 +12,9 @@ const chatContainer = useTemplateRef<HTMLElement>('chatContainer')
 const modelName = ref('')
 const modelProvider = ref('')
 const advancedEnabled = ref(false)
+const showAvatar = ref(false)
+const editingMessage = ref(false)
+const editContent = ref('')
 
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
@@ -67,6 +70,42 @@ async function handleSelectSession(sid: string) {
 async function handleDeleteSession(sid: string) {
   await deleteChatSession(sid)
   await chatStore.remove(sid)
+}
+
+function getLastUserMsgIndex(): number {
+  for (let i = messages.value.length - 1; i >= 0; i--) {
+    if (messages.value[i]?.role === 'user') return i
+  }
+  return -1
+}
+
+function startEditMessage() {
+  const idx = getLastUserMsgIndex()
+  if (idx === -1) return
+  const msg = messages.value[idx]
+  if (!msg) return
+  editContent.value = msg.content
+  editingMessage.value = true
+}
+
+async function confirmEdit() {
+  if (!editContent.value.trim()) return
+  const idx = getLastUserMsgIndex()
+  if (idx === -1) return
+  // Remove user message and any AI response after it
+  messages.value = messages.value.slice(0, idx)
+  editingMessage.value = false
+  inputMessage.value = editContent.value
+  await handleSend()
+}
+
+function cancelEdit() {
+  editingMessage.value = false
+  editContent.value = ''
+}
+
+async function copyMessage(content: string) {
+  await navigator.clipboard.writeText(content)
 }
 
 async function handleSend() {
@@ -161,14 +200,36 @@ const demoMeta = {
               <p>开始对话吧</p>
             </div>
 
-            <div v-for="(msg, i) in messages" :key="i" class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-              <div
-                class="max-w-[80%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed"
-                :class="msg.role === 'user'
-                  ? 'bg-primary text-white'
-                  : 'bg-muted text-highlighted'"
-              >
-                {{ msg.content }}
+            <div v-for="(msg, i) in messages" :key="i" class="flex gap-2" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+              <div v-if="showAvatar && msg.role === 'assistant'" class="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
+                AI
+              </div>
+
+              <div class="group relative" :class="msg.role === 'user' ? 'order-first' : ''">
+                <div
+                  class="max-w-[80%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed"
+                  :class="msg.role === 'user'
+                    ? 'bg-primary text-white ml-auto'
+                    : 'bg-muted text-highlighted'"
+                >
+                  {{ msg.content }}
+                </div>
+
+                <div
+                  v-if="msg.role === 'user' && i === getLastUserMsgIndex() && !isRunning"
+                  class="absolute -bottom-1 left-0 translate-y-full flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <UTooltip text="编辑并重新发送">
+                    <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="xs" @click="startEditMessage" />
+                  </UTooltip>
+                  <UTooltip text="复制">
+                    <UButton icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copyMessage(msg.content)" />
+                  </UTooltip>
+                </div>
+              </div>
+
+              <div v-if="showAvatar && msg.role === 'user'" class="flex-shrink-0 w-7 h-7 rounded-full bg-neutral-400 flex items-center justify-center text-white text-xs font-bold">
+                U
               </div>
             </div>
 
@@ -178,6 +239,13 @@ const demoMeta = {
             </div>
 
             <UAlert v-if="errorMessage" icon="i-lucide-circle-alert" color="error" variant="soft" :description="errorMessage" />
+          </div>
+
+          <div v-if="editingMessage" class="flex items-center gap-2 px-4 py-2 border-t border-black/5 bg-amber-50">
+            <UIcon name="i-lucide-pencil" class="text-amber-600 text-sm" />
+            <UTextarea v-model="editContent" :rows="1" autoresize size="xs" class="flex-1" :disabled="isRunning" />
+            <UButton size="xs" color="primary" variant="solid" :disabled="isRunning" @click="confirmEdit">发送</UButton>
+            <UButton size="xs" color="neutral" variant="ghost" @click="cancelEdit">取消</UButton>
           </div>
 
           <div class="border-t border-black/5">
@@ -210,6 +278,7 @@ const demoMeta = {
           :disabled="isRunning"
           @update:model-value="systemPrompt = $event"
           @update:advanced-enabled="advancedEnabled = $event"
+          @update:show-avatar="showAvatar = $event"
         />
 
         <ChatAiInfoCard
