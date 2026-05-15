@@ -240,7 +240,6 @@ const demoMeta = {
                     :model-name="modelName || 'loading...'"
                     :message-count="messages.length"
                     :estimated-tokens="estimatedTokens"
-                    :provider="modelProvider || 'loading...'"
                   />
                 </div>
               </template>
