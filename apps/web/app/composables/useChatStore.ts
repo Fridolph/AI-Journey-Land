@@ -4,6 +4,7 @@ import type { ChatMessage } from './useChat'
 export interface ChatSessionRecord {
   id: string
   title: string
+  systemPrompt?: string
   createdAt: string
   lastActiveAt: string
 }
@@ -121,5 +122,40 @@ export function useChatStore() {
     return record?.messages ?? []
   }
 
-  return { sessions, isLoading, loadAll, save, remove, saveMessages, loadMessages }
+  async function loadSessionConfig(sessionId: string): Promise<string | undefined> {
+    const db = await openDB()
+    const tx = db.transaction(SESSION_STORE, 'readonly')
+    const store = tx.objectStore(SESSION_STORE)
+    const record = await new Promise<ChatSessionRecord | undefined>((resolve, reject) => {
+      const req = store.get(sessionId)
+      req.onsuccess = () => resolve(req.result)
+      req.onerror = () => reject(req.error)
+    })
+    return record?.systemPrompt
+  }
+
+  async function saveSessionConfig(sessionId: string, systemPrompt: string): Promise<void> {
+    const db = await openDB()
+    const tx = db.transaction(SESSION_STORE, 'readwrite')
+    const store = tx.objectStore(SESSION_STORE)
+    const existing = await new Promise<ChatSessionRecord | undefined>((resolve, reject) => {
+      const req = store.get(sessionId)
+      req.onsuccess = () => resolve(req.result)
+      req.onerror = () => reject(req.error)
+    })
+    const record: ChatSessionRecord = {
+      id: sessionId,
+      title: existing?.title ?? '新对话',
+      systemPrompt,
+      createdAt: existing?.createdAt ?? new Date().toISOString(),
+      lastActiveAt: new Date().toISOString(),
+    }
+    await new Promise<void>((resolve, reject) => {
+      const req = store.put(record)
+      req.onsuccess = () => resolve()
+      req.onerror = () => reject(req.error)
+    })
+  }
+
+  return { sessions, isLoading, loadAll, save, remove, saveMessages, loadMessages, loadSessionConfig, saveSessionConfig }
 }

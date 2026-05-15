@@ -59,6 +59,13 @@ watch(messages, () => {
   }
 }, { deep: true })
 
+// 当前会话配置变化时自动持久化
+watch(systemPrompt, () => {
+  if (sessionId.value) {
+    chatStore.saveSessionConfig(sessionId.value, systemPrompt.value)
+  }
+}, { immediate: false })
+
 async function handleNewSession() {
   const sid = await createSession()
   await chatStore.save({ id: sid, title: '新对话', createdAt: new Date().toISOString(), lastActiveAt: new Date().toISOString() })
@@ -75,6 +82,8 @@ async function handleSelectSession(sid: string) {
   } else {
     messages.value = []
   }
+  const savedPrompt = await chatStore.loadSessionConfig(sid)
+  systemPrompt.value = savedPrompt ?? ''
 }
 
 async function handleDeleteSession(sid: string) {
