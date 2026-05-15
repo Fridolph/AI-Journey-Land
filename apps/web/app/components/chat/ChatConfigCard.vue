@@ -27,11 +27,11 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
           size="sm"
           @update:model-value="enableCustom = $event"
         />
-        <span class="text-sm font-semibold text-[var(--ui-text-highlighted)]">自定义 AI 人设</span>
+        <span class="text-sm font-semibold text-highlighted">自定义 AI 人设</span>
       </label>
 
       <div v-if="enableCustom" class="grid gap-1.5">
-        <span class="text-xs text-[var(--ui-text-muted)]">
+        <span class="text-xs text-muted">
           修改 System Prompt，AI 将在当前会话中遵循新的人设回答问题
         </span>
         <UTextarea

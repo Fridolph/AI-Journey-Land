@@ -153,7 +153,7 @@ const demoMeta = {
 
         <UCard class="flex-1 flex flex-col" :ui="{ body: 'p-0 sm:p-0 flex-1 flex flex-col' }">
           <div ref="chatContainer" class="flex-1 overflow-auto p-4 grid gap-3 content-start min-h-[24rem] max-h-[28rem]">
-            <div v-if="messages.length === 0" class="text-center text-[var(--ui-text-muted)] py-8">
+            <div v-if="messages.length === 0" class="text-center text-muted py-8">
               <UIcon name="i-lucide-message-circle" class="text-3xl mb-2 opacity-30" />
               <p>开始对话吧</p>
             </div>
@@ -162,15 +162,15 @@ const demoMeta = {
               <div
                 class="max-w-[80%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed"
                 :class="msg.role === 'user'
-                  ? 'bg-[var(--ui-primary)] text-white'
-                  : 'bg-[var(--ui-bg-muted)] text-[var(--ui-text-highlighted)]'"
+                  ? 'bg-primary text-white'
+                  : 'bg-muted text-highlighted'"
               >
                 {{ msg.content }}
               </div>
             </div>
 
-            <div v-if="mode === 'streaming'" class="flex items-center gap-2 text-[var(--ui-text-muted)] text-sm px-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-[var(--ui-primary)] animate-pulse" />
+            <div v-if="mode === 'streaming'" class="flex items-center gap-2 text-muted text-sm px-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               正在回复...
             </div>
 

@@ -18,7 +18,7 @@ defineProps<{
         <span
           v-for="tag in techTags"
           :key="tag.name"
-          class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.82rem] font-semibold bg-[var(--ui-bg-muted)] text-[var(--ui-text-muted)]"
+          class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[0.82rem] font-semibold bg-muted text-muted"
         >
           {{ tag.name }}
         </span>
@@ -39,8 +39,8 @@ defineProps<{
             <span class="text-[0.6rem] font-bold">{{ i + 1 }}</span>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-[0.875rem] font-bold text-[var(--ui-text-highlighted)]">{{ step.label }}</p>
-            <p class="text-[0.875rem] text-[var(--ui-text-muted)] leading-relaxed mt-0.5">{{ step.detail }}</p>
+            <p class="text-[0.875rem] font-bold text-highlighted">{{ step.label }}</p>
+            <p class="text-[0.875rem] text-muted leading-relaxed mt-0.5">{{ step.detail }}</p>
           </div>
         </div>
       </div>
@@ -50,10 +50,10 @@ defineProps<{
       <div class="grid gap-4">
         <div v-for="item in codeAnalysisItems" :key="item.file" class="grid gap-1">
           <div class="flex items-center gap-1.5">
-            <span class="text-[0.82rem] font-mono font-bold text-[var(--ui-primary)] bg-[var(--ui-bg-muted)] rounded px-1 py-px">{{ item.file }}</span>
-            <span class="text-[0.875rem] font-bold text-[var(--ui-text-highlighted)]">{{ item.title }}</span>
+            <span class="text-[0.82rem] font-mono font-bold text-primary bg-muted rounded px-1 py-px">{{ item.file }}</span>
+            <span class="text-[0.875rem] font-bold text-highlighted">{{ item.title }}</span>
           </div>
-          <p class="text-[0.875rem] text-[var(--ui-text-muted)] leading-relaxed whitespace-pre-line">{{ item.desc }}</p>
+          <p class="text-[0.875rem] text-muted leading-relaxed whitespace-pre-line">{{ item.desc }}</p>
         </div>
       </div>
     </DemoCollapsibleCard>

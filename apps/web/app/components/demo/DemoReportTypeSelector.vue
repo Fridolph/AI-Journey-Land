@@ -79,11 +79,11 @@ function onTypeChange(type: string) {
 
     <label class="grid gap-1.5 min-w-0">
       <span class="text-[0.82rem] font-bold text-[#334155]">汇报时间</span>
-      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-[var(--ui-primary)] font-semibold min-h-[36px]">
+      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-primary font-semibold min-h-[36px]">
         <UIcon name="i-lucide-calendar-range" />
         {{ dateRange }}
       </span>
-      <span v-else class="text-sm text-[var(--ui-text-muted)] min-h-[36px] flex items-center">
+      <span v-else class="text-sm text-muted min-h-[36px] flex items-center">
         选择报告类型后自动填入
       </span>
     </label>

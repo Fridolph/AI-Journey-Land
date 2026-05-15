@@ -18,8 +18,8 @@ const emit = defineEmits<{
       <div
         v-for="s in sessions"
         :key="s.id"
-        class="flex items-center justify-between gap-2 py-1.5 px-2 rounded hover:bg-[var(--ui-bg-muted)] cursor-pointer"
-        :class="{ 'bg-[var(--ui-bg-muted)]': s.id === currentSessionId }"
+        class="flex items-center justify-between gap-2 py-1.5 px-2 rounded hover:bg-muted cursor-pointer"
+        :class="{ 'bg-muted': s.id === currentSessionId }"
         @click="emit('select', s.id)"
       >
         <span class="text-sm truncate flex-1 min-w-0">{{ s.title }}</span>

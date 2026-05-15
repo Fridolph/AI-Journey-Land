@@ -334,18 +334,18 @@ onMounted(() => {
                 <div class="flex items-center gap-2 font-extrabold">
                   <UIcon name="i-lucide-braces" />
                   <span>Prompt 模板</span>
-                  <span v-if="customPrompt !== DEFAULT_PROMPT" class="w-1.5 h-1.5 rounded-full bg-[var(--ui-primary)]" />
+                  <span v-if="customPrompt !== DEFAULT_PROMPT" class="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
                 <div class="flex items-center gap-2">
                   <UButton v-if="customPrompt !== DEFAULT_PROMPT && !showPrompt" size="xs" variant="ghost" color="neutral" @click.stop="resetPrompt">
                     重置
                   </UButton>
-                  <UIcon :name="showPrompt ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="text-[var(--ui-text-muted)]" />
+                  <UIcon :name="showPrompt ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="text-muted" />
                 </div>
               </button>
             </template>
             <div v-if="showPrompt" class="grid gap-2">
-              <p class="text-sm text-[var(--ui-text-muted)]">
+              <p class="text-sm text-muted">
                 下方是即将发送给 AI 的 Prompt 模板。你可以直接修改它来调整 AI 的输出风格。变量占位（如 {role}）会在运行时自动替换。
               </p>
               <UTextarea :model-value="customPrompt" :rows="12" :disabled="isRunning" autoresize @update:model-value="customPrompt = String($event ?? '')" />
@@ -381,7 +381,7 @@ onMounted(() => {
                     <UIcon name="i-lucide-users" />
                     {{ record.role }}
                   </UBadge>
-                  <span class="text-sm text-[var(--ui-text-muted)] whitespace-nowrap">
+                  <span class="text-sm text-muted whitespace-nowrap">
                     {{ new Date(record.createdAt).toLocaleString('zh-CN') }}
                   </span>
                 </div>

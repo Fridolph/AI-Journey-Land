@@ -25,7 +25,7 @@ const isOpen = ref(props.defaultOpen)
         </div>
         <UIcon
           :name="isOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          class="text-[var(--ui-text-muted)] flex-shrink-0"
+          class="text-muted flex-shrink-0"
         />
       </button>
     </template>
