@@ -243,6 +243,7 @@ const demoMeta = {
   flex-direction: column;
   min-height: 0;
   height: calc(100vh - 16rem);
+  max-width: 600px;
 }
 
 .chat-textarea {
