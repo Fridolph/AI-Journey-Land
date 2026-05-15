@@ -10,7 +10,6 @@ const chatStore = useChatStore()
 const inputMessage = ref('')
 const chatContainer = useTemplateRef<HTMLElement>('chatContainer')
 const modelName = ref('')
-const modelProvider = ref('')
 const advancedEnabled = ref(false)
 const showAvatar = ref(false)
 const quotedContent = ref('')
@@ -25,14 +24,12 @@ const apiBase = computed(() => config.public.apiBase)
 
 async function loadModelInfo() {
   try {
-    const res = await $fetch<{ data: { modelName: string; provider: string } }>(
+    const res = await $fetch<{ data: { modelName: string } }>(
       `${apiBase.value}/demos/chat/model-info`,
     )
     modelName.value = res.data.modelName
-    modelProvider.value = res.data.provider
   } catch {
     modelName.value = 'unknown'
-    modelProvider.value = 'unknown'
   }
 }
 
@@ -113,6 +110,13 @@ function saveTitle() {
     createdAt: new Date().toISOString(),
     lastActiveAt: new Date().toISOString(),
   })
+}
+
+function onTextareaKeydown(e: KeyboardEvent) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault()
+    if (!isRunning.value) handleSend()
+  }
 }
 
 async function copyMessage(content: string) {
@@ -308,7 +312,7 @@ const demoMeta = {
                 autoresize
                 size="sm"
                 class="flex-1 chat-textarea"
-                @keydown="(e: KeyboardEvent) => { if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); handleSend() } }"
+                @keydown="onTextareaKeydown"
               />
             </div>
 
@@ -328,13 +332,6 @@ const demoMeta = {
           @update:model-value="systemPrompt = $event"
           @update:advanced-enabled="advancedEnabled = $event"
           @update:show-avatar="showAvatar = $event"
-        />
-
-        <ChatAiInfoCard
-          :model-name="modelName || 'loading...'"
-          :message-count="messages.length"
-          :estimated-tokens="estimatedTokens"
-          :provider="modelProvider || 'loading...'"
         />
       </div>
 

@@ -29,7 +29,7 @@ const emit = defineEmits<{
           ? 'bg-primary text-white ml-auto'
           : 'bg-muted text-highlighted'"
       >
-        {{ message.content }}
+        {{ message.content.trim() }}
       </div>
 
       <div
