@@ -151,8 +151,8 @@ const demoMeta = {
           @create="handleNewSession"
         />
 
-        <UCard class="flex-1 flex flex-col" :ui="{ body: 'p-0 sm:p-0 flex-1 flex flex-col' }">
-          <div ref="chatContainer" class="flex-1 overflow-auto p-4 grid gap-3 content-start min-h-[24rem] max-h-[28rem]">
+        <UCard class="chat-card" :ui="{ body: 'p-0 sm:p-0 flex flex-col h-full' }">
+          <div ref="chatContainer" class="flex-1 overflow-auto p-4 grid gap-3 content-start">
             <div v-if="messages.length === 0" class="text-center text-muted py-8">
               <UIcon name="i-lucide-message-circle" class="text-3xl mb-2 opacity-30" />
               <p>开始对话吧</p>
@@ -177,13 +177,24 @@ const demoMeta = {
             <UAlert v-if="errorMessage" icon="i-lucide-circle-alert" color="error" variant="soft" :description="errorMessage" />
           </div>
 
-          <div class="border-t border-black/5 px-4 py-3">
-            <form class="flex gap-2" @submit.prevent="handleSend">
-              <UInput v-model="inputMessage" placeholder="输入消息，Enter 发送..." :disabled="isRunning" class="flex-1" size="sm" />
-              <UButton type="submit" icon="i-lucide-send" color="primary" :disabled="isRunning || !inputMessage.trim()" size="sm">
+          <div class="border-t border-black/5">
+            <form class="flex gap-2 p-4" @submit.prevent="handleSend">
+              <UTextarea
+                v-model="inputMessage"
+                placeholder="输入消息，Enter 发送..."
+                :disabled="isRunning"
+                :rows="2"
+                :max-rows="8"
+                autoresize
+                size="sm"
+                class="flex-1"
+              />
+              <UButton type="submit" icon="i-lucide-send" color="primary" :disabled="isRunning || !inputMessage.trim()" size="sm" class="self-end">
                 发送
               </UButton>
             </form>
+
+            <ChatQuickConfig :disabled="isRunning" />
           </div>
         </UCard>
 
@@ -218,6 +229,13 @@ const demoMeta = {
 .demo-page__body { display: grid; align-items: start; gap: 1rem; }
 .demo-page__primary { display: grid; gap: 1rem; }
 .demo-page__side { display: grid; gap: 1rem; }
+
+.chat-card {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - 10rem);
+}
 
 @media (min-width: 1024px) {
   .demo-page__body { grid-template-columns: repeat(12, minmax(0, 1fr)); }
