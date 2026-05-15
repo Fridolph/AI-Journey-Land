@@ -10,6 +10,17 @@ const emit = defineEmits<{
   delete: [id: string]
   create: []
 }>()
+
+const deletePopoverOpen = ref<string | null>(null)
+
+function closePopover() {
+  deletePopoverOpen.value = null
+}
+
+function confirmDelete(id: string) {
+  emit('delete', id)
+  closePopover()
+}
 </script>
 
 <template>
@@ -23,13 +34,25 @@ const emit = defineEmits<{
         @click="emit('select', s.id)"
       >
         <span class="text-sm truncate flex-1 min-w-0">{{ s.title }}</span>
-        <UButton
-          icon="i-lucide-trash-2"
-          color="error"
-          variant="ghost"
-          size="xs"
-          @click.stop="emit('delete', s.id)"
-        />
+        <UPopover :open="deletePopoverOpen === s.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
+          <UButton
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="ghost"
+            size="xs"
+            @click.stop="deletePopoverOpen = s.id"
+          />
+
+          <template #content>
+            <div class="grid gap-3 p-2">
+              <p class="text-sm whitespace-nowrap">确定删除此会话？</p>
+              <div class="flex gap-2 justify-end">
+                <UButton color="neutral" variant="ghost" size="xs" @click="closePopover">否</UButton>
+                <UButton color="error" variant="solid" size="xs" @click="confirmDelete(s.id)">是</UButton>
+              </div>
+            </div>
+          </template>
+        </UPopover>
       </div>
 
       <UButton
