@@ -157,3 +157,41 @@ docs/
 7. 合并到 `dev` 后填写 issue 相关开发信息，确认验收后关闭 issue。
 
 发布分支边界：issue 不从 `main` 开发，不直接合到 `main`；`main` 只接受稳定发布合并。
+
+## 9. Dao Commit 提交规范
+
+**Dao Commit 不是每次提交都用**。日常 feature/fix/chore 仍用 conventional commit 格式（`feat(#1): xxx`）。只有在以下时刻启用 Dao Commit：
+
+- Milestone 完成，阶段性收口
+- Squash merge `dev` → `main`（发布）
+- 系统发生本质变化（架构切换、方向调整）
+
+### 起草顺序
+
+```
+❶ 辨真实变化 → ❷ 写 subject → ❸ 定 scope → ❹ 选 type → ❺ 推卦象 → ❻ 补 body/footer
+```
+
+禁止倒过来——先卦象后 subject 会让 commit 变成解释文，失去锚点价值。
+
+### 格式
+
+```
+[卦象][卦名] type(scope): subject
+
+背景：
+判断：
+停点：
+
+Refs: #issue
+#沉淀 ... → ...
+```
+
+### 核心要求
+
+- **subject** 写"这一轮到底把什么往哪推了一步"，不写"做了什么"
+- **scope** 写变化落在谁身上，不写碰了哪些目录
+- **type** 从 `feat | fix | refactor | docs | test | chore` 中选，只保句法兼容
+- **卦象** 提供 1-2 个候选，由人定锚（AI 不直接给唯一答案）
+
+详细规则见 `dao-commit` skill。
