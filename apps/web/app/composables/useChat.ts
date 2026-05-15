@@ -58,7 +58,7 @@ export function useChat() {
     }
   }
 
-  async function sendMessage(message: string) {
+  async function sendMessage(message: string, quotedMessage?: string) {
     if (!sessionId.value) await createSession()
     if (!message.trim() || !sessionId.value) return
 
@@ -74,6 +74,7 @@ export function useChat() {
         body: JSON.stringify({
           sessionId: sid,
           message,
+          quotedMessage: quotedMessage || undefined,
           systemPrompt: systemPrompt.value || undefined,
           temperature: temperature.value,
         }),

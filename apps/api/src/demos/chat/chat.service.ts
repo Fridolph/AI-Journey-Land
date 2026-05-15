@@ -62,7 +62,7 @@ export class ChatService implements DemoRunner {
     const messages: BaseMessage[] = [
       new SystemMessage(systemPrompt),
       ...this.buildHistoryMessages(sessionManager.getHistory(sessionId)),
-      new HumanMessage(input.message),
+      new HumanMessage(this.buildUserMessage(input)),
     ]
 
     sessionManager.addMessage(sessionId, 'user', input.message)
@@ -84,6 +84,13 @@ export class ChatService implements DemoRunner {
     } catch {
       return sessionManager.createSession(this.demoId, { sessionId }).sessionId
     }
+  }
+
+  private buildUserMessage(input: ChatMessageInput): string {
+    if (input.quotedMessage) {
+      return `[引用消息]\n"""\n${input.quotedMessage}\n"""\n\n[我的问题]\n${input.message}`
+    }
+    return input.message
   }
 
   private parseInput(body: unknown): ChatMessageInput {

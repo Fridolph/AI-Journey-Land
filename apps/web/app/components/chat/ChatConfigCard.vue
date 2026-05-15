@@ -72,7 +72,7 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
       </label>
 
       <label class="flex items-center justify-between gap-2 cursor-pointer">
-        <span class="text-sm font-semibold text-highlighted">显示头像</span>
+        <span class="text-sm font-semibold text-highlighted">编辑与扩展</span>
         <UButton
           :icon="showAvatar ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
           :color="showAvatar ? 'primary' : 'neutral'"

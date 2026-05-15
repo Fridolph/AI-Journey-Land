@@ -15,6 +15,8 @@ const advancedEnabled = ref(false)
 const showAvatar = ref(false)
 const editingMessage = ref(false)
 const editContent = ref('')
+const quotedContent = ref('')
+const quotedRole = ref('')
 
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
@@ -112,8 +114,10 @@ async function handleSend() {
   const msg = inputMessage.value.trim()
   if (!msg || isRunning.value) return
   if (msg.length > 10000) return
+  const quoted = quotedContent.value
   inputMessage.value = ''
-  await sendMessage(msg)
+  quotedContent.value = ''
+  await sendMessage(msg, quoted)
   if (sessionId.value) {
     const firstUserMsg = messages.value.find(m => m.role === 'user')
     await chatStore.save({
@@ -200,37 +204,16 @@ const demoMeta = {
               <p>开始对话吧</p>
             </div>
 
-            <div v-for="(msg, i) in messages" :key="i" class="flex gap-2" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-              <div v-if="showAvatar && msg.role === 'assistant'" class="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
-                AI
-              </div>
-
-              <div class="group relative" :class="msg.role === 'user' ? 'order-first' : ''">
-                <div
-                  class="max-w-[80%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed"
-                  :class="msg.role === 'user'
-                    ? 'bg-primary text-white ml-auto'
-                    : 'bg-muted text-highlighted'"
-                >
-                  {{ msg.content }}
-                </div>
-
-                <div
-                  v-if="msg.role === 'user' && i === getLastUserMsgIndex() && !isRunning"
-                  class="absolute -bottom-1 left-0 translate-y-full flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <UTooltip text="编辑并重新发送">
-                    <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="xs" @click="startEditMessage" />
-                  </UTooltip>
-                  <UTooltip text="复制">
-                    <UButton icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="copyMessage(msg.content)" />
-                  </UTooltip>
-                </div>
-              </div>
-
-              <div v-if="showAvatar && msg.role === 'user'" class="flex-shrink-0 w-7 h-7 rounded-full bg-neutral-400 flex items-center justify-center text-white text-xs font-bold">
-                U
-              </div>
+            <div v-for="(msg, i) in messages" :key="i">
+              <ChatMessageItem
+                :message="msg"
+                :show-avatar="showAvatar"
+                :is-last-user="msg.role === 'user' && i === getLastUserMsgIndex()"
+                :disabled="isRunning"
+                @copy="copyMessage"
+                @edit="startEditMessage"
+                @quote="(content: string) => { quotedContent = content; quotedRole = msg.role }"
+              />
             </div>
 
             <div v-if="mode === 'streaming'" class="flex items-center gap-2 text-muted text-sm px-1">
@@ -249,6 +232,11 @@ const demoMeta = {
           </div>
 
           <div class="border-t border-black/5">
+            <div v-if="quotedContent" class="flex items-start gap-2 px-4 pt-3 pb-1 border-t border-amber-200 bg-amber-50/80">
+              <UIcon name="i-lucide-quote" class="text-amber-600 text-sm mt-0.5 flex-shrink-0" />
+              <span class="text-xs text-amber-800 line-clamp-2 flex-1" :title="quotedContent">{{ quotedContent }}</span>
+              <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" class="flex-shrink-0 -mt-0.5" @click="quotedContent = ''" />
+            </div>
             <div class="flex gap-2 p-4">
               <UTextarea
                 v-model="inputMessage"

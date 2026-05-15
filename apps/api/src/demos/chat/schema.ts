@@ -5,6 +5,7 @@ export const chatMessageSchema = z.object({
   message: z.string().min(1, '消息不能为空'),
   systemPrompt: z.string().optional(),
   temperature: z.number().min(0).max(2).optional(),
+  quotedMessage: z.string().optional(),
 })
 
 export type ChatMessageInput = z.infer<typeof chatMessageSchema>
