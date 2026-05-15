@@ -14,19 +14,26 @@ onMounted(async () => {
   await chatStore.loadAll()
   if (chatStore.sessions.value.length > 0) {
     const recent = chatStore.sessions.value[0]
-    if (recent) await loadHistory(recent.id)
+    if (recent) {
+      await loadHistory(recent.id)
+      // 从 IndexedDB 恢复消息
+      const savedMessages = await chatStore.loadMessages(recent.id)
+      if (savedMessages.length > 0) messages.value = savedMessages
+    }
   } else {
     await createSession()
     if (sessionId.value) {
-      await chatStore.save({
-        id: sessionId.value,
-        title: '新对话',
-        createdAt: new Date().toISOString(),
-        lastActiveAt: new Date().toISOString(),
-      })
+      await chatStore.save({ id: sessionId.value, title: '新对话', createdAt: new Date().toISOString(), lastActiveAt: new Date().toISOString() })
     }
   }
 })
+
+// 消息变化时自动持久化
+watch(messages, () => {
+  if (sessionId.value && messages.value.length > 0) {
+    chatStore.saveMessages(sessionId.value, [...messages.value])
+  }
+}, { deep: true })
 
 async function handleNewSession() {
   const sid = await createSession()
@@ -160,9 +167,7 @@ const demoMeta = {
             </form>
           </div>
         </UCard>
-      </div>
 
-      <aside class="demo-page__side">
         <ChatConfigCard
           :model-value="systemPrompt"
           :disabled="isRunning"
@@ -175,7 +180,9 @@ const demoMeta = {
           :estimated-tokens="estimatedTokens"
           :provider="'OpenAI-compatible'"
         />
+      </div>
 
+      <aside class="demo-page__side">
         <DemoInsightPanel
           :demo="demoMeta"
           :pipeline-steps="pipelineSteps"
