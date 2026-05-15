@@ -10,9 +10,21 @@ const emit = defineEmits<{
   'update:showAvatar': [value: boolean]
 }>()
 
-const enableCustom = ref(false)
-const advancedEnabled = ref(false)
-const showAvatar = ref(false)
+function useLocalBool(key: string, def: boolean) {
+  const val = ref(def)
+  if (import.meta.client) {
+    const stored = localStorage.getItem(key)
+    if (stored !== null) val.value = stored === 'true'
+  }
+  watch(val, (v) => {
+    if (import.meta.client) localStorage.setItem(key, String(v))
+  })
+  return val
+}
+
+const enableCustom = useLocalBool('chat-config-custom-prompt', false)
+const advancedEnabled = useLocalBool('chat-config-advanced', false)
+const showAvatar = useLocalBool('chat-config-avatar', false)
 
 watch(enableCustom, (v) => {
   if (!v) emit('update:modelValue', '')

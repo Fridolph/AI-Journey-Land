@@ -12,6 +12,7 @@ const emit = defineEmits<{
   copy: [content: string]
   edit: []
   quote: [content: string]
+  delete: []
 }>()
 </script>
 
@@ -32,11 +33,11 @@ const emit = defineEmits<{
       </div>
 
       <div
-        v-if="message.role === 'user' && !disabled"
+        v-if="!disabled"
         class="flex gap-0.5 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
         :class="message.role === 'user' ? 'justify-end' : ''"
       >
-        <UTooltip v-if="isLastUser" text="编辑">
+        <UTooltip v-if="message.role === 'user' && isLastUser" text="编辑">
           <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" size="xs" @click="emit('edit')" />
         </UTooltip>
         <UTooltip text="引用">
@@ -44,6 +45,9 @@ const emit = defineEmits<{
         </UTooltip>
         <UTooltip text="复制">
           <UButton icon="i-lucide-copy" color="neutral" variant="ghost" size="xs" @click="emit('copy', message.content)" />
+        </UTooltip>
+        <UTooltip text="删除">
+          <UButton icon="i-lucide-trash-2" color="neutral" variant="ghost" size="xs" @click="emit('delete')" />
         </UTooltip>
       </div>
     </div>

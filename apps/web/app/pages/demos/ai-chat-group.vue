@@ -13,8 +13,6 @@ const modelName = ref('')
 const modelProvider = ref('')
 const advancedEnabled = ref(false)
 const showAvatar = ref(false)
-const editingMessage = ref(false)
-const editContent = ref('')
 const quotedContent = ref('')
 const quotedRole = ref('')
 
@@ -86,24 +84,13 @@ function startEditMessage() {
   if (idx === -1) return
   const msg = messages.value[idx]
   if (!msg) return
-  editContent.value = msg.content
-  editingMessage.value = true
+  inputMessage.value = msg.content
+  // Remove this message so it gets replaced on send
+  messages.value.splice(idx, 1)
 }
 
-async function confirmEdit() {
-  if (!editContent.value.trim()) return
-  const idx = getLastUserMsgIndex()
-  if (idx === -1) return
-  // Remove user message and any AI response after it
-  messages.value = messages.value.slice(0, idx)
-  editingMessage.value = false
-  inputMessage.value = editContent.value
-  await handleSend()
-}
-
-function cancelEdit() {
-  editingMessage.value = false
-  editContent.value = ''
+function deleteMessage(idx: number) {
+  messages.value.splice(idx, 1)
 }
 
 async function copyMessage(content: string) {
@@ -213,6 +200,7 @@ const demoMeta = {
                 @copy="copyMessage"
                 @edit="startEditMessage"
                 @quote="(content: string) => { quotedContent = content; quotedRole = msg.role }"
+                @delete="deleteMessage(i)"
               />
             </div>
 
@@ -224,17 +212,12 @@ const demoMeta = {
             <UAlert v-if="errorMessage" icon="i-lucide-circle-alert" color="error" variant="soft" :description="errorMessage" />
           </div>
 
-          <div v-if="editingMessage" class="flex items-center gap-2 px-4 py-2 border-t border-black/5 bg-amber-50">
-            <UIcon name="i-lucide-pencil" class="text-amber-600 text-sm" />
-            <UTextarea v-model="editContent" :rows="1" autoresize size="xs" class="flex-1" :disabled="isRunning" />
-            <UButton size="xs" color="primary" variant="solid" :disabled="isRunning" @click="confirmEdit">发送</UButton>
-            <UButton size="xs" color="neutral" variant="ghost" @click="cancelEdit">取消</UButton>
-          </div>
-
           <div class="border-t border-black/5">
             <div v-if="quotedContent" class="flex items-start gap-2 px-4 pt-3 pb-1 border-t border-amber-200 bg-amber-50/80">
               <UIcon name="i-lucide-quote" class="text-amber-600 text-sm mt-0.5 flex-shrink-0" />
-              <span class="text-xs text-amber-800 line-clamp-2 flex-1" :title="quotedContent">{{ quotedContent }}</span>
+              <UTooltip :text="quotedContent" :content="{ align: 'start' }" class="flex-1 min-w-0">
+                <span class="text-xs text-amber-800 line-clamp-2">{{ quotedContent }}</span>
+              </UTooltip>
               <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" class="flex-shrink-0 -mt-0.5" @click="quotedContent = ''" />
             </div>
             <div class="flex gap-2 p-4">
