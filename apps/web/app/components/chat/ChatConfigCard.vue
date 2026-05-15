@@ -6,12 +6,18 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'update:advancedEnabled': [value: boolean]
 }>()
 
 const enableCustom = ref(false)
+const advancedEnabled = ref(false)
 
 watch(enableCustom, (v) => {
   if (!v) emit('update:modelValue', '')
+})
+
+watch(advancedEnabled, (v) => {
+  emit('update:advancedEnabled', v)
 })
 
 const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各种问题。`
@@ -44,6 +50,16 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
           @update:model-value="emit('update:modelValue', String($event ?? ''))"
         />
       </div>
+
+      <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-black/5">
+        <UToggle
+          :model-value="advancedEnabled"
+          :disabled="disabled"
+          size="sm"
+          @update:model-value="advancedEnabled = $event"
+        />
+        <span class="text-sm font-semibold text-highlighted">启用高级功能</span>
+      </label>
     </div>
   </DemoCollapsibleCard>
 </template>

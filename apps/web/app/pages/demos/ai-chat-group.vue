@@ -11,6 +11,7 @@ const inputMessage = ref('')
 const chatContainer = useTemplateRef<HTMLElement>('chatContainer')
 const modelName = ref('')
 const modelProvider = ref('')
+const advancedEnabled = ref(false)
 
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
@@ -194,7 +195,7 @@ const demoMeta = {
               </UButton>
             </form>
 
-            <ChatQuickConfig :disabled="isRunning" />
+            <ChatQuickConfig :show="advancedEnabled" :disabled="isRunning" />
           </div>
         </UCard>
 
@@ -202,6 +203,7 @@ const demoMeta = {
           :model-value="systemPrompt"
           :disabled="isRunning"
           @update:model-value="systemPrompt = $event"
+          @update:advanced-enabled="advancedEnabled = $event"
         />
 
         <ChatAiInfoCard
