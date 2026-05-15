@@ -72,6 +72,7 @@ async function handleDeleteSession(sid: string) {
 async function handleSend() {
   const msg = inputMessage.value.trim()
   if (!msg || isRunning.value) return
+  if (msg.length > 10000) return
   inputMessage.value = ''
   await sendMessage(msg)
   if (sessionId.value) {
@@ -180,23 +181,27 @@ const demoMeta = {
           </div>
 
           <div class="border-t border-black/5">
-            <form class="flex gap-2 p-4" @submit.prevent="handleSend">
+            <div class="flex gap-2 p-4">
               <UTextarea
                 v-model="inputMessage"
-                placeholder="输入消息，Ctrl+Enter 发送..."
+                placeholder="输入消息，Ctrl+Enter 发送 · 最多 10000 字"
                 :disabled="isRunning"
                 :rows="1"
+                :maxlength="10000"
                 autoresize
                 size="sm"
                 class="flex-1 chat-textarea"
-                @keydown.ctrl.enter="handleSend"
+                @keydown="(e: KeyboardEvent) => { if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); handleSend() } }"
               />
-              <UButton type="submit" icon="i-lucide-send" color="primary" :disabled="isRunning || !inputMessage.trim()" size="sm" class="self-end">
-                发送
-              </UButton>
-            </form>
+            </div>
 
-            <ChatQuickConfig :show="advancedEnabled" :disabled="isRunning" />
+            <ChatQuickConfig :show="advancedEnabled" :disabled="isRunning">
+              <template #send>
+                <UButton type="button" icon="i-lucide-send" color="primary" :disabled="isRunning || !inputMessage.trim()" size="sm" @click="handleSend">
+                  发送
+                </UButton>
+              </template>
+            </ChatQuickConfig>
           </div>
         </UCard>
 
@@ -241,7 +246,7 @@ const demoMeta = {
 }
 
 .chat-textarea {
-  max-height: 14rem;
+  max-height: 8rem;
 }
 
 @media (min-width: 1024px) {

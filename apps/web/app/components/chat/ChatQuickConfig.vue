@@ -11,29 +11,49 @@ const ragEnabled = ref(false)
 </script>
 
 <template>
-  <div v-if="show" class="flex items-center gap-3 px-4 pb-2.5 flex-wrap">
-    <span class="text-xs text-muted">当前模型</span>
-    <USelect
-      :model-value="selectedModel"
-      :items="modelOptions"
-      :disabled="disabled"
-      size="xs"
-      class="w-40"
-    />
+  <div class="flex items-center gap-3 px-4 pb-2.5 flex-wrap">
+    <template v-if="show">
+      <span class="text-xs text-muted">当前模型</span>
+      <USelect
+        :model-value="selectedModel"
+        :items="modelOptions"
+        :disabled="disabled"
+        size="xs"
+        class="w-40"
+      />
 
-    <div class="flex items-center gap-1">
-      <UToggle :model-value="webSearch" :disabled="disabled" size="xs" @update:model-value="webSearch = $event" />
-      <span class="text-xs text-muted">联网</span>
-    </div>
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 transition-colors"
+        :class="webSearch ? 'bg-primary text-white' : 'hover:bg-muted'"
+        :disabled="disabled"
+        @click="webSearch = !webSearch"
+      >
+        <UIcon :name="webSearch ? 'i-lucide-globe' : 'i-lucide-globe'" class="text-[0.85rem]" />
+        联网
+      </button>
 
-    <div class="flex items-center gap-1">
-      <UToggle :model-value="ragEnabled" :disabled="disabled" size="xs" @update:model-value="ragEnabled = $event" />
-      <span class="text-xs text-muted">RAG</span>
-    </div>
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 transition-colors"
+        :class="ragEnabled ? 'bg-primary text-white' : 'hover:bg-muted'"
+        :disabled="disabled"
+        @click="ragEnabled = !ragEnabled"
+      >
+        <UIcon :name="ragEnabled ? 'i-lucide-database' : 'i-lucide-database'" class="text-[0.85rem]" />
+        RAG
+      </button>
+
+      <button type="button" class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30" :disabled="disabled">
+        <UIcon name="i-lucide-at-sign" class="text-[0.85rem]" />
+      </button>
+
+      <button type="button" class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30" :disabled="disabled">
+        <UIcon name="i-lucide-paperclip" class="text-[0.85rem]" />
+      </button>
+    </template>
 
     <div class="flex-1" />
-
-    <UButton icon="i-lucide-at-sign" color="neutral" variant="ghost" size="xs" :disabled="disabled" />
-    <UButton icon="i-lucide-paperclip" color="neutral" variant="ghost" size="xs" :disabled="disabled" />
+    <slot name="send" />
   </div>
 </template>

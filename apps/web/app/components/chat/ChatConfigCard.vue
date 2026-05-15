@@ -26,14 +26,16 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
 <template>
   <DemoCollapsibleCard title="对话配置" icon="i-lucide-settings-2" :default-open="false">
     <div class="grid gap-3">
-      <label class="flex items-center gap-2 cursor-pointer">
-        <UToggle
-          :model-value="enableCustom"
-          :disabled="disabled"
-          size="sm"
-          @update:model-value="enableCustom = $event"
-        />
+      <label class="flex items-center justify-between gap-2 cursor-pointer">
         <span class="text-sm font-semibold text-highlighted">自定义 AI 人设</span>
+        <UButton
+          :icon="enableCustom ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
+          :color="enableCustom ? 'primary' : 'neutral'"
+          variant="ghost"
+          size="sm"
+          :disabled="disabled"
+          @click="enableCustom = !enableCustom"
+        />
       </label>
 
       <div v-if="enableCustom" class="grid gap-1.5">
@@ -51,14 +53,16 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
         />
       </div>
 
-      <label class="flex items-center gap-2 cursor-pointer pt-2 border-t border-black/5">
-        <UToggle
-          :model-value="advancedEnabled"
-          :disabled="disabled"
-          size="sm"
-          @update:model-value="advancedEnabled = $event"
-        />
+      <label class="flex items-center justify-between gap-2 cursor-pointer pt-2 border-t border-black/5">
         <span class="text-sm font-semibold text-highlighted">启用高级功能</span>
+        <UButton
+          :icon="advancedEnabled ? 'i-lucide-toggle-right' : 'i-lucide-toggle-left'"
+          :color="advancedEnabled ? 'primary' : 'neutral'"
+          variant="ghost"
+          size="sm"
+          :disabled="disabled"
+          @click="advancedEnabled = !advancedEnabled"
+        />
       </label>
     </div>
   </DemoCollapsibleCard>
