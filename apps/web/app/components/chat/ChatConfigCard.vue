@@ -46,7 +46,7 @@ const DEFAULT_PROMPT = `你是一个智能 AI 助手，可以回答用户的各�
   <DemoCollapsibleCard
     :title="variant === 'global' ? '公共配置' : '当前对话配置'"
     icon="i-lucide-settings-2"
-    :default-open="false"
+    :default-open="variant === 'session' ? true : false"
   >
     <div class="grid gap-3">
       <!-- Global: 高级功能 + 编辑扩展 -->

@@ -51,7 +51,11 @@ export function useChat() {
   }
 
   async function deleteSession(sid: string): Promise<void> {
-    await $fetch(`${apiBase.value}/demos/chat/sessions/${sid}`, { method: 'DELETE' })
+    try {
+      await $fetch(`${apiBase.value}/demos/chat/sessions/${sid}`, { method: 'DELETE' })
+    } catch {
+      // Server-side session may not exist — non-blocking
+    }
     if (sessionId.value === sid) {
       sessionId.value = null
       messages.value = []

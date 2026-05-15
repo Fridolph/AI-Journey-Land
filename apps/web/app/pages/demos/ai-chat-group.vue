@@ -223,13 +223,6 @@ const demoMeta = {
           @update:show-avatar="showAvatar = $event"
         />
 
-        <ChatConfigCard
-          variant="session"
-          :model-value="systemPrompt"
-          :disabled="isRunning"
-          @update:model-value="systemPrompt = $event"
-        />
-
         <UCard class="chat-card" :ui="{ body: 'p-0 sm:p-0 flex flex-col h-full' }">
           <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-black/5">
             <div class="flex items-center gap-2 min-w-0 flex-1">
@@ -332,6 +325,13 @@ const demoMeta = {
             </ChatQuickConfig>
           </div>
         </UCard>
+
+        <ChatConfigCard
+          variant="session"
+          :model-value="systemPrompt"
+          :disabled="isRunning"
+          @update:model-value="systemPrompt = $event"
+        />
       </div>
 
       <aside class="demo-page__side">
