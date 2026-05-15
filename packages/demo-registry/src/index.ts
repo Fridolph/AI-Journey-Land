@@ -1,7 +1,8 @@
 import type { DemoListItem, DemoMeta } from '@ai-journey-land/shared'
 import { promptTemplateWeeklyReportDemo, DEFAULT_PROMPT } from './demos/prompt-template-weekly-report'
+import { chatDemo } from './demos/chat'
 
-export const demos: DemoMeta[] = [promptTemplateWeeklyReportDemo]
+export const demos: DemoMeta[] = [promptTemplateWeeklyReportDemo, chatDemo]
 
 export function listDemoItems(): DemoListItem[] {
   return demos.map(
@@ -52,3 +53,4 @@ export function getDemoById(id: string): DemoMeta | undefined {
 }
 
 export { promptTemplateWeeklyReportDemo, DEFAULT_PROMPT }
+export { chatDemo }

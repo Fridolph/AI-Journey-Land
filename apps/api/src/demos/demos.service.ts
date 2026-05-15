@@ -2,6 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { getDemoById, listDemoItems } from '@ai-journey-land/demo-registry'
 import type { DemoListResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
+import { ChatService } from './chat/chat.service'
 import type { DemoRunner } from './demo-runner'
 
 @Injectable()
@@ -11,9 +12,12 @@ export class DemosService {
   constructor(
     @Inject(PromptTemplateWeeklyReportService)
     private readonly promptTemplateWeeklyReportService: PromptTemplateWeeklyReportService,
+    @Inject(ChatService)
+    private readonly chatService: ChatService,
   ) {
-    this.runners = new Map([
+    this.runners = new Map<string, DemoRunner>([
       [promptTemplateWeeklyReportService.demoId, promptTemplateWeeklyReportService],
+      [chatService.demoId, chatService],
     ])
   }
 
