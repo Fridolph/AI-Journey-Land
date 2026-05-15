@@ -9,8 +9,27 @@ const chatStore = useChatStore()
 
 const inputMessage = ref('')
 const chatContainer = useTemplateRef<HTMLElement>('chatContainer')
+const modelName = ref('')
+const modelProvider = ref('')
+
+const config = useRuntimeConfig()
+const apiBase = computed(() => config.public.apiBase)
+
+async function loadModelInfo() {
+  try {
+    const res = await $fetch<{ data: { modelName: string; provider: string } }>(
+      `${apiBase.value}/demos/chat/model-info`,
+    )
+    modelName.value = res.data.modelName
+    modelProvider.value = res.data.provider
+  } catch {
+    modelName.value = 'unknown'
+    modelProvider.value = 'unknown'
+  }
+}
 
 onMounted(async () => {
+  await loadModelInfo()
   await chatStore.loadAll()
   if (chatStore.sessions.value.length > 0) {
     const recent = chatStore.sessions.value[0]
@@ -175,10 +194,10 @@ const demoMeta = {
         />
 
         <ChatAiInfoCard
-          :model-name="'qwen-plus'"
+          :model-name="modelName || 'loading...'"
           :message-count="messages.length"
           :estimated-tokens="estimatedTokens"
-          :provider="'OpenAI-compatible'"
+          :provider="modelProvider || 'loading...'"
         />
       </div>
 

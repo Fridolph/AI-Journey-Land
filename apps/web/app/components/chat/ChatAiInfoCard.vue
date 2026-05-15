@@ -22,7 +22,7 @@ const usageColor = computed(() => {
 </script>
 
 <template>
-  <DemoCollapsibleCard title="AI 运行信息" icon="i-lucide-info" :default-open="false">
+  <DemoCollapsibleCard title="AI 运行信息" icon="i-lucide-info" :default-open="true">
     <div class="grid gap-2.5">
       <div class="grid grid-cols-2 gap-1.5 text-sm">
         <span class="text-[var(--ui-text-muted)]">模型</span>

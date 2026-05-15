@@ -71,6 +71,15 @@ export class DemosService {
     return { deleted: this.aiService.getSessionManager().endSession(sessionId) }
   }
 
+  getChatModelInfo() {
+    const config = this.aiService.getProviderConfig()
+    return {
+      modelName: config.modelName ?? 'unknown',
+      provider: config.provider ?? 'unknown',
+      baseUrl: config.baseUrl ?? 'unknown',
+    }
+  }
+
   private getRunner(id: string): DemoRunner {
     const runner = this.runners.get(id)
 

@@ -133,4 +133,12 @@ export class DemosController {
   deleteChatSession(@Param('sessionId') sessionId: string) {
     return this.demosService.deleteChatSession(sessionId)
   }
+
+  /**
+   * 获取当前 AI 模型信息（从 .env 读取）。
+   */
+  @Get('chat/model-info')
+  getChatModelInfo() {
+    return this.demosService.getChatModelInfo()
+  }
 }
