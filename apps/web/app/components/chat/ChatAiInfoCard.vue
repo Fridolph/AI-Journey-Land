@@ -47,7 +47,7 @@ function fmtNum(n: number): string {
     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
       <div>
         <span class="text-xs text-muted">模型</span>
-        <p class="text-sm font-semibold truncate">{{ modelName || '-' }}</p>
+        <p class="text-sm font-semibold truncate max-w-full" :title="modelName">{{ modelName || '-' }}</p>
       </div>
       <div>
         <span class="text-xs text-muted">上下文</span>

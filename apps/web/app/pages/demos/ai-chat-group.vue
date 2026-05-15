@@ -68,9 +68,16 @@ async function handleNewSession() {
 }
 
 async function handleSelectSession(sid: string) {
-  await loadHistory(sid)
+  sessionId.value = sid
   const s = chatStore.sessions.value.find(x => x.id === sid)
   if (s) sessionTitle.value = s.title
+  const saved = await chatStore.loadMessages(sid)
+  if (saved.length > 0) {
+    messages.value = saved
+    mode.value = 'done'
+  } else {
+    messages.value = []
+  }
 }
 
 async function handleDeleteSession(sid: string) {
@@ -95,6 +102,17 @@ function startEditMessage() {
 
 function deleteMessage(idx: number) {
   messages.value.splice(idx, 1)
+}
+
+function saveTitle() {
+  editingTitle.value = false
+  if (!sessionId.value) return
+  chatStore.save({
+    id: sessionId.value,
+    title: sessionTitle.value,
+    createdAt: new Date().toISOString(),
+    lastActiveAt: new Date().toISOString(),
+  })
 }
 
 async function copyMessage(content: string) {
@@ -217,8 +235,8 @@ const demoMeta = {
                 size="xs"
                 class="flex-1"
                 autofocus
-                @blur="editingTitle = false"
-                @keydown.enter="editingTitle = false"
+                @blur="saveTitle"
+                @keydown.enter="saveTitle"
                 @update:model-value="(v: string) => sessionTitle = v"
               />
               <UButton
@@ -235,7 +253,7 @@ const demoMeta = {
               <UButton icon="i-lucide-info" color="neutral" variant="ghost" size="xs" />
 
               <template #content>
-                <div class="w-64 p-2">
+                <div class="w-72 min-w-72 p-2">
                   <ChatAiInfoCard
                     :model-name="modelName || 'loading...'"
                     :message-count="messages.length"
