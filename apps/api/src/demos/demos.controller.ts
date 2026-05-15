@@ -9,6 +9,8 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Query,
+  Delete,
 } from '@nestjs/common'
 import type { Response } from 'express'
 import { AiConfigurationError } from '@ai-journey-land/ai-core'
@@ -104,5 +106,31 @@ export class DemosController {
     } finally {
       response.end()
     }
+  }
+
+  /**
+   * 获取聊天会话历史。
+   */
+  @Get('chat/history')
+  getChatHistory(@Query('sessionId') sessionId: string) {
+    return this.demosService.getChatHistory(sessionId)
+  }
+
+  /**
+   * 创建新聊天会话。
+   */
+  @Post('chat/sessions')
+  @HttpCode(HttpStatus.CREATED)
+  createChatSession() {
+    return this.demosService.createChatSession()
+  }
+
+  /**
+   * 删除聊天会话。
+   */
+  @Delete('chat/sessions/:sessionId')
+  @HttpCode(HttpStatus.OK)
+  deleteChatSession(@Param('sessionId') sessionId: string) {
+    return this.demosService.deleteChatSession(sessionId)
   }
 }

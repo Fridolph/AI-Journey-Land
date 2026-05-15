@@ -1,6 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { getDemoById, listDemoItems } from '@ai-journey-land/demo-registry'
 import type { DemoListResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
+import type { AiMessage } from '@ai-journey-land/ai-core'
+import { AiService } from '../ai/ai.service'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
 import { ChatService } from './chat/chat.service'
 import type { DemoRunner } from './demo-runner'
@@ -14,6 +16,8 @@ export class DemosService {
     private readonly promptTemplateWeeklyReportService: PromptTemplateWeeklyReportService,
     @Inject(ChatService)
     private readonly chatService: ChatService,
+    @Inject(AiService)
+    private readonly aiService: AiService,
   ) {
     this.runners = new Map<string, DemoRunner>([
       [promptTemplateWeeklyReportService.demoId, promptTemplateWeeklyReportService],
@@ -52,6 +56,19 @@ export class DemosService {
     const runner = this.getRunner(id)
 
     yield* runner.stream(body)
+  }
+
+  getChatHistory(sessionId: string): AiMessage[] {
+    return this.aiService.getSessionManager().getHistory(sessionId)
+  }
+
+  createChatSession(): { sessionId: string } {
+    const session = this.aiService.getSessionManager().createSession('chat')
+    return { sessionId: session.sessionId }
+  }
+
+  deleteChatSession(sessionId: string): { deleted: boolean } {
+    return { deleted: this.aiService.getSessionManager().endSession(sessionId) }
   }
 
   private getRunner(id: string): DemoRunner {
