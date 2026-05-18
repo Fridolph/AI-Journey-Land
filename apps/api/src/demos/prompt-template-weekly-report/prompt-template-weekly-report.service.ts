@@ -1,51 +1,22 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { PromptTemplate } from '@langchain/core/prompts'
-import {
-  AiConfigurationError,
-  createChatModel,
-  stringifyAiContent,
-  type ChatModelConfig,
-} from '@ai-journey-land/ai-core'
+import { stringifyAiContent } from '@ai-journey-land/ai-core'
 import { demoRunRequestSchema, type DemoRunRequest } from '@ai-journey-land/shared'
 import { ZodError } from 'zod'
+import { AiService } from '../../ai/ai.service'
 import type { DemoRunner } from '../demo-runner'
-
-const supportedProviders = ['openai', 'deepseek'] as const
-
-type AiProvider = (typeof supportedProviders)[number]
-
-const weeklyReportTemplate = `
-你是一名严谨但不失人情味的工程团队负责人，需要根据本周数据写一份周报。
-
-公司名称：{companyName}
-部门名称：{teamName}
-直接汇报对象：{managerName}
-本周时间范围：{weekRange}
-
-本周团队核心目标：
-{teamGoal}
-
-本周开发数据（Git 提交 / Jira 任务）：
-{devActivities}
-
-请根据以上信息生成一份【Markdown 周报】，要求：
-- 有简短的整体 summary（两三句话）
-- 有按模块/项目拆分的小结
-- 用一个 Markdown 表格列出关键指标（字段示例：模块 / 亮点 / 风险 / 下周计划）
-- 语气专业但有一点人情味，适合作为给老板和团队抄送的周报。
-`.trim()
+import { promptTemplateWeeklyReportInputSchema, type PromptTemplateWeeklyReportInput } from './schema'
+import { REPORT_TYPE_GUIDE, ROLE_PERSPECTIVE, REPORT_PROMPT } from './prompts'
 
 @Injectable()
 export class PromptTemplateWeeklyReportService implements DemoRunner {
   readonly demoId = 'prompt-template-weekly-report'
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(@Inject(AiService) private readonly aiService: AiService) {}
 
   async run(body: unknown): Promise<string> {
     const request = this.parseRunRequest(body)
-    const model = createChatModel({
-      ...this.getModelConfig(),
+    const model = this.aiService.createStableModel({
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -56,8 +27,7 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
 
   async *stream(body: unknown): AsyncGenerator<string> {
     const request = this.parseRunRequest(body)
-    const model = createChatModel({
-      ...this.getModelConfig(),
+    const model = this.aiService.createStreamingModel({
       temperature: 0.3,
     })
     const prompt = await this.formatPrompt(request)
@@ -72,9 +42,10 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
     }
   }
 
-  private parseRunRequest(body: unknown): DemoRunRequest {
+  private parseRunRequest(body: unknown): PromptTemplateWeeklyReportInput {
     try {
-      return demoRunRequestSchema.parse(body)
+      const generic = demoRunRequestSchema.parse(body)
+      return promptTemplateWeeklyReportInputSchema.parse(generic.input)
     } catch (error) {
       if (error instanceof ZodError) {
         const issues = error.issues.map((issue) => issue.message).join('；')
@@ -85,46 +56,26 @@ export class PromptTemplateWeeklyReportService implements DemoRunner {
     }
   }
 
-  private async formatPrompt(request: DemoRunRequest): Promise<string> {
-    const promptTemplate = PromptTemplate.fromTemplate(weeklyReportTemplate)
-    return promptTemplate.format(request.input)
-  }
+  private async formatPrompt(
+    request: PromptTemplateWeeklyReportInput,
+  ): Promise<string> {
+    const templateSource = request.customPrompt || REPORT_PROMPT
+    const promptTemplate = PromptTemplate.fromTemplate(templateSource)
 
-  private getModelConfig(): ChatModelConfig {
-    const provider = this.getAiProvider()
+    const fewShotExample = request.reportTemplate
+      ? `\n参考示例（请参照此风格和结构）：\n${request.reportTemplate}\n`
+      : ''
 
-    if (provider === 'deepseek') {
-      return {
-        provider,
-        apiKey: this.configService.get<string>('DEEPSEEK_API_KEY'),
-        apiKeyEnvName: 'DEEPSEEK_API_KEY',
-        baseUrl: this.configService.get<string>('DEEPSEEK_BASE_URL'),
-        baseUrlEnvName: 'DEEPSEEK_BASE_URL',
-        modelName: this.configService.get<string>('DEEPSEEK_MODEL_NAME'),
-        modelNameEnvName: 'DEEPSEEK_MODEL_NAME',
-      }
-    }
-
-    return {
-      provider,
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
-      apiKeyEnvName: 'OPENAI_API_KEY',
-      baseUrl: this.configService.get<string>('OPENAI_BASE_URL'),
-      baseUrlEnvName: 'OPENAI_BASE_URL',
-      modelName: this.configService.get<string>('MODEL_NAME'),
-      modelNameEnvName: 'MODEL_NAME',
-    }
-  }
-
-  private getAiProvider(): AiProvider {
-    const provider = this.configService.get<string>('AI_PROVIDER') ?? 'openai'
-
-    if (supportedProviders.includes(provider as AiProvider)) {
-      return provider as AiProvider
-    }
-
-    throw new AiConfigurationError(
-      `AI_PROVIDER 仅支持：${supportedProviders.join(', ')}，当前值：${provider}`,
-    )
+    return promptTemplate.format({
+      ...request,
+      authorName: request.authorName ? `作者：${request.authorName}` : '',
+      companyName: request.companyName ? `公司名称：${request.companyName}\n` : '',
+      teamName: request.teamName ? `部门名称：${request.teamName}\n` : '',
+      managerName: request.managerName ? `汇报对象：${request.managerName}\n` : '',
+      reportTypeGuide:
+        REPORT_TYPE_GUIDE[request.reportType] ?? '结构清晰，重点突出',
+      rolePerspective: ROLE_PERSPECTIVE[request.role] ?? '',
+      fewShotExample,
+    })
   }
 }

@@ -7,16 +7,23 @@ const props = defineProps<{
 
 const outputContentRef = useTemplateRef<HTMLElement>('outputContent')
 
+const copied = ref(false)
+
+async function copyOutput() {
+  if (!props.output) return
+  await navigator.clipboard.writeText(props.output)
+  copied.value = true
+  setTimeout(() => {
+    copied.value = false
+  }, 1800)
+}
+
 let streamScrollTimer: ReturnType<typeof setInterval> | undefined
 let lastStreamScrollAt = 0
 
 function scrollOutputToBottom() {
   const outputContent = outputContentRef.value
-
-  if (!outputContent) {
-    return
-  }
-
+  if (!outputContent) return
   outputContent.scrollTo({
     top: outputContent.scrollHeight,
     behavior: 'smooth',
@@ -24,10 +31,7 @@ function scrollOutputToBottom() {
 }
 
 function stopStreamAutoScroll() {
-  if (!streamScrollTimer) {
-    return
-  }
-
+  if (!streamScrollTimer) return
   clearInterval(streamScrollTimer)
   streamScrollTimer = undefined
 }
@@ -36,21 +40,15 @@ watch(
   () => props.mode,
   async (mode) => {
     stopStreamAutoScroll()
-
     if (mode === 'done') {
       await nextTick()
       scrollOutputToBottom()
       return
     }
-
-    if (mode !== 'streaming') {
-      return
-    }
-
+    if (mode !== 'streaming') return
     lastStreamScrollAt = 0
     await nextTick()
     scrollOutputToBottom()
-
     streamScrollTimer = setInterval(() => {
       scrollOutputToBottom()
     }, 3000)
@@ -61,16 +59,9 @@ watch(
 watch(
   () => props.output,
   async () => {
-    if (props.mode !== 'streaming') {
-      return
-    }
-
+    if (props.mode !== 'streaming') return
     const now = Date.now()
-
-    if (now - lastStreamScrollAt < 3000) {
-      return
-    }
-
+    if (now - lastStreamScrollAt < 3000) return
     lastStreamScrollAt = now
     await nextTick()
     scrollOutputToBottom()
@@ -83,11 +74,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="output-panel">
-    <div class="output-panel__header">
+  <section class="grid gap-4">
+    <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="output-panel__eyebrow">Model Output</p>
-        <h3 class="output-panel__title">运行结果</h3>
+        <p class="text-[0.72rem] font-extrabold uppercase tracking-[0.08em] text-land-primary">
+          Model Output
+        </p>
+        <h3 class="mt-0.5 text-xl font-extrabold">运行结果</h3>
       </div>
       <UBadge v-if="mode === 'streaming'" color="primary" variant="soft">Streaming</UBadge>
       <UBadge v-else-if="mode === 'loading'" color="warning" variant="soft">Running</UBadge>
@@ -105,71 +98,46 @@ onBeforeUnmount(() => {
       :description="errorMessage"
     />
 
-    <div v-if="mode === 'loading'" class="output-panel__loading" role="status" aria-live="polite">
+    <div v-if="mode === 'loading'" class="output-panel__loading">
       <div class="output-panel__loading-orbit">
         <UIcon name="i-lucide-loader-circle" class="output-panel__loading-icon" />
       </div>
       <div>
-        <p class="output-panel__loading-title">模型正在生成周报...</p>
-        <p class="output-panel__loading-description">
+        <p class="font-extrabold text-land-ink">模型正在生成...</p>
+        <p class="mt-1.5 max-w-lg text-sm text-land-muted leading-relaxed">
           普通运行会等待完整响应返回；流式运行会继续使用 SSE 逐步展示 token。
         </p>
       </div>
-      <div class="output-panel__skeleton" aria-hidden="true">
+      <div class="output-panel__skeleton">
         <span />
         <span />
         <span />
       </div>
     </div>
-    <pre v-else-if="output" ref="outputContent" class="output-panel__content">{{ output }}</pre>
-    <div v-else class="output-panel__empty">
-      <UIcon name="i-lucide-terminal-square" class="output-panel__empty-icon" />
-      <span>等待一次真实模型调用。</span>
+
+    <div v-if="output" class="relative">
+      <button
+        class="output-panel__copy-btn"
+        :class="{ 'output-panel__copy-btn--done': copied }"
+        @click="copyOutput"
+      >
+        <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" />
+      </button>
+      <pre
+        ref="outputContent"
+        class="min-h-72 max-h-[33.75rem] overflow-auto whitespace-pre-wrap rounded-lg border border-black/10 bg-[#101816] px-4 py-4 text-[0.9rem] leading-relaxed text-[#d7fff4]"
+      >{{ output }}</pre>
+    </div>
+
+    <div v-else-if="mode !== 'loading'" class="output-panel__empty">
+      <UIcon name="i-lucide-terminal-square" class="text-2xl text-land-primary" />
+      <span class="text-land-muted">等待一次真实模型调用。</span>
     </div>
   </section>
 </template>
 
 <style scoped>
-.output-panel {
-  display: grid;
-  gap: 1rem;
-}
-
-.output-panel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.output-panel__eyebrow {
-  color: #0f766e;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.output-panel__title {
-  margin-top: 0.2rem;
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.output-panel__content {
-  min-height: 18rem;
-  max-height: 33.75rem;
-  overflow: auto;
-  white-space: pre-wrap;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.5rem;
-  background: #101816;
-  color: #d7fff4;
-  font-size: 0.9rem;
-  line-height: 1.75;
-  padding: 1rem;
-}
-
+/* BEM: loading/skeleton states exceed 9-class threshold */
 .output-panel__loading {
   display: grid;
   min-height: 18rem;
@@ -201,19 +169,6 @@ onBeforeUnmount(() => {
   animation: spin 900ms linear infinite;
 }
 
-.output-panel__loading-title {
-  color: var(--ui-text-highlighted);
-  font-weight: 850;
-}
-
-.output-panel__loading-description {
-  margin-top: 0.35rem;
-  max-width: 30rem;
-  color: var(--ui-text-muted);
-  font-size: 0.88rem;
-  line-height: 1.6;
-}
-
 .output-panel__skeleton {
   display: grid;
   width: min(100%, 28rem);
@@ -243,6 +198,36 @@ onBeforeUnmount(() => {
   animation-delay: 240ms;
 }
 
+/* BEM: copy button needs hover/position logic */
+.output-panel__copy-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 2;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid rgba(215, 255, 244, 0.18);
+  border-radius: 0.35rem;
+  background: rgba(215, 255, 244, 0.06);
+  color: rgba(215, 255, 244, 0.6);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 140ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.output-panel__copy-btn--done {
+  background: color-mix(in oklab, var(--ui-primary) 28%, transparent);
+  border-color: var(--ui-primary);
+  color: var(--ui-primary);
+  opacity: 1;
+}
+
+/* BEM: empty state */
 .output-panel__empty {
   display: grid;
   min-height: 18rem;
@@ -255,9 +240,14 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
-.output-panel__empty-icon {
-  color: #0f766e;
-  font-size: 2rem;
+/* hover show copy button */
+.output-panel__copy-btn {
+  opacity: 0;
+}
+
+.relative:hover .output-panel__copy-btn,
+.output-panel__copy-btn--done {
+  opacity: 1;
 }
 
 @keyframes spin {

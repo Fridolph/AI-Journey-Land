@@ -1,0 +1,23 @@
+{
+  "types": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "refactor", "section": "Refactoring" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "test", "section": "Tests" },
+    { "type": "chore", "section": "Chores", "hidden": false },
+    { "type": "style", "section": "Styles", "hidden": false },
+    { "type": "perf", "section": "Performance" },
+    { "type": "ci", "section": "CI/CD" },
+    { "type": "build", "section": "Build" }
+  ],
+  "issueUrlFormat": "https://github.com/Fridolph/AI-Journey-Land/issues/{{id}}",
+  "commitUrlFormat": "https://github.com/Fridolph/AI-Journey-Land/commit/{{hash}}",
+  "compareUrlFormat": "https://github.com/Fridolph/AI-Journey-Land/compare/{{previousTag}}...{{currentTag}}",
+  "skip": {
+    "bump": false,
+    "changelog": false,
+    "commit": false,
+    "tag": false
+  }
+}

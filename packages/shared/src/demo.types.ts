@@ -1,14 +1,30 @@
-import type { PromptTemplateWeeklyReportInput } from './demo.schemas'
-
 export type DemoRunStatus = 'success' | 'error'
 export type DemoDisplayMode = 'custom-page' | 'generic-runner'
 
+/**
+ * API 标准响应结构，与后端 ResponseInterceptor 保持一致。
+ */
+export interface ApiResponse<T> {
+  code: number
+  message: string
+  data: T | null
+  timestamp: string
+  path: string
+}
+
 export interface DemoInputField {
-  name: keyof PromptTemplateWeeklyReportInput
+  name: string
   label: string
   component: 'input' | 'textarea'
   placeholder: string
   defaultValue: string
+}
+
+export interface DemoSourceFiles {
+  apiDir: string
+  apiFiles: string[]
+  webDir: string
+  webFiles: string[]
 }
 
 export interface DemoMeta {
@@ -26,9 +42,10 @@ export interface DemoMeta {
   ownerPackage: string
   supportsStreaming: boolean
   inputFields: DemoInputField[]
+  rolePresets?: string[]
+  reportTypePresets?: string[]
+  sourceFiles?: DemoSourceFiles
   sourceUrl?: string
-  sourceCode?: string
-  sourceLanguage?: string
   docsUrl?: string
   draftUrl?: string
   knownLimits: string[]
@@ -48,6 +65,9 @@ export interface DemoListItem {
   displayMode: DemoDisplayMode
   ownerPackage: string
   supportsStreaming: boolean
+  rolePresets?: string[]
+  reportTypePresets?: string[]
+  sourceFiles?: DemoSourceFiles
   sourceUrl?: string
   knownLimits: string[]
 }

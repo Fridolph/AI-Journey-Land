@@ -1,5 +1,5 @@
 import { computed, reactive, shallowRef } from 'vue'
-import type { DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
+import type { ApiResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 
 type RunMode = 'idle' | 'loading' | 'streaming' | 'done' | 'error'
 
@@ -65,7 +65,8 @@ export function useDemoRunner() {
   const isRunning = computed(() => mode.value === 'loading' || mode.value === 'streaming')
 
   async function loadDemo(id: string) {
-    selectedDemo.value = await $fetch<DemoMeta>(`${apiBase.value}/demos/${id}`)
+    const response = await $fetch<ApiResponse<DemoMeta>>(`${apiBase.value}/demos/${id}`)
+    selectedDemo.value = response.data
     resetForm()
     resetOutput()
   }
@@ -96,7 +97,7 @@ export function useDemoRunner() {
     mode.value = 'loading'
 
     try {
-      const response = await $fetch<DemoRunResponse>(
+      const response = await $fetch<ApiResponse<DemoRunResponse>>(
         `${apiBase.value}/demos/${selectedDemo.value.id}/run`,
         {
           method: 'POST',
@@ -105,7 +106,7 @@ export function useDemoRunner() {
           },
         },
       )
-      output.value = response.output
+      output.value = response.data?.output ?? ''
       mode.value = 'done'
     } catch (error) {
       errorMessage.value = getErrorMessage(error, 'Demo 运行失败')

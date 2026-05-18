@@ -16,8 +16,11 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:3001/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:4041/api',
     },
+  },
+  devServer: {
+    port: 4040,
   },
   app: {
     head: {
@@ -35,5 +38,14 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     typeCheck: true,
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        onLog(_level: string, log: { message?: string }) {
+          if (log.message?.includes('Sourcemap')) return
+        },
+      },
+    },
   },
 })

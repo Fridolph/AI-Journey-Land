@@ -70,7 +70,7 @@ AI-Journey-Land 的目标是把这些学习成果进一步工程化：
 │   ├── ai-core/             # 模型初始化、provider adapter、stream helper
 │   ├── demo-registry/       # demo 元信息、输入 schema、展示配置
 │   └── shared/              # DTO、类型、通用 schema
-├── docs/                    # 项目上下文、架构设计、阶段记录
+├── docs/                    # 项目上下文、架构设计、issue 日志、demo 复盘
 ├── AGENTS.md                # 协作规范
 └── README.md
 ```
@@ -101,8 +101,8 @@ cp apps/api/.env.example apps/api/.env
 `apps/api/.env` 默认采用 DashScope OpenAI-compatible 模式：
 
 ```dotenv
-API_PORT=3001
-WEB_ORIGIN=http://localhost:3000
+API_PORT=4041
+WEB_ORIGIN=http://localhost:4040
 
 OPENAI_API_KEY=sk-xx
 OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
@@ -117,19 +117,34 @@ pnpm dev
 
 默认地址：
 
-- Web：http://localhost:3000
-- API：http://localhost:3001/api
+- Web：http://localhost:4040
+- API：http://localhost:4041/api
 
 ## 常用脚本
 
 ```bash
-pnpm build
-pnpm lint
-pnpm format
-pnpm format:check
-pnpm typecheck
-pnpm test
+pnpm build          # 构建所有 package（使用缓存）
+pnpm build:fresh    # 强制重新构建（清除 turbo 缓存）
+pnpm clean          # 清除所有构建产物和缓存
+pnpm dev:fresh      # 清除 + 重构 + 启动开发服务（改多包后首选）
 ```
+
+单个 package 测试：
+
+```bash
+pnpm test --filter @ai-journey-land/ai-core
+pnpm test --filter @ai-journey-land/shared
+pnpm test --filter @ai-journey-land/demo-registry
+pnpm test --filter @ai-journey-land/api
+```
+
+覆盖率报告：
+
+```bash
+pnpm --filter @ai-journey-land/ai-core exec vitest run --coverage
+```
+
+详细信息见 [测试规范](./docs/03-测试规范.md)。
 
 ## 当前已接入 demo
 
@@ -188,9 +203,12 @@ Prompt Template 周报生成 demo。
 - [项目上下文](./docs/00-项目上下文.md)
 - [AI 演示平台架构设计](./docs/01-AI演示平台架构设计.md)
 - [工程化约定](./docs/02-工程化约定.md)
+- [测试规范](./docs/03-测试规范.md)
+- [Issue 开发日志规范](./docs/issues/README.md)
 - [Demo 文档索引](./docs/demos/README.md)
 - [Prompt Template 周报生成 Demo 总览](./docs/demos/prompt-template-weekly-report/总览.md)
-- [Prompt Template 周报生成 Demo 复盘](./docs/03-Prompt%20Template%20周报生成%20Demo%20复盘.md)
+- [Prompt Template 周报生成 Demo 前端复盘](./docs/demos/prompt-template-weekly-report/前端复盘.md)
+- [Prompt Template 周报生成 Demo 后端与 AI 复盘](./docs/demos/prompt-template-weekly-report/后端与AI复盘.md)
 
 ## 当前状态
 

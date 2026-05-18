@@ -1,142 +1,138 @@
 import type { DemoMeta } from '@ai-journey-land/shared'
 
-const sourceCode = `
-import 'dotenv/config';
-import { ChatOpenAI } from '@langchain/openai';
-import { PromptTemplate } from '@langchain/core/prompts';
-
-// 初始化模型
-const model = new ChatOpenAI({
-    modelName: process.env.MODEL_NAME,
-    apiKey: process.env.OPENAI_API_KEY,
-    temperature: 0,
-    configuration: {
-        baseURL: process.env.OPENAI_BASE_URL,
-    },
-});
-
-const naiveTemplate = PromptTemplate.fromTemplate(\`
-你是一名严谨但不失人情味的工程团队负责人，需要根据本周数据写一份周报。
-
-公司名称：{company_name}
-部门名称：{team_name}
-直接汇报对象：{manager_name}
-本周时间范围：{week_range}
-
-本周团队核心目标：
-{team_goal}
-
-本周开发数据（Git 提交 / Jira 任务）：
-{dev_activities}
-
-请根据以上信息生成一份【Markdown 周报】，要求：
-- 有简短的整体 summary（两三句话）
-- 有按模块/项目拆分的小结
-- 用一个 Markdown 表格列出关键指标（字段示例：模块 / 亮点 / 风险 / 下周计划）
-- 语气专业但有一点人情味，适合作为给老板和团队抄送的周报。
-\`);
-
-const prompt = await naiveTemplate.format({
-    company_name: '星航科技',
-    team_name: '数据智能平台组',
-    manager_name: '刘总',
-    week_range: '2025-03-10 ~ 2025-03-16',
-    team_goal: '完成用户画像服务的灰度上线，并验证核心指标是否达标。',
-    dev_activities:
-        '- 阿兵：完成用户画像服务的 Canary 发布与回滚脚本优化，提交 27 次，相关任务：DATA-321 / DATA-335\\n' +
-        '- 小李：接入埋点数据，打通埋点 → Kafka → DWD → 画像服务的全链路，提交 22 次\\n' +
-        '- 小赵：完善画像服务的告警与Dashboard，新增 8 个告警规则，提交 15 次\\n' +
-        '- 小周：配合产品输出 A/B 实验报表，支持 3 条对外汇报用数据',
-    });
-
-// console.log('格式化后的提示词:');
-// console.log(prompt);
-
-const prompt2 = await naiveTemplate.format({
-    company_name: '极光云科技',
-    team_name: '订单结算后端组',
-    manager_name: '陈总',
-    week_range: '2025-04-07 ~ 2025-04-13',
-    team_goal: '本周以稳定性为主，集中清理历史技术债和高频告警。',
-    dev_activities:
-      '- 老王：修复高优先级线上 Bug 7 个（包含两起支付超时问题），提交 19 次，关联工单：PAY-1024 / PAY-1056\\n' +
-      '- 小何：重构结算批任务调度逻辑，将执行时间从 35min 优化到 18min，提交 24 次\\n' +
-      '- 小陈：梳理告警策略，合并冗余告警 12 条，新增 SLO 监控 3 项，提交 16 次\\n' +
-      '- 实习生小刘：补齐历史接口的缺失单测，用例覆盖 12 个核心方法，整体覆盖率从 52% 提升到 61%',
-  });
-console.log('格式化后的提示词:');
-console.log(prompt2);
-
-const stream = await model.stream(prompt2);
-console.log('\\nAI 回答:');
-for await (const chunk of stream) {
-    process.stdout.write(chunk.content);
-}
-`.trim()
-
 export const promptTemplateWeeklyReportDemo: DemoMeta = {
   id: 'prompt-template-weekly-report',
-  title: 'Prompt Template 周报生成',
-  description: '把团队本周目标和开发活动填入 Prompt Template，生成一份可读的 Markdown 周报。',
-  learningGoal: '理解变量填充后的 prompt 如何稳定进入模型调用，并观察普通输出与流式输出的差异。',
+  title: '角色驱动 · 智能报告',
+  description: 'Role-Driven Document Generator —— 选择角色和报告类型，填入工作数据，AI 即按角色视角生成专业文档。同一份数据，技术 Leader 看技术债，CEO 看业务价值——角色不同，输出完全不同。支持日报到年度总结的全周期覆盖，本地 IndexedDB 持久化，Few-Shot 自定义模板。',
+  learningGoal: '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式：模板是壳，角色是魂，数据是血肉。核心技术栈：LangChain、Zod、SSE Streaming、IndexedDB。',
   category: 'Prompt Engineering',
-  tags: ['Prompt Template', 'LangChain', 'Streaming'],
+  tags: ['Prompt Template', 'Role Injection', 'LangChain', 'Streaming', 'Few-Shot'],
   routePath: '/demos/prompt-template-weekly-report',
   apiNamespace: '/api/demos/prompt-template-weekly-report',
   displayMode: 'custom-page',
   ownerPackage: '@ai-journey-land/api',
   supportsStreaming: true,
+  rolePresets: ['部门Leader', '技术研发', '老板'],
+  reportTypePresets: ['日报', '周报', '月报', '季度总结', '年度总结', '半年总结'],
   inputFields: [
+    {
+      name: 'role',
+      label: '角色',
+      component: 'input',
+      placeholder: '',
+      defaultValue: '部门Leader',
+    },
+    {
+      name: 'authorName',
+      label: '姓名',
+      component: 'input',
+      placeholder: '你的名字（可选）',
+      defaultValue: '',
+    },
+    {
+      name: 'reportType',
+      label: '报告类型',
+      component: 'input',
+      placeholder: '',
+      defaultValue: '周报',
+    },
+    {
+      name: 'dateRange',
+      label: '汇报时间',
+      component: 'input',
+      placeholder: '',
+      defaultValue: '',
+    },
     {
       name: 'companyName',
       label: '公司名称',
       component: 'input',
-      placeholder: '例如：极光云科技',
-      defaultValue: '极光云科技',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'teamName',
       label: '部门名称',
       component: 'input',
-      placeholder: '例如：订单结算后端组',
-      defaultValue: '订单结算后端组',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'managerName',
       label: '汇报对象',
       component: 'input',
-      placeholder: '例如：陈总',
-      defaultValue: '陈总',
-    },
-    {
-      name: 'weekRange',
-      label: '本周时间范围',
-      component: 'input',
-      placeholder: '例如：2026-05-04 ~ 2026-05-08',
-      defaultValue: '2026-05-04 ~ 2026-05-08',
+      placeholder: '可选',
+      defaultValue: '',
     },
     {
       name: 'teamGoal',
-      label: '本周团队核心目标',
-      component: 'textarea',
-      placeholder: '描述本周团队最重要的目标',
-      defaultValue: '本周以稳定性为主，集中清理历史技术债和高频告警。',
+      label: '当前目标',
+      component: 'input',
+      placeholder: '有需要AI结合这块内容，没写就参考下面的主要内容',
+      defaultValue: '',
     },
     {
       name: 'devActivities',
-      label: '本周开发数据',
+      label: '主要内容',
       component: 'textarea',
-      placeholder: '按人员或模块列出提交、任务、风险和产出',
+      placeholder: '按人员或模块列出关键产出、任务和数据（至少 15 个字）',
       defaultValue:
         '- 老王：修复高优先级线上 Bug 7 个，关联工单：PAY-1024 / PAY-1056\n' +
         '- 小何：重构结算批任务调度逻辑，将执行时间从 35min 优化到 18min\n' +
         '- 小陈：梳理告警策略，合并冗余告警 12 条，新增 SLO 监控 3 项\n' +
         '- 实习生小刘：补齐历史接口缺失单测，覆盖 12 个核心方法',
     },
+    {
+      name: 'reportTemplate',
+      label: '报告模版',
+      component: 'textarea',
+      placeholder: '可提供一份参考模版或 Few-Shot 示例（可选）',
+      defaultValue: '',
+    },
   ],
   sourceUrl:
     'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
-  sourceCode,
-  sourceLanguage: 'mjs',
-  knownLimits: ['第一版只展示单个 Prompt Template，不包含 Few-shot 与 Example Selector。'],
+  sourceFiles: {
+    apiDir: 'apps/api/src/demos/prompt-template-weekly-report/',
+    apiFiles: [
+      'schema.ts',
+      'prompt-template-weekly-report.service.ts',
+      'prompt-template-weekly-report.module.ts',
+      'prompts/guides.ts',
+      'prompts/perspectives.ts',
+      'prompts/report-template.ts',
+    ],
+    webDir: 'apps/web/app/',
+    webFiles: [
+      'pages/demos/[id].vue',
+      'components/demo/DemoInputForm.vue',
+      'components/demo/DemoRoleSelector.vue',
+      'components/demo/DemoReportTypeSelector.vue',
+      'components/demo/DemoOutputPanel.vue',
+      'composables/useDemoRunner.ts',
+      'composables/useReportStore.ts',
+    ],
+  },
+  knownLimits: ['Few-Shot 示例通过文本输入自由设定，尚未提供预设模板快捷选择。'],
 }
+
+export const DEFAULT_PROMPT = `
+你是一名{role}，需要根据以下数据生成一份专业的 Markdown 文档。
+
+【角色视角】{rolePerspective}
+
+报告类型：{reportType}
+{authorName}
+{companyName}{teamName}{managerName}时间范围：{dateRange}
+
+{teamGoal}
+
+活动数据：
+{devActivities}
+{fewShotExample}
+请生成一份格式规范的【{reportType}】，要求：
+- 开头有简短的整体 summary（两三句话）
+- {reportTypeGuide}
+- 语气和视角贴合 {role} 的身份定位
+- 适合作为给老板和团队传阅的专业文档
+`.trim()

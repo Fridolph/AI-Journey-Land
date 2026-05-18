@@ -77,6 +77,10 @@ packages/
 docs/
   00-项目上下文.md
   01-AI演示平台架构设计.md
+  02-工程化约定.md
+  03-测试规范.md
+  issues/             # GitHub issue 开发日志
+  demos/              # demo 三件套复盘文档
 ```
 
 后续如果目录调整，需要同步更新 README 和 docs。
@@ -113,3 +117,81 @@ docs/
 - 保持每次提交边界清晰
 - 如果涉及 Fighting 与 Land 的职责边界，优先在文档中说明
 - 对 demo 的工程化改造，要尊重原始学习路径，不丢上下文
+- 每次改动后运行 `pnpm typecheck && pnpm test` 确保通过
+- 新增/修改功能必须同步补充单元测试
+- 新增 demo 必须补充三件套文档（总览、前端复盘、后端与AI复盘）
+- 提交格式遵循 `docs/02-工程化约定.md` 中的 Commit 格式规范
+
+## 8. GitHub Issue 开发流程
+
+每个 issue 都按完整工程流程推进，避免在 `dev` 或 `main` 上直接堆改动。
+
+### 开始前
+
+1. 先有 issue，再开发；issue 至少写清背景、目标、非目标、验收标准和测试计划。
+2. 查看 issue 描述，确认本次开发范围、验收标准和需要增删改的文件。
+3. 进入实现前先拆 Plan / TDD，尤其关注 API、数据库、跨端契约、AI prompt、SSE、鉴权等容易回归的区域。
+4. 检查工作区状态，确认不会覆盖用户或其他协作者的未提交改动。
+5. 从最新 `dev` 分支切出 issue 分支：`feat/#<issue>-<short-desc>`、`fix/#<issue>-<short-desc>` 或 `docs/#<issue>-<short-desc>`。
+6. API server 按 NestJS 最佳实践组织 module、controller、service、provider；前端按当前框架规范组织页面、组件、composable 和类型。
+
+### 开发中
+
+- 单个文件超过 3 个类型定义时，拆到同目录 `.types.ts` 文件。
+- 类型字段、对外方法、API 方法必须添加标准 TSDoc；核心业务逻辑使用必要的 `//` 注释说明意图。
+- 遵循 SOLID，单文件尽量不超过 500 行，超过时按职责拆分。
+- 不做过度抽象和过早优化；同类逻辑出现 3 处以上重复，再提取公共能力。
+- 可维护性和安全性优先，使用常见 API 和清晰的面向对象/函数式写法，避免生僻语法。
+- 测试文件按 DDD 边界写入对应模块的 `__tests__` 目录；测试要验证真实行为，不写无意义模板测试，不用硬编码凑通过。
+- 发现旁支问题时新建 issue，不混入当前 issue；除非它阻塞当前验收。
+- 涉及数据库、环境变量、依赖、Docker、CI、API 契约或 AI prompt 时，记录升级影响和回滚方式。
+
+### 完成后
+
+1. Review 自查：是否符合 issue、是否有无关改动、是否需要同步文档、API client、Swagger/OpenAPI、README 或 `.env.example`。
+2. 先自测，至少运行 `pnpm typecheck && pnpm test`；涉及 lint、格式或构建时同步运行对应脚本。
+3. 涉及 UI 时，至少记录桌面端和移动端关键路径验证；必要时附截图或浏览器验证记录。
+4. 自测通过后，在 `docs/issues/` 下按 issue 号补充开发日志。
+5. 按规范提交 commit，并推送 issue 分支。
+6. 创建 PR 或按团队约定合并回 `dev`，确保 issue、PR、commit 和开发日志互相可追溯。
+7. 合并到 `dev` 后填写 issue 相关开发信息，确认验收后关闭 issue。
+
+发布分支边界：issue 不从 `main` 开发，不直接合到 `main`；`main` 只接受稳定发布合并。
+
+## 9. Dao Commit 提交规范
+
+**Dao Commit 不是每次提交都用**。日常 feature/fix/chore 仍用 conventional commit 格式（`feat(#1): xxx`）。只有在以下时刻启用 Dao Commit：
+
+- Milestone 完成，阶段性收口
+- Squash merge `dev` → `main`（发布）
+- 系统发生本质变化（架构切换、方向调整）
+
+### 起草顺序
+
+```
+❶ 辨真实变化 → ❷ 写 subject → ❸ 定 scope → ❹ 选 type → ❺ 推卦象 → ❻ 补 body/footer
+```
+
+禁止倒过来——先卦象后 subject 会让 commit 变成解释文，失去锚点价值。
+
+### 格式
+
+```
+[卦象][卦名] type(scope): subject
+
+背景：
+判断：
+停点：
+
+Refs: #issue
+#沉淀 ... → ...
+```
+
+### 核心要求
+
+- **subject** 写"这一轮到底把什么往哪推了一步"，不写"做了什么"
+- **scope** 写变化落在谁身上，不写碰了哪些目录
+- **type** 从 `feat | fix | refactor | docs | test | chore` 中选，只保句法兼容
+- **卦象** 提供 1-2 个候选，由人定锚（AI 不直接给唯一答案）
+
+详细规则见 `dao-commit` skill。

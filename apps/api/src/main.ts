@@ -1,14 +1,19 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
+import { Reflector } from '@nestjs/core'
 import { AppModule } from './app.module'
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter'
+import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const configService = app.get(ConfigService)
-  const webOrigin = configService.get<string>('WEB_ORIGIN') ?? 'http://localhost:3000'
-  const port = Number(configService.get<string>('API_PORT') ?? 3001)
+  const webOrigin = configService.get<string>('WEB_ORIGIN') ?? 'http://localhost:4041'
+  const port = Number(configService.get<string>('API_PORT') ?? 4041)
 
   app.setGlobalPrefix('api')
+  app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)))
+  app.useGlobalFilters(new AllExceptionsFilter())
   app.enableCors({
     origin: webOrigin,
     methods: ['GET', 'POST', 'OPTIONS'],
