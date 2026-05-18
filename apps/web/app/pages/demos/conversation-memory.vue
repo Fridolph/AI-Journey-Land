@@ -266,6 +266,14 @@ const trackedSentences = computed(() => {
         </DemoCollapsibleCard>
 
         <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
+          <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录</div>
+          <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
+            <span class="font-semibold text-primary">{{ g.turns }}</span>
+            <p class="mt-0.5">{{ g.summary.slice(0, 200) }}{{ g.summary.length > 200 ? '...' : '' }}</p>
+          </div>
+        </DemoCollapsibleCard>
+
+        <DemoInsightPanel
           :demo="{
             id: 'conversation-memory', title: '长对话记忆 · 压缩验证', description: '', learningGoal: '理解长对话记忆管理核心机制：对话摘要压缩、Token-aware 上下文窗口。核心技术：Summarization Chain、Session Manager。', category: 'Memory & Context', tags: [], routePath: '', apiNamespace: '', displayMode: 'custom-page', ownerPackage: '', supportsStreaming: true, inputFields: [], knownLimits: ['压缩后清除完整历史', '摘要质量依赖 AI'],
           }"
