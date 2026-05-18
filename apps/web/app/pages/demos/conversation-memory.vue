@@ -234,15 +234,6 @@ const trackedSentences = computed(() => {
         </UCard>
 
         <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
-          <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录，达到设定轮数后自动生成</div>
-          <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
-            <span class="font-semibold text-primary">{{ g.turns }}</span>
-            <p class="mt-0.5">{{ g.summary.slice(0, 200) }}{{ g.summary.length > 200 ? '...' : '' }}</p>
-          </div>
-        </DemoCollapsibleCard>
-      </div>
-
-        <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
           <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录</div>
           <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
             <span class="font-semibold text-primary">{{ g.turns }}</span>
