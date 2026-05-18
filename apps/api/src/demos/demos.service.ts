@@ -5,6 +5,7 @@ import type { AiMessage } from '@ai-journey-land/ai-core'
 import { AiService } from '../ai/ai.service'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
 import { ChatService } from './chat/chat.service'
+import { MemoryChatService } from './memory/memory-chat.service'
 import type { DemoRunner } from './demo-runner'
 
 @Injectable()
@@ -16,12 +17,15 @@ export class DemosService {
     private readonly promptTemplateWeeklyReportService: PromptTemplateWeeklyReportService,
     @Inject(ChatService)
     private readonly chatService: ChatService,
+    @Inject(MemoryChatService)
+    private readonly memoryChatService: MemoryChatService,
     @Inject(AiService)
     private readonly aiService: AiService,
   ) {
     this.runners = new Map<string, DemoRunner>([
       [promptTemplateWeeklyReportService.demoId, promptTemplateWeeklyReportService],
       [chatService.demoId, chatService],
+      [memoryChatService.demoId, memoryChatService],
     ])
   }
 
