@@ -242,8 +242,15 @@ const trackedSentences = computed(() => {
         </DemoCollapsibleCard>
       </div>
 
-      <aside class="demo-page__side">
-        <DemoCollapsibleCard title="关键变量追踪" icon="i-lucide-eye" :default-open="true">
+        <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
+          <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录</div>
+          <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
+            <span class="font-semibold text-primary">{{ g.turns }}</span>
+            <p class="mt-0.5">{{ g.summary.slice(0, 200) }}{{ g.summary.length > 200 ? '...' : '' }}</p>
+          </div>
+        </DemoCollapsibleCard>
+
+        <DemoCollapsibleCard title="关键变量追踪" icon="i-lucide-eye">
           <div v-if="trackedKeywords.length === 0" class="text-xs text-muted">开始对话后将自动提取关键术语</div>
           <div v-else class="flex flex-wrap gap-1.5">
             <span
@@ -264,15 +271,9 @@ const trackedSentences = computed(() => {
             {{ s }}
           </div>
         </DemoCollapsibleCard>
+      </div>
 
-        <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
-          <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录</div>
-          <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
-            <span class="font-semibold text-primary">{{ g.turns }}</span>
-            <p class="mt-0.5">{{ g.summary.slice(0, 200) }}{{ g.summary.length > 200 ? '...' : '' }}</p>
-          </div>
-        </DemoCollapsibleCard>
-
+      <aside class="demo-page__side">
         <DemoInsightPanel
           :demo="{
             id: 'conversation-memory', title: '长对话记忆 · 压缩验证', description: '', learningGoal: '理解长对话记忆管理核心机制：对话摘要压缩、Token-aware 上下文窗口。核心技术：Summarization Chain、Session Manager。', category: 'Memory & Context', tags: [], routePath: '', apiNamespace: '', displayMode: 'custom-page', ownerPackage: '', supportsStreaming: true, inputFields: [], knownLimits: ['压缩后清除完整历史', '摘要质量依赖 AI'],
