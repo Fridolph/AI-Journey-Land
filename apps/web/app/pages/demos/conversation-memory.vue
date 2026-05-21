@@ -176,7 +176,7 @@ const trackedSentences = computed(() => {
                   size="sm"
                   class="w-20"
                   :disabled="isRunning"
-                  @update:model-value="(v: string) => { const n = Number(v); if (n >= 1 && n <= 100) maxTurns = n }"
+                  @update:model-value="(v: string) => { const n = Number(v); if (isNaN(n)) return; maxTurns = Math.min(100, Math.max(1, n)) }"
                 />
               </template>
               <template v-else>
@@ -192,6 +192,7 @@ const trackedSentences = computed(() => {
                 :disabled="isRunning"
                 autoresize
                 size="sm"
+                class="w-full max-h-24"
                 @update:model-value="systemPrompt = String($event ?? '')"
               />
             </div>
