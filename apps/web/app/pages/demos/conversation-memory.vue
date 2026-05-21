@@ -154,24 +154,33 @@ const trackedSentences = computed(() => {
           <div class="grid gap-3">
             <div class="flex items-center gap-4 flex-wrap">
               <label class="flex items-center gap-2 cursor-pointer">
-                <span class="text-xs text-muted">按轮次</span>
+                <span class="text-sm text-muted">按轮次</span>
                 <UButton
                   :icon="useTokenCompress ? 'i-lucide-toggle-left' : 'i-lucide-toggle-right'"
                   :color="useTokenCompress ? 'neutral' : 'primary'"
                   variant="ghost"
-                  size="sm"
                   :disabled="isRunning"
                   @click="useTokenCompress = !useTokenCompress"
                 />
-                <span class="text-xs text-muted">按 Token</span>
+                <span class="text-sm text-muted">按 Token</span>
               </label>
 
               <template v-if="!useTokenCompress">
-                <span class="text-xs text-muted">压缩轮数</span>
-                <USelect :model-value="String(maxTurns)" :items="['5', '10', '20', '50', '100']" size="xs" class="w-20" :disabled="isRunning" @update:model-value="(v: string) => maxTurns = Number(v)" />
+                <span class="text-sm text-muted">压缩轮数</span>
+                <UInput
+                  :model-value="String(maxTurns)"
+                  type="number"
+                  :min="1"
+                  :max="100"
+                  :step="10"
+                  size="sm"
+                  class="w-20"
+                  :disabled="isRunning"
+                  @update:model-value="(v: string) => { const n = Number(v); if (n >= 1 && n <= 100) maxTurns = n }"
+                />
               </template>
               <template v-else>
-                <span class="text-xs text-muted">Token 阈值: 70% 时自动压缩</span>
+                <span class="text-sm text-muted">Token 阈值: 70% 时自动压缩</span>
               </template>
             </div>
 
@@ -234,7 +243,7 @@ const trackedSentences = computed(() => {
         </UCard>
 
         <DemoCollapsibleCard title="历史总结" icon="i-lucide-archive">
-          <div v-if="compressedGroups.length === 0" class="text-xs text-muted">暂无压缩记录</div>
+          <div v-if="compressedGroups.length === 0" class="text-sm text-muted">暂无压缩记录</div>
           <div v-for="g in compressedGroups" :key="g.id" class="mb-2 p-2 rounded bg-muted text-xs leading-relaxed">
             <span class="font-semibold text-primary">{{ g.turns }}</span>
             <p class="mt-0.5">{{ g.summary.slice(0, 200) }}{{ g.summary.length > 200 ? '...' : '' }}</p>
@@ -242,7 +251,7 @@ const trackedSentences = computed(() => {
         </DemoCollapsibleCard>
 
         <DemoCollapsibleCard title="关键变量追踪" icon="i-lucide-eye">
-          <div v-if="trackedKeywords.length === 0" class="text-xs text-muted">开始对话后将自动提取关键术语</div>
+          <div v-if="trackedKeywords.length === 0" class="text-sm text-muted">开始对话后将自动提取关键术语</div>
           <div v-else class="flex flex-wrap gap-1.5">
             <span
               v-for="kw in trackedKeywords"
@@ -257,7 +266,7 @@ const trackedSentences = computed(() => {
         </DemoCollapsibleCard>
 
         <DemoCollapsibleCard title="关键语句" icon="i-lucide-quote">
-          <div v-if="trackedSentences.length === 0" class="text-xs text-muted">暂无关键语句</div>
+          <div v-if="trackedSentences.length === 0" class="text-sm text-muted">暂无关键语句</div>
           <div v-for="(s, i) in trackedSentences" :key="i" class="text-xs text-muted leading-relaxed mb-1.5 pb-1.5 border-b border-black/5 last:border-0 last:mb-0 last:pb-0">
             {{ s }}
           </div>
