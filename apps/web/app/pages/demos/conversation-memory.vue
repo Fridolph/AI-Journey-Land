@@ -150,6 +150,7 @@ const trackedSentences = computed(() => {
 
     <section class="demo-page__body">
       <div class="demo-page__primary">
+        <div class="max-h-[500px] overflow-auto">
         <DemoCollapsibleCard title="压缩配置" icon="i-lucide-settings-2" :default-open="true">
           <div class="grid gap-3">
             <div class="flex items-center gap-4 flex-wrap">
@@ -188,16 +189,15 @@ const trackedSentences = computed(() => {
               <UTextarea
                 :model-value="systemPrompt"
                 placeholder="自定义 System Prompt（可选）"
-                :rows="2"
+                :rows="3"
                 :disabled="isRunning"
-                autoresize
-                size="sm"
-                class="w-full max-h-24"
+                class="w-full max-h-32 overflow-auto"
                 @update:model-value="systemPrompt = String($event ?? '')"
               />
             </div>
           </div>
         </DemoCollapsibleCard>
+        </div>
 
         <UCard class="chat-card" :ui="{ body: 'p-0 sm:p-0 flex flex-col h-full' }">
           <div class="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-black/5">
