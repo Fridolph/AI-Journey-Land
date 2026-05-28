@@ -15,7 +15,13 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)))
   app.useGlobalFilters(new AllExceptionsFilter())
   app.enableCors({
-    origin: webOrigin,
+    origin: (origin, cb) => {
+      if (!origin || origin.startsWith('http://localhost:')) {
+        cb(null, true)
+      } else {
+        cb(null, origin === webOrigin)
+      }
+    },
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   })
