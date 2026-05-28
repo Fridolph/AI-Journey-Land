@@ -19,11 +19,11 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "oxfmt": "0.48.0",
-    "oxlint": "1.63.0",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
     "standard-version": "^9.5.0",
-    "turbo": "2.9.10",
-    "typescript": "6.0.3"
+    "turbo": "^2.9.10",
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": "22.18.0",
