@@ -100,9 +100,9 @@ onMounted(() => {
 
 .catalog-page__title {
   max-width: 58rem;
-  font-size: clamp(2rem, 5vw, 4.6rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.8rem);
   font-weight: 900;
-  line-height: 0.98;
+  line-height: 1.15;
   margin-top: 0.45rem;
 }
 

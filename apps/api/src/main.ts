@@ -15,7 +15,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)))
   app.useGlobalFilters(new AllExceptionsFilter())
   app.enableCors({
-    origin: (origin, cb) => {
+    origin: (origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => {
       if (!origin || origin.startsWith('http://localhost:')) {
         cb(null, true)
       } else {
