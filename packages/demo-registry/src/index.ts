@@ -2,8 +2,9 @@ import type { DemoCatalogGroup, DemoListItem, DemoMeta } from '@ai-journey-land/
 import { promptTemplateWeeklyReportDemo, DEFAULT_PROMPT } from './demos/prompt-template-weekly-report'
 import { chatDemo } from './demos/chat'
 import { memoryChatDemo } from './demos/memory-chat'
+import { cardCrudDemo } from './demos/card-crud'
 
-export const demos: DemoMeta[] = [promptTemplateWeeklyReportDemo, chatDemo, memoryChatDemo]
+export const demos: DemoMeta[] = [promptTemplateWeeklyReportDemo, chatDemo, memoryChatDemo, cardCrudDemo]
 
 export function listDemoItems(): DemoListItem[] {
   return demos.map(
@@ -53,3 +54,4 @@ export function getDemoById(id: string): DemoMeta | undefined {
 export { promptTemplateWeeklyReportDemo, DEFAULT_PROMPT }
 export { chatDemo }
 export { memoryChatDemo }
+export { cardCrudDemo }

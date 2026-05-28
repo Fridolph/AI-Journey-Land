@@ -17,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module'
     AiModule,
     AuthModule,
     DemosModule,
+    CardsModule,
   ],
   controllers: [HealthController],
 })
