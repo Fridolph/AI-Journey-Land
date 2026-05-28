@@ -72,7 +72,8 @@ export interface DemoListItem {
   knownLimits: string[]
 }
 
-export interface DemoListResponse {
+export interface DemoCatalogGroup {
+  category: string
   items: DemoListItem[]
 }
 

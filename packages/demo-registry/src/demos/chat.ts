@@ -5,7 +5,7 @@ export const chatDemo: DemoMeta = {
   title: '多轮对话 · AI 助手',
   description: '与 AI 进行连续多轮对话，AI 保持上下文记忆并流式返回。支持自定义 System Prompt 设定 AI 人设，会话管理、IndexedDB 对话持久化。',
   learningGoal: '理解多轮对话的核心机制：System Prompt 角色设定、Chat History 上下文管理、Session 生命周期、SSE Streaming 流式输出。核心技术栈：LangChain MessageHistory、SessionManager、IndexedDB。',
-  category: 'Conversational AI',
+  category: 'AI & Agent',
   tags: ['Multi-turn Chat', 'System Prompt', 'Memory', 'SSE Streaming', 'Session'],
   routePath: '/demos/ai-chat-group',
   apiNamespace: '/api/demos/ai-chat-group',

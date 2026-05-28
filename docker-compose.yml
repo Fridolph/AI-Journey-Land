@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: ai-journey-pg
+    restart: unless-stopped
+    ports:
+      - '15432:5432'
+    environment:
+      POSTGRES_USER: journey
+      POSTGRES_PASSWORD: journey123
+      POSTGRES_DB: ai_journey_lab
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

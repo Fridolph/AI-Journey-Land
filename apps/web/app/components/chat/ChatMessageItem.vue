@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
     <div class="group relative" :class="message.role === 'user' ? 'order-first' : ''">
       <div
-        class="rounded-lg px-3.5 py-2.5 text-sm leading-relaxed"
+        class="rounded-lg px-3.5 py-2.5 text-[15px] leading-relaxed"
         :class="message.role === 'user'
           ? 'bg-primary text-white ml-auto'
           : 'bg-muted text-highlighted'"

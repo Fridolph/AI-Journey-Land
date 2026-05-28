@@ -1,10 +1,10 @@
 import { computed, shallowRef } from 'vue'
-import type { ApiResponse, DemoListItem, DemoListResponse } from '@ai-journey-land/shared'
+import type { ApiResponse, DemoCatalogGroup } from '@ai-journey-land/shared'
 
 export function useDemoCatalog() {
   const config = useRuntimeConfig()
   const apiBase = computed(() => config.public.apiBase)
-  const demos = shallowRef<DemoListItem[]>([])
+  const groups = shallowRef<DemoCatalogGroup[]>([])
   const isLoading = shallowRef(true)
   const errorMessage = shallowRef('')
 
@@ -13,8 +13,8 @@ export function useDemoCatalog() {
     errorMessage.value = ''
 
     try {
-      const response = await $fetch<ApiResponse<DemoListResponse>>(`${apiBase.value}/demos`)
-      demos.value = response.data?.items ?? []
+      const response = await $fetch<ApiResponse<DemoCatalogGroup[]>>(`${apiBase.value}/demos`)
+      groups.value = response.data ?? []
     } catch (error) {
       errorMessage.value = error instanceof Error ? error.message : 'Demo 列表加载失败'
     } finally {
@@ -22,10 +22,5 @@ export function useDemoCatalog() {
     }
   }
 
-  return {
-    demos,
-    isLoading,
-    errorMessage,
-    loadCatalog,
-  }
+  return { groups, isLoading, errorMessage, loadCatalog }
 }

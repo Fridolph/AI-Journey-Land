@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Card {
+  id         String   @id @default(uuid())
+  title      String
+  summary    String?
+  content    String
+  category   String?
+  difficulty String   @default("basic")
+  status     String   @default("todo")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  tags    CardTag[]
+  records LearningRecord[]
+
+  @@map("cards")
+}
+
+model Demo {
+  id               String  @id
+  title            String
+  description      String
+  learningGoal     String  @map("learning_goal")
+  category         String
+  tags             Json    @default("[]")
+  routePath        String  @map("route_path")
+  apiNamespace     String  @map("api_namespace")
+  displayMode      String  @map("display_mode")
+  ownerPackage     String  @map("owner_package")
+  supportsStreaming Boolean @default(false) @map("supports_streaming")
+  rolePresets      Json?   @map("role_presets")
+  reportTypePresets Json?  @map("report_type_presets")
+  inputFields      Json?   @map("input_fields")
+  sourceUrl        String? @map("source_url")
+  sourceFiles      Json?   @map("source_files")
+  knownLimits      Json    @default("[]") @map("known_limits")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("demos")
+}
+
+model Tag {
+  id   String @id @default(uuid())
+  name String @unique
+
+  cards CardTag[]
+
+  @@map("tags")
+}
+
+model CardTag {
+  cardId String
+  tagId  String
+  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([cardId, tagId])
+  @@map("card_tags")
+}
+
+model LearningRecord {
+  id        String   @id @default(uuid())
+  cardId    String   @map("card_id")
+  action    String
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@map("learning_records")
+}

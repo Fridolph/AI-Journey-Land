@@ -101,8 +101,8 @@ cp apps/api/.env.example apps/api/.env
 `apps/api/.env` 默认采用 DashScope OpenAI-compatible 模式：
 
 ```dotenv
-API_PORT=4041
-WEB_ORIGIN=http://localhost:4040
+API_PORT=5044
+WEB_ORIGIN=http://localhost:5033
 
 OPENAI_API_KEY=sk-xx
 OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
@@ -117,8 +117,8 @@ pnpm dev
 
 默认地址：
 
-- Web：http://localhost:4040
-- API：http://localhost:4041/api
+- Web：http://localhost:5033
+- API：http://localhost:5044/api
 
 ## 常用脚本
 
