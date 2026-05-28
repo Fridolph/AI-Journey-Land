@@ -4,7 +4,10 @@ import { PrismaClient } from '@prisma/client'
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
-    super()
+    super({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      datasourceUrl: (process.env.DATABASE_URL || undefined) as any,
+    } as any)
   }
 
   async onModuleInit() {
