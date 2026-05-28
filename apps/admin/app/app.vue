@@ -1,38 +1,53 @@
 <script setup lang="ts">
 import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui'
 
+const route = useRoute()
 const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('admin-sidebar-open') : null
 const open = ref(saved !== null ? saved === 'true' : true)
 watch(open, (v) => { if (typeof localStorage !== 'undefined') localStorage.setItem('admin-sidebar-open', String(v)) })
 
-const items: NavigationMenuItem[] = [{
+const items = computed<NavigationMenuItem[]>(() => [{
   label: 'Dashboard',
   icon: 'i-lucide-layout-dashboard',
-  to: '/'
+  to: '/',
+  active: route.path === '/'
 }, {
   label: 'Demo 管理',
   icon: 'i-lucide-blocks',
   to: '/demos',
-  active: useRoute().path.startsWith('/demos')
+  active: route.path.startsWith('/demos')
 }, {
   label: 'Card 管理',
   icon: 'i-lucide-credit-card',
   to: '/cards',
-  active: useRoute().path.startsWith('/cards')
+  active: route.path.startsWith('/cards')
 }, {
   label: '系统设置',
   icon: 'i-lucide-settings',
-  defaultOpen: true,
+  defaultOpen: route.path.startsWith('/settings'),
+  active: route.path.startsWith('/settings'),
   children: [{
     label: '数据库',
     icon: 'i-lucide-database',
-    to: '/settings/database'
+    to: '/settings/database',
+    active: route.path === '/settings/database'
   }, {
     label: 'API 服务',
     icon: 'i-lucide-cloud',
-    to: '/settings/api'
+    to: '/settings/api',
+    active: route.path === '/settings/api'
   }]
-}]
+}])
+
+const breadcrumb = computed(() => {
+  const path = route.path
+  const parts: { label: string; to?: string }[] = [{ label: 'Dashboard', to: '/' }]
+  if (path.startsWith('/demos')) parts.push({ label: 'Demo 管理' })
+  if (path.startsWith('/cards')) parts.push({ label: 'Card 管理' })
+  if (path.startsWith('/settings/database')) parts.push({ label: '系统设置' }, { label: '数据库' })
+  if (path.startsWith('/settings/api')) parts.push({ label: '系统设置' }, { label: 'API 服务' })
+  return parts
+})
 
 const user = ref({
   name: 'Admin',
@@ -100,10 +115,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [[{
           aria-label="Toggle sidebar"
           @click="open = !open"
         />
-        <UBreadcrumb
-          :items="[{ label: 'Dashboard' }]"
-          class="ml-4"
-        />
+        <UBreadcrumb :items="breadcrumb" class="ml-4" />
       </div>
 
       <div class="flex-1 overflow-auto">
