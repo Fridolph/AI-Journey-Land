@@ -2,8 +2,8 @@
 const config = useRuntimeConfig()
 const apiBase = computed(() => config.public.apiBase)
 
-const STATUS_OPTIONS = ['todo', 'doing', 'done'] as const
-const DIFFICULTY_OPTIONS = ['basic', 'medium', 'advanced'] as const
+const STATUS_OPTIONS = ['todo', 'doing', 'done']
+const DIFFICULTY_OPTIONS = ['basic', 'medium', 'advanced']
 
 interface Card { id: string; title: string; summary?: string; content: string; category?: string; difficulty: string; status: string; createdAt: string; updatedAt: string }
 
@@ -29,27 +29,21 @@ async function load() {
 }
 
 async function search() { pagination.value.page = 1; await load() }
-
 async function onSubmit() {
   if (!form.title || !form.content) return showNotice('标题和内容必填')
   try {
     const body = { ...form, summary: form.summary || undefined, category: form.category || undefined }
     if (editId.value) {
       await $fetch(`${apiBase.value}/cards/${editId.value}`, { method: 'PATCH', body })
-    } else {
-      await $fetch(`${apiBase.value}/cards`, { method: 'POST', body })
-    }
+    } else { await $fetch(`${apiBase.value}/cards`, { method: 'POST', body }) }
     showNotice(editId.value ? '已更新' : '已创建'); resetForm(); await load()
   } catch (e: any) { showNotice(e.message) }
 }
 
-function edit(c: Card) { editId.value = c.id; Object.assign(form, c) }
+function edit(c: Card) { editId.value = c.id; Object.assign(form, c); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 async function del(id: string) { try { await $fetch(`${apiBase.value}/cards/${id}`, { method: 'DELETE' }); await load(); showNotice('已删除') } catch (e: any) { showNotice(e.message) } }
 function resetForm() { editId.value = null; Object.assign(form, { title: '', summary: '', content: '', category: '', difficulty: 'basic', status: 'todo' }) }
 function goPage(p: number) { pagination.value.page = p; load() }
-
-watch(editId, (v) => { if (v) window.scrollTo({ top: 0, behavior: 'smooth' }) })
-
 onMounted(load)
 </script>
 
@@ -57,7 +51,6 @@ onMounted(load)
   <div class="p-6 grid gap-4">
     <h2 class="text-xl font-bold">Cards 管理</h2>
 
-    <!-- Filters -->
     <UCard>
       <div class="flex items-center gap-3 flex-wrap">
         <UInput v-model="filters.keyword" placeholder="搜索标题/摘要/内容" class="w-48" @keydown.enter="search()" />
@@ -68,7 +61,6 @@ onMounted(load)
       </div>
     </UCard>
 
-    <!-- Create / Edit Form -->
     <UCard>
       <template #header><span class="font-bold">{{ editId ? '编辑 Card' : '新增 Card' }}</span></template>
       <div class="grid gap-3">
@@ -89,58 +81,46 @@ onMounted(load)
       </div>
     </UCard>
 
-    <!-- Table -->
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <div class="flex items-center justify-between px-4 py-2.5 border-b border-default">
         <span class="font-bold text-sm">Card 列表 ({{ pagination.total }})</span>
       </div>
-      <UTable
-        :rows="cards"
-        :columns="[
-          { key: 'index', label: '#' },
-          { key: 'title', label: '标题' },
-          { key: 'category', label: '分类' },
-          { key: 'difficulty', label: '难度' },
-          { key: 'status', label: '状态' },
-          { key: 'createdAt', label: '创建时间' },
-          { key: 'actions', label: '操作' },
-        ]"
-      >
-        <template #index-data="{ row, index }">
-          <span class="text-sm text-gray-400">{{ (pagination.page - 1) * pagination.pageSize + index + 1 }}</span>
-        </template>
-
-        <template #title-data="{ row }">
-          <div class="min-w-0">
-            <p class="text-sm font-semibold truncate max-w-48">{{ row.title }}</p>
-            <p class="text-xs text-gray-400 truncate max-w-48 mt-0.5">{{ row.summary || '(无摘要)' }}</p>
-          </div>
-        </template>
-
-        <template #category-data="{ row }">
-          <span class="text-sm text-gray-500">{{ row.category || '-' }}</span>
-        </template>
-
-        <template #difficulty-data="{ row }">
-          <UBadge variant="soft" size="xs" :color="row.difficulty === 'advanced' ? 'error' : row.difficulty === 'medium' ? 'warning' : 'success'">{{ row.difficulty }}</UBadge>
-        </template>
-
-        <template #status-data="{ row }">
-          <UBadge variant="soft" size="xs" :color="row.status === 'done' ? 'success' : row.status === 'doing' ? 'primary' : 'neutral'">{{ row.status }}</UBadge>
-        </template>
-
-        <template #createdAt-data="{ row }">
-          <span class="text-sm text-gray-400 whitespace-nowrap">{{ new Date(row.createdAt).toLocaleDateString('zh-CN') }}</span>
-        </template>
-
-        <template #actions-data="{ row }">
-          <div class="flex gap-0.5">
-            <UButton icon="i-lucide-pencil" variant="ghost" size="xs" @click="edit(row)" />
-            <UButton icon="i-lucide-trash-2" color="error" variant="ghost" size="xs" @click="del(row.id)" />
-          </div>
-        </template>
-      </UTable>
-
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-default bg-gray-50">
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500 w-12">#</th>
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500">标题</th>
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500 w-20">分类</th>
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500 w-16">难度</th>
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500 w-16">状态</th>
+              <th class="text-left px-4 py-2.5 font-semibold text-gray-500 w-24">创建时间</th>
+              <th class="text-right px-4 py-2.5 font-semibold text-gray-500 w-20">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(c, i) in cards" :key="c.id" class="border-b border-default hover:bg-gray-50">
+              <td class="px-4 py-2.5 text-gray-400">{{ (pagination.page - 1) * pagination.pageSize + i + 1 }}</td>
+              <td class="px-4 py-2.5">
+                <p class="font-semibold truncate max-w-48">{{ c.title }}</p>
+                <p class="text-xs text-gray-400 truncate max-w-48 mt-0.5">{{ c.summary || '(无摘要)' }}</p>
+              </td>
+              <td class="px-4 py-2.5 text-gray-500">{{ c.category || '-' }}</td>
+              <td class="px-4 py-2.5">
+                <UBadge variant="soft" size="xs" :color="c.difficulty === 'advanced' ? 'error' : c.difficulty === 'medium' ? 'warning' : 'success'">{{ c.difficulty }}</UBadge>
+              </td>
+              <td class="px-4 py-2.5">
+                <UBadge variant="soft" size="xs" :color="c.status === 'done' ? 'success' : c.status === 'doing' ? 'primary' : 'neutral'">{{ c.status }}</UBadge>
+              </td>
+              <td class="px-4 py-2.5 text-gray-400 whitespace-nowrap text-xs">{{ new Date(c.createdAt).toLocaleDateString('zh-CN') }}</td>
+              <td class="px-4 py-2.5 text-right">
+                <UButton icon="i-lucide-pencil" variant="ghost" size="xs" @click="edit(c)" />
+                <UButton icon="i-lucide-trash-2" color="error" variant="ghost" size="xs" @click="del(c.id)" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div v-if="pagination.totalPages > 1" class="flex items-center justify-center gap-2 py-3 border-t border-default">
         <UButton :disabled="pagination.page <= 1" variant="ghost" size="xs" @click="goPage(pagination.page - 1)">上一页</UButton>
         <span class="text-sm text-gray-500">{{ pagination.page }} / {{ pagination.totalPages }}</span>
