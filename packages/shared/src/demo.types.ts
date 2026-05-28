@@ -76,6 +76,16 @@ export interface DemoListResponse {
   items: DemoListItem[]
 }
 
+export interface DemoCatalogGroup {
+  category: string
+  items: DemoListItem[]
+}
+
+export interface DemoCatalogResponse {
+  items: DemoListItem[]
+  groups: DemoCatalogGroup[]
+}
+
 export interface DemoRunResponse {
   demoId: string
   status: DemoRunStatus

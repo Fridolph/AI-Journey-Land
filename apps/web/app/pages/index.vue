@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DemoCatalogCard from '~/components/catalog/DemoCatalogCard.vue'
 
-const { demos, isLoading, errorMessage, loadCatalog } = useDemoCatalog()
+const { demos, groups, isLoading, errorMessage, loadCatalog } = useDemoCatalog()
 
 onMounted(() => {
   void loadCatalog()
@@ -63,8 +63,19 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-else class="catalog-page__grid" aria-label="Demo 列表">
-      <DemoCatalogCard v-for="(demo, index) in demos" :key="demo.id" :demo="demo" :index="index" />
+    <section v-else class="catalog-page__content">
+      <template v-for="group in groups" :key="group.category">
+        <h2 class="catalog-page__category-title">{{ group.category }}</h2>
+        <section class="catalog-page__grid" aria-label="Demo 列表">
+          <DemoCatalogCard v-for="(demo, index) in group.items" :key="demo.id" :demo="demo" :index="index" />
+        </section>
+      </template>
+
+      <template v-if="demos.length && !groups.length">
+        <section class="catalog-page__grid" aria-label="Demo 列表">
+          <DemoCatalogCard v-for="(demo, index) in demos" :key="demo.id" :demo="demo" :index="index" />
+        </section>
+      </template>
     </section>
   </UContainer>
 </template>
@@ -184,19 +195,19 @@ onMounted(() => {
   width: 90%;
 }
 
-@media (max-width: 960px) {
-  .catalog-page__header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .catalog-page__actions {
-    justify-content: flex-start;
-  }
+.catalog-page__content {
+  display: grid;
+  gap: 1.5rem;
 }
 
-@media (min-width: 640px) {
-  .catalog-page__grid {
+.catalog-page__category-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  padding-top: 0.5rem;
+}
+
+.catalog-page__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

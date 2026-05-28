@@ -8,45 +8,29 @@ export const demos: DemoMeta[] = [promptTemplateWeeklyReportDemo, chatDemo, memo
 export function listDemoItems(): DemoListItem[] {
   return demos.map(
     ({
-      id,
-      title,
-      description,
-      learningGoal,
-      category,
-      tags,
-      coverImageUrl,
-      coverAlt,
-      routePath,
-      apiNamespace,
-      displayMode,
-      ownerPackage,
-      supportsStreaming,
-      rolePresets,
-      reportTypePresets,
-      sourceFiles,
-      sourceUrl,
-      knownLimits,
+      id, title, description, learningGoal, category, tags,
+      coverImageUrl, coverAlt, routePath, apiNamespace,
+      displayMode, ownerPackage, supportsStreaming,
+      rolePresets, reportTypePresets, sourceFiles, sourceUrl, knownLimits,
     }) => ({
-      id,
-      title,
-      description,
-      learningGoal,
-      category,
-      tags,
-      coverImageUrl,
-      coverAlt,
-      routePath,
-      apiNamespace,
-      displayMode,
-      ownerPackage,
-      supportsStreaming,
-      rolePresets,
-      reportTypePresets,
-      sourceFiles,
-      sourceUrl,
-      knownLimits,
+      id, title, description, learningGoal, category, tags,
+      coverImageUrl, coverAlt, routePath, apiNamespace,
+      displayMode, ownerPackage, supportsStreaming,
+      rolePresets, reportTypePresets, sourceFiles, sourceUrl, knownLimits,
     }),
   )
+}
+
+export function listDemoCatalog(): { items: DemoListItem[]; groups: { category: string; items: DemoListItem[] }[] } {
+  const items = listDemoItems()
+  const map = new Map<string, DemoListItem[]>()
+  for (const item of items) {
+    const cat = item.category || '其他'
+    if (!map.has(cat)) map.set(cat, [])
+    map.get(cat)!.push(item)
+  }
+  const groups = Array.from(map.entries()).map(([category, items]) => ({ category, items }))
+  return { items, groups }
 }
 
 export function getDemoById(id: string): DemoMeta | undefined {

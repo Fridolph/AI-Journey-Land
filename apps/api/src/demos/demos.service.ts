@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
-import { getDemoById, listDemoItems } from '@ai-journey-land/demo-registry'
+import { getDemoById, listDemoCatalog } from '@ai-journey-land/demo-registry'
 import type { DemoListResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import type { AiMessage } from '@ai-journey-land/ai-core'
 import { AiService } from '../ai/ai.service'
@@ -30,9 +30,7 @@ export class DemosService {
   }
 
   listDemos(): DemoListResponse {
-    return {
-      items: listDemoItems(),
-    }
+    return listDemoCatalog()
   }
 
   getDemo(id: string): DemoMeta {
