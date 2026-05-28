@@ -152,9 +152,31 @@ docs/
 2. 先自测，至少运行 `pnpm typecheck && pnpm test`；涉及 lint、格式或构建时同步运行对应脚本。
 3. 涉及 UI 时，至少记录桌面端和移动端关键路径验证；必要时附截图或浏览器验证记录。
 4. 自测通过后，在 `docs/issues/` 下按 issue 号补充开发日志。
+   - 文件名：`issue-<编号>-<简短描述>.md`
+   - 内容：开发目标、过程、踩坑记录、自测结果
 5. 按规范提交 commit，并推送 issue 分支。
-6. 创建 PR 或按团队约定合并回 `dev`，确保 issue、PR、commit 和开发日志互相可追溯。
+6. 合并回 `dev`，确保 issue、commit 和开发日志互相可追溯。
 7. 合并到 `dev` 后填写 issue 相关开发信息，确认验收后关闭 issue。
+
+### Milestone 发布流程
+
+当 milestone 完成，需要将 `dev` 发布到 `main` 时：
+
+```bash
+# 1. 自测确认全部通过
+pnpm typecheck && pnpm test
+
+# 2. 使用 dao-commit 起草并执行 squash merge
+git checkout main
+git merge --squash dev
+git commit -m "[卦象][卦名] type(scope): subject ..."   # dao-commit 草案
+git push origin main
+
+# 3. 对齐 dev 到 main，继续开发
+git checkout dev
+git reset --hard main
+git push origin dev --force
+```
 
 发布分支边界：issue 不从 `main` 开发，不直接合到 `main`；`main` 只接受稳定发布合并。
 
