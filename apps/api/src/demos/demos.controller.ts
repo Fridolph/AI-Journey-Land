@@ -5,12 +5,13 @@ import {
   Post,
   Body,
   Res,
+  Patch,
+  Delete,
   ServiceUnavailableException,
   HttpCode,
   HttpStatus,
   Inject,
   Query,
-  Delete,
 } from '@nestjs/common'
 import type { Response } from 'express'
 import { AiConfigurationError } from '@ai-journey-land/ai-core'
@@ -106,6 +107,32 @@ export class DemosController {
     } finally {
       response.end()
     }
+  }
+
+  /**
+   * 创建新 Demo。
+   */
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  createDemo(@Body() body: unknown) {
+    return this.demosService.createDemo(body)
+  }
+
+  /**
+   * 更新 Demo。
+   */
+  @Patch(':id')
+  updateDemo(@Param('id') id: string, @Body() body: unknown) {
+    return this.demosService.updateDemo(id, body)
+  }
+
+  /**
+   * 删除 Demo。
+   */
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  deleteDemo(@Param('id') id: string) {
+    return this.demosService.deleteDemo(id)
   }
 
   /**
