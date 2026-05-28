@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DemoCatalogCard from '~/components/catalog/DemoCatalogCard.vue'
 
-const { demos, groups, isLoading, errorMessage, loadCatalog } = useDemoCatalog()
+const { groups, isLoading, errorMessage, loadCatalog } = useDemoCatalog()
 
 onMounted(() => {
   void loadCatalog()
@@ -65,16 +65,12 @@ onMounted(() => {
 
     <section v-else class="catalog-page__content">
       <template v-for="group in groups" :key="group.category">
-        <h2 class="catalog-page__category-title">{{ group.category }}</h2>
-        <section class="catalog-page__grid" aria-label="Demo 列表">
-          <DemoCatalogCard v-for="(demo, index) in group.items" :key="demo.id" :demo="demo" :index="index" />
-        </section>
-      </template>
-
-      <template v-if="demos.length && !groups.length">
-        <section class="catalog-page__grid" aria-label="Demo 列表">
-          <DemoCatalogCard v-for="(demo, index) in demos" :key="demo.id" :demo="demo" :index="index" />
-        </section>
+        <template v-if="group.items.length > 0">
+          <h2 class="catalog-page__category-title">{{ group.category }}</h2>
+          <section class="catalog-page__grid" aria-label="Demo 列表">
+            <DemoCatalogCard v-for="(demo, index) in group.items" :key="demo.id" :demo="demo" :index="index" />
+          </section>
+        </template>
       </template>
     </section>
   </UContainer>

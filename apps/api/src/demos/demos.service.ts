@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { getDemoById, listDemoCatalog } from '@ai-journey-land/demo-registry'
-import type { DemoListResponse, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
+import type { DemoCatalogGroup, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import type { AiMessage } from '@ai-journey-land/ai-core'
 import { AiService } from '../ai/ai.service'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
@@ -29,7 +29,7 @@ export class DemosService {
     ])
   }
 
-  listDemos(): DemoListResponse {
+  listDemos(): DemoCatalogGroup[] {
     return listDemoCatalog()
   }
 

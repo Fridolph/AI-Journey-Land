@@ -1,4 +1,4 @@
-import type { DemoListItem, DemoMeta } from '@ai-journey-land/shared'
+import type { DemoCatalogGroup, DemoListItem, DemoMeta } from '@ai-journey-land/shared'
 import { promptTemplateWeeklyReportDemo, DEFAULT_PROMPT } from './demos/prompt-template-weekly-report'
 import { chatDemo } from './demos/chat'
 import { memoryChatDemo } from './demos/memory-chat'
@@ -21,16 +21,29 @@ export function listDemoItems(): DemoListItem[] {
   )
 }
 
-export function listDemoCatalog(): { items: DemoListItem[]; groups: { category: string; items: DemoListItem[] }[] } {
-  const items = listDemoItems()
+export function listDemoCatalog(): DemoCatalogGroup[] {
+  const items = demos.map(
+    ({
+      id, title, description, learningGoal, category, tags,
+      coverImageUrl, coverAlt, routePath, apiNamespace,
+      displayMode, ownerPackage, supportsStreaming,
+      rolePresets, reportTypePresets, sourceUrl, knownLimits,
+    }) => ({
+      id, title, description, learningGoal, category, tags,
+      coverImageUrl, coverAlt, routePath, apiNamespace,
+      displayMode, ownerPackage, supportsStreaming,
+      rolePresets, reportTypePresets, sourceUrl, knownLimits,
+    }),
+  )
+
   const map = new Map<string, DemoListItem[]>()
   for (const item of items) {
     const cat = item.category || '其他'
     if (!map.has(cat)) map.set(cat, [])
     map.get(cat)!.push(item)
   }
-  const groups = Array.from(map.entries()).map(([category, items]) => ({ category, items }))
-  return { items, groups }
+
+  return Array.from(map.entries()).map(([category, items]) => ({ category, items }))
 }
 
 export function getDemoById(id: string): DemoMeta | undefined {
