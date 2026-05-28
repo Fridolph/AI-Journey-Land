@@ -1,6 +1,9 @@
 import { ConfigService } from '@nestjs/config'
 import { describe, expect, it, vi } from 'vitest'
-import { AiConfigurationError, AiProviderUnsupportedError } from '@ai-journey-land/ai-core'
+import {
+  AiConfigurationError,
+  AiProviderUnsupportedError,
+} from '@ai-journey-land/ai-core'
 import { AiService } from '../ai.service'
 
 vi.mock('@langchain/openai', () => ({

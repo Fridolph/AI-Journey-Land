@@ -45,20 +45,24 @@ onMounted(() => {
       color="error"
       variant="soft"
       title="Demo 列表加载失败"
-      :description="errorMessage"
-    />
+      :description="errorMessage" />
 
     <section v-else-if="isLoading" class="catalog-page__grid" aria-label="正在加载">
       <div v-for="n in 4" :key="n" class="catalog-card-skeleton">
         <USkeleton class="catalog-card-skeleton__media" />
         <div class="catalog-card-skeleton__body">
-          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
-          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--lg" />
-          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
-          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
+          <USkeleton
+            class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
+          <USkeleton
+            class="catalog-card-skeleton__line catalog-card-skeleton__line--lg" />
+          <USkeleton
+            class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
+          <USkeleton
+            class="catalog-card-skeleton__line catalog-card-skeleton__line--md" />
         </div>
         <div class="catalog-card-skeleton__footer">
-          <USkeleton class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
+          <USkeleton
+            class="catalog-card-skeleton__line catalog-card-skeleton__line--sm" />
         </div>
       </div>
     </section>
@@ -68,7 +72,11 @@ onMounted(() => {
         <template v-if="group.items.length > 0">
           <h2 class="catalog-page__category-title">{{ group.category }}</h2>
           <section class="catalog-page__grid" aria-label="Demo 列表">
-            <DemoCatalogCard v-for="(demo, index) in group.items" :key="demo.id" :demo="demo" :index="index" />
+            <DemoCatalogCard
+              v-for="(demo, index) in group.items"
+              :key="demo.id"
+              :demo="demo"
+              :index="index" />
           </section>
         </template>
       </template>

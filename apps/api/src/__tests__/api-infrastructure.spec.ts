@@ -75,7 +75,9 @@ describe('API infrastructure controller behavior', () => {
       'text/event-stream; charset=utf-8',
     )
     expect(response.write).toHaveBeenCalledWith('event: meta\n')
-    expect(response.write).toHaveBeenCalledWith('data: {"demoId":"demo-1","status":"started"}\n\n')
+    expect(response.write).toHaveBeenCalledWith(
+      'data: {"demoId":"demo-1","status":"started"}\n\n',
+    )
     expect(response.write).toHaveBeenCalledWith('event: token\n')
     expect(response.write).toHaveBeenCalledWith('data: {"text":"first chunk"}\n\n')
     expect(response.write).toHaveBeenCalledWith('data: {"text":"second chunk"}\n\n')

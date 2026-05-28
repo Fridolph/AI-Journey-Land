@@ -5,14 +5,17 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   fonts: {
     providers: {
-      adobe: false, bunny: false, fontshare: false,
-      fontsource: false, google: false, googleicons: false, npm: false,
+      adobe: false,
+      bunny: false,
+      fontshare: false,
+      fontsource: false,
+      google: false,
+      googleicons: false,
+      npm: false,
     },
   },
   runtimeConfig: {
-    public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:5044/api',
-    },
+    public: { apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:5044/api' },
   },
   devServer: { port: 5055 },
   app: { head: { title: 'AI-Journey-Land Admin' } },

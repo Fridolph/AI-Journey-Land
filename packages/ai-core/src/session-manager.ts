@@ -19,7 +19,8 @@ export class SessionManager {
   constructor(options: SessionManagerOptions = {}) {
     this.ttlMs = options.ttlMs ?? defaultSessionTtlMs
     this.sessionIdGenerator =
-      options.sessionIdGenerator ?? (() => `${Date.now()}-${Math.random().toString(16).slice(2)}`)
+      options.sessionIdGenerator ??
+      (() => `${Date.now()}-${Math.random().toString(16).slice(2)}`)
   }
 
   /**

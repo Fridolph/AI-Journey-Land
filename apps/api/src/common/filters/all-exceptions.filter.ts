@@ -29,7 +29,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (normalized.status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       const stack = exception instanceof Error ? exception.stack : undefined
-      this.logger.error(`${request.method} ${request.originalUrl} - ${normalized.message}`, stack)
+      this.logger.error(
+        `${request.method} ${request.originalUrl} - ${normalized.message}`,
+        stack,
+      )
     } else {
       this.logger.warn(`${request.method} ${request.originalUrl} - ${normalized.message}`)
     }
@@ -50,7 +53,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof UnauthorizedException) {
       return {
         status: HttpStatus.UNAUTHORIZED,
-        message: this.extractHttpExceptionMessage(exception, '未授权，请先登录或提供有效凭证。'),
+        message: this.extractHttpExceptionMessage(
+          exception,
+          '未授权，请先登录或提供有效凭证。',
+        ),
         data: null,
       }
     }
@@ -70,7 +76,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
   }
 
-  private extractHttpExceptionMessage(exception: HttpException, fallback: string): string {
+  private extractHttpExceptionMessage(
+    exception: HttpException,
+    fallback: string,
+  ): string {
     const exceptionResponse = exception.getResponse()
 
     if (typeof exceptionResponse === 'string') {
@@ -90,7 +99,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     return fallback
   }
 
-  private isHttpExceptionResponseBody(value: unknown): value is HttpExceptionResponseBody {
+  private isHttpExceptionResponseBody(
+    value: unknown,
+  ): value is HttpExceptionResponseBody {
     return Boolean(value && typeof value === 'object')
   }
 }

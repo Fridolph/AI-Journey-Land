@@ -73,13 +73,14 @@ function onTypeChange(type: string) {
         :items="presets"
         :disabled="isRunning"
         size="sm"
-        @update:model-value="onTypeChange(String($event))"
-      />
+        @update:model-value="onTypeChange(String($event))" />
     </label>
 
     <label class="grid gap-1.5 min-w-0">
       <span class="text-[0.82rem] font-bold text-[#334155]">汇报时间</span>
-      <span v-if="dateRange" class="flex items-center gap-1 text-sm text-primary font-semibold min-h-[36px]">
+      <span
+        v-if="dateRange"
+        class="flex items-center gap-1 text-sm text-primary font-semibold min-h-[36px]">
         <UIcon name="i-lucide-calendar-range" />
         {{ dateRange }}
       </span>

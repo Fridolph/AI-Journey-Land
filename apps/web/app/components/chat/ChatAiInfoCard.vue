@@ -14,7 +14,9 @@ const maxTokens = computed(() => {
   return 8192
 })
 
-const remainingTokens = computed(() => Math.max(0, maxTokens.value - props.estimatedTokens))
+const remainingTokens = computed(() =>
+  Math.max(0, maxTokens.value - props.estimatedTokens),
+)
 
 const usagePct = computed(() => {
   const pct = (props.estimatedTokens / maxTokens.value) * 100
@@ -47,7 +49,9 @@ function fmtNum(n: number): string {
     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
       <div>
         <span class="text-xs text-muted">模型</span>
-        <p class="text-sm font-semibold truncate max-w-full" :title="modelName">{{ modelName || '-' }}</p>
+        <p class="text-sm font-semibold truncate max-w-full" :title="modelName">
+          {{ modelName || '-' }}
+        </p>
       </div>
       <div>
         <span class="text-xs text-muted">上下文</span>
@@ -63,15 +67,16 @@ function fmtNum(n: number): string {
       </div>
       <div class="col-span-2">
         <span class="text-xs text-muted">预估 / 剩余</span>
-        <p class="text-sm font-semibold">~{{ fmtNum(estimatedTokens) }} / ~{{ fmtNum(remainingTokens) }}</p>
+        <p class="text-sm font-semibold">
+          ~{{ fmtNum(estimatedTokens) }} / ~{{ fmtNum(remainingTokens) }}
+        </p>
       </div>
     </div>
 
     <div class="w-full h-1.5 rounded-full bg-muted overflow-hidden">
       <div
         class="h-full rounded-full transition-all duration-300"
-        :style="{ width: `${usageBarPct}%`, background: usageColor }"
-      />
+        :style="{ width: `${usageBarPct}%`, background: usageColor }" />
     </div>
   </div>
 </template>

@@ -1,90 +1,121 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
+import { Prisma } from '@prisma/client'
+import { QueryCardsDto } from './dto/query-cards.dto'
+import { CreateCardDto } from './dto/create-card.dto'
+import { UpdateCardDto } from './dto/update-card.dto'
 
 @Injectable()
 export class CardsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.card.findMany({
-      include: { tags: { include: { tag: true } } },
-      orderBy: { updatedAt: 'desc' },
-    })
+  async findAll(query: QueryCardsDto) {
+    const page = query.page
+    const pageSize = query.pageSize
+    const skip = (page - 1) * pageSize
+    const take = pageSize
+    const where: Prisma.CardWhereInput = {}
+
+    if (query.keyword) {
+      where.OR = [
+        {
+          title: {
+            contains: query.keyword,
+            mode: 'insensitive',
+          },
+        },
+        {
+          summary: {
+            contains: query.keyword,
+            mode: 'insensitive',
+          },
+        },
+        {
+          content: {
+            contains: query.keyword,
+            mode: 'insensitive',
+          },
+        },
+      ]
+    }
+    if (query.status) {
+      where.status = query.status
+    }
+
+    if (query.difficulty) {
+      where.difficulty = query.difficulty
+    }
+
+    if (query.category) {
+      where.category = query.category
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.card.findMany({
+        where,
+        skip,
+        take,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.prisma.card.count({
+        where,
+      }),
+    ])
+
+    return {
+      items,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    }
   }
 
-  findOne(id: string) {
-    return this.prisma.card.findUnique({
+  async findOne(id: string) {
+    const card = await this.prisma.card.findUnique({
       where: { id },
-      include: { tags: { include: { tag: true } }, records: { orderBy: { createdAt: 'desc' } } },
     })
+
+    if (!card) throw new NotFoundException('卡片不存在')
+
+    return card
   }
 
-  async create(data: {
-    title: string
-    content: string
-    summary?: string
-    category?: string
-    difficulty?: string
-    tags?: string[]
-  }) {
-    const { tags, ...rest } = data
+  async create(createCardDto: CreateCardDto) {
     return this.prisma.card.create({
       data: {
-        ...rest,
-        tags: tags?.length
-          ? {
-              create: tags.map((name) => ({
-                tag: {
-                  connectOrCreate: { where: { name }, create: { name } },
-                },
-              })),
-            }
-          : undefined,
+        title: createCardDto.title,
+        summary: createCardDto.summary,
+        content: createCardDto.content || '',
       },
-      include: { tags: { include: { tag: true } } },
     })
   }
 
-  async update(id: string, data: {
-    title?: string; content?: string; summary?: string
-    category?: string; difficulty?: string; status?: string; tags?: string[]
-  }) {
-    const { tags, ...rest } = data
-    if (tags) {
-      await this.prisma.cardTag.deleteMany({ where: { cardId: id } })
-    }
+  async update(id: string, updateCardDto: UpdateCardDto) {
+    await this.findOne(id)
+
     return this.prisma.card.update({
       where: { id },
       data: {
-        ...rest,
-        tags: tags?.length
-          ? {
-              create: tags.map((name) => ({
-                tag: {
-                  connectOrCreate: { where: { name }, create: { name } },
-                },
-              })),
-            }
-          : undefined,
+        title: updateCardDto.title,
+        summary: updateCardDto.summary,
+        content: updateCardDto.content,
+        category: updateCardDto.category,
+        difficulty: updateCardDto.difficulty,
+        status: updateCardDto.status,
       },
-      include: { tags: { include: { tag: true } } },
     })
   }
 
   async remove(id: string) {
-    return this.prisma.card.delete({ where: { id } })
-  }
+    await this.findOne(id)
 
-  async addRecord(cardId: string, action: string, note?: string) {
-    return this.prisma.learningRecord.create({
-      data: { cardId, action, note },
-    })
-  }
-
-  async getRecords(cardId: string) {
-    return this.prisma.learningRecord.findMany({
-      where: { cardId },
-      orderBy: { createdAt: 'desc' },
+    return this.prisma.card.delete({
+      where: { id },
     })
   }
 }

@@ -19,17 +19,17 @@ const ragEnabled = ref(false)
         :items="modelOptions"
         :disabled="disabled"
         size="xs"
-        class="w-40"
-      />
+        class="w-40" />
 
       <button
         type="button"
         class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 transition-colors"
         :class="webSearch ? 'bg-primary text-white' : 'hover:bg-muted'"
         :disabled="disabled"
-        @click="webSearch = !webSearch"
-      >
-        <UIcon :name="webSearch ? 'i-lucide-globe' : 'i-lucide-globe'" class="text-[0.85rem]" />
+        @click="webSearch = !webSearch">
+        <UIcon
+          :name="webSearch ? 'i-lucide-globe' : 'i-lucide-globe'"
+          class="text-[0.85rem]" />
         联网
       </button>
 
@@ -38,17 +38,24 @@ const ragEnabled = ref(false)
         class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 transition-colors"
         :class="ragEnabled ? 'bg-primary text-white' : 'hover:bg-muted'"
         :disabled="disabled"
-        @click="ragEnabled = !ragEnabled"
-      >
-        <UIcon :name="ragEnabled ? 'i-lucide-database' : 'i-lucide-database'" class="text-[0.85rem]" />
+        @click="ragEnabled = !ragEnabled">
+        <UIcon
+          :name="ragEnabled ? 'i-lucide-database' : 'i-lucide-database'"
+          class="text-[0.85rem]" />
         RAG
       </button>
 
-      <button type="button" class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30" :disabled="disabled">
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30"
+        :disabled="disabled">
         <UIcon name="i-lucide-at-sign" class="text-[0.85rem]" />
       </button>
 
-      <button type="button" class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30" :disabled="disabled">
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 text-xs text-muted rounded px-1.5 py-0.5 hover:bg-muted disabled:opacity-30"
+        :disabled="disabled">
         <UIcon name="i-lucide-paperclip" class="text-[0.85rem]" />
       </button>
     </template>

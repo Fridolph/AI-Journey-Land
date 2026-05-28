@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { promptTemplateWeeklyReportInputSchema, REPORT_ROLES, REPORT_TYPES } from '../schema'
+import {
+  promptTemplateWeeklyReportInputSchema,
+  REPORT_ROLES,
+  REPORT_TYPES,
+} from '../schema'
 
 describe('promptTemplateWeeklyReportInputSchema', () => {
   it('accepts valid minimal input', () => {
@@ -88,6 +92,13 @@ describe('promptTemplateWeeklyReportInputSchema', () => {
   })
 
   it('REPORT_TYPES has expected values', () => {
-    expect(REPORT_TYPES).toEqual(['日报', '周报', '月报', '季度总结', '半年总结', '年度总结'])
+    expect(REPORT_TYPES).toEqual([
+      '日报',
+      '周报',
+      '月报',
+      '季度总结',
+      '半年总结',
+      '年度总结',
+    ])
   })
 })
