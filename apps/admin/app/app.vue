@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { NavigationMenuItem, DropdownMenuItem } from '@nuxt/ui'
 
-const open = useLocalStorage('admin-sidebar-open', true)
+const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('admin-sidebar-open') : null
+const open = ref(saved !== null ? saved === 'true' : true)
+watch(open, (v) => { if (typeof localStorage !== 'undefined') localStorage.setItem('admin-sidebar-open', String(v)) })
 
 const items: NavigationMenuItem[] = [{
   label: 'Dashboard',
