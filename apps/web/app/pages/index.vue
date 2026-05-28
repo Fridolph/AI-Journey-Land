@@ -207,7 +207,8 @@ onMounted(() => {
   padding-top: 0.5rem;
 }
 
-.catalog-page__grid {
+@media (min-width: 640px) {
+  .catalog-page__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
