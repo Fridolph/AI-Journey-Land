@@ -3,9 +3,10 @@ import { ConfigModule } from '@nestjs/config'
 import { AiModule } from './ai/ai.module'
 import { AuthModule } from './auth/auth.module'
 import { DemosModule } from './demos/demos.module'
-import { CardsModule } from './cards/cards.module'
+// [LEARN] Cards/Prisma 待从零构建，暂时注释
+// import { CardsModule } from './cards/cards.module'
 import { HealthController } from './health.controller'
-import { PrismaModule } from './prisma/prisma.module'
+// import { PrismaModule } from './prisma/prisma.module'
 
 @Module({
   imports: [
@@ -13,11 +14,11 @@ import { PrismaModule } from './prisma/prisma.module'
       isGlobal: true,
       envFilePath: ['apps/api/.env', '.env'],
     }),
-    PrismaModule,
+    // PrismaModule,
     AiModule,
     AuthModule,
     DemosModule,
-    CardsModule,
+    // CardsModule,
   ],
   controllers: [HealthController],
 })
