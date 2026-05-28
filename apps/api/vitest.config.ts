@@ -22,7 +22,10 @@ export default defineConfig({
     alias: {
       '@ai-journey-land/shared': resolve(__dirname, '../../packages/shared/src'),
       '@ai-journey-land/ai-core': resolve(__dirname, '../../packages/ai-core/src'),
-      '@ai-journey-land/demo-registry': resolve(__dirname, '../../packages/demo-registry/src'),
+      '@ai-journey-land/demo-registry': resolve(
+        __dirname,
+        '../../packages/demo-registry/src',
+      ),
     },
   },
 })

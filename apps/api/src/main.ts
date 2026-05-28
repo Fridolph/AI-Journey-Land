@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
+import { ZodValidationPipe } from 'nestjs-zod'
 import { Reflector } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter'
@@ -12,10 +13,14 @@ async function bootstrap() {
   const port = Number(configService.get<string>('API_PORT') ?? 5044)
 
   app.setGlobalPrefix('api')
+  app.useGlobalPipes(new ZodValidationPipe())
   app.useGlobalInterceptors(new ResponseInterceptor(app.get(Reflector)))
   app.useGlobalFilters(new AllExceptionsFilter())
   app.enableCors({
-    origin: (origin: string | undefined, cb: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      cb: (err: Error | null, allow?: boolean) => void,
+    ) => {
       if (!origin || origin.startsWith('http://localhost:')) {
         cb(null, true)
       } else {

@@ -13,7 +13,9 @@ export function useDemoCatalog() {
     errorMessage.value = ''
 
     try {
-      const response = await $fetch<ApiResponse<DemoCatalogGroup[]>>(`${apiBase.value}/demos`)
+      const response = await $fetch<ApiResponse<DemoCatalogGroup[]>>(
+        `${apiBase.value}/demos`,
+      )
       groups.value = response.data ?? []
     } catch (error) {
       errorMessage.value = error instanceof Error ? error.message : 'Demo 列表加载失败'

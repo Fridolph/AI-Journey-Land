@@ -15,11 +15,13 @@ docs/demos/
 ## 当前 demo
 
 ### AI Demo
+
 - [Prompt Template 周报生成：总览](./prompt-template-weekly-report/总览.md)
 - [Prompt Template 周报生成：前端复盘](./prompt-template-weekly-report/前端复盘.md)
 - [Prompt Template 周报生成：后端与 AI 复盘](./prompt-template-weekly-report/后端与AI复盘.md)
 
 ### 全栈 Demo
+
 - [Card Learning Demo：总览](./card-learning-demo/总览.md)
 - [Card Learning Demo：数据库环境](./card-learning-demo/数据库环境.md)
 

@@ -17,15 +17,13 @@ const displayModeLabel = computed(() =>
       as="article"
       class="catalog-card"
       :style="{ '--delay': `${index * 60}ms` }"
-      :ui="{ body: 'p-0 sm:p-0', footer: 'p-4 sm:px-5 sm:py-4' }"
-    >
+      :ui="{ body: 'p-0 sm:p-0', footer: 'p-4 sm:px-5 sm:py-4' }">
       <div class="catalog-card__media" aria-hidden="true">
         <img
           v-if="demo.coverImageUrl"
           class="catalog-card__image"
           :src="demo.coverImageUrl"
-          :alt="demo.coverAlt ?? demo.title"
-        />
+          :alt="demo.coverAlt ?? demo.title" />
         <div v-else class="catalog-card__media-placeholder">
           <UIcon name="i-lucide-sparkles" />
           <UIcon name="i-lucide-brain" class="catalog-card__media-placeholder-icon" />
@@ -43,8 +41,7 @@ const displayModeLabel = computed(() =>
             icon="i-lucide-radio"
             color="primary"
             variant="soft"
-            size="xs"
-          >
+            size="xs">
             SSE
           </UBadge>
         </div>
@@ -53,20 +50,18 @@ const displayModeLabel = computed(() =>
         <p class="catalog-card__description">{{ demo.description }}</p>
 
         <div class="catalog-card__techs" aria-label="使用到的 AI 技术">
-          <span
-            v-for="tag in demo.tags"
-            :key="tag"
-            class="catalog-card__tech-tag"
-          >
+          <span v-for="tag in demo.tags" :key="tag" class="catalog-card__tech-tag">
             <UIcon
               :name="
-                tag === 'Streaming' ? 'i-lucide-radio'
-                : tag === 'LangChain' ? 'i-lucide-link-2'
-                : tag === 'Role Injection' ? 'i-lucide-users'
-                : 'i-lucide-file-text'
+                tag === 'Streaming'
+                  ? 'i-lucide-radio'
+                  : tag === 'LangChain'
+                    ? 'i-lucide-link-2'
+                    : tag === 'Role Injection'
+                      ? 'i-lucide-users'
+                      : 'i-lucide-file-text'
               "
-              class="catalog-card__tech-icon"
-            />
+              class="catalog-card__tech-icon" />
             {{ tag }}
           </span>
         </div>
@@ -85,7 +80,11 @@ const displayModeLabel = computed(() =>
       <template #footer>
         <div class="catalog-card__footer">
           <div class="catalog-card__capabilities">
-            <UBadge icon="i-lucide-panels-top-left" color="neutral" variant="soft" size="sm">
+            <UBadge
+              icon="i-lucide-panels-top-left"
+              color="neutral"
+              variant="soft"
+              size="sm">
               {{ displayModeLabel }}
             </UBadge>
           </div>

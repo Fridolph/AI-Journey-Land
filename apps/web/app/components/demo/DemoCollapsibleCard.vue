@@ -17,16 +17,14 @@ const isOpen = ref(props.defaultOpen)
       <button
         type="button"
         class="flex items-center justify-between gap-2 w-full cursor-pointer"
-        @click="isOpen = !isOpen"
-      >
+        @click="isOpen = !isOpen">
         <div class="flex items-center gap-2 font-extrabold">
           <UIcon :name="icon" />
           <span>{{ title }}</span>
         </div>
         <UIcon
           :name="isOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          class="text-muted flex-shrink-0"
-        />
+          class="text-muted flex-shrink-0" />
       </button>
     </template>
     <slot />

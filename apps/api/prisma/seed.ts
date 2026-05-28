@@ -12,8 +12,10 @@ async function main() {
     {
       id: 'prompt-template-weekly-report',
       title: '角色驱动 · 智能报告',
-      description: 'Role-Driven Document Generator —— 选择角色和报告类型，填入工作数据，AI 即按角色视角生成专业文档。',
-      learningGoal: '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式。',
+      description:
+        'Role-Driven Document Generator —— 选择角色和报告类型，填入工作数据，AI 即按角色视角生成专业文档。',
+      learningGoal:
+        '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式。',
       category: 'AI & Agent',
       tags: ['Prompt Template', 'Role Injection', 'LangChain', 'Streaming', 'Few-Shot'],
       routePath: '/demos/prompt-template-weekly-report',
@@ -24,14 +26,16 @@ async function main() {
       rolePresets: ['部门Leader', '技术研发', '老板'],
       reportTypePresets: ['日报', '周报', '月报', '季度总结', '年度总结', '半年总结'],
       inputFields: [],
-      sourceUrl: 'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
+      sourceUrl:
+        'https://github.com/Fridolph/AI-Journey-Fighting/blob/main/examples/prompt-template-test/src/prompt-template1.mjs',
       knownLimits: ['Few-Shot 示例通过文本输入自由设定'],
     },
     {
       id: 'chat',
       title: '多轮对话 · AI 助手',
       description: '与 AI 进行连续多轮对话，AI 保持上下文记忆并流式返回。',
-      learningGoal: '理解多轮对话核心机制：System Prompt 角色设定、Chat History 上下文管理、SSE Streaming。',
+      learningGoal:
+        '理解多轮对话核心机制：System Prompt 角色设定、Chat History 上下文管理、SSE Streaming。',
       category: 'AI & Agent',
       tags: ['Multi-turn Chat', 'System Prompt', 'Memory', 'SSE Streaming', 'Session'],
       routePath: '/demos/ai-chat-group',

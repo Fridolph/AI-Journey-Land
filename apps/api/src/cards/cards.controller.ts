@@ -1,8 +1,8 @@
-import { CardsService } from './cards.service';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
-import { QueryCardsDto } from './dto/query-card.dto';
+import { CardsService } from './cards.service'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import { QueryCardsDto } from './dto/query-cards.dto'
+import { CreateCardDto } from './dto/create-card.dto'
+import { UpdateCardDto } from './dto/update-card.dto'
 
 @Controller('cards')
 export class CardsController {

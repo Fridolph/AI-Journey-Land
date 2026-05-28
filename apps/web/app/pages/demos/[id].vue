@@ -23,11 +23,24 @@ const DEFAULT_PROMPT = `你是一名{role}，需要根据以下数据生成一�
 - 语气和视角贴合 {role} 的身份定位
 - 适合作为给老板和团队传阅的专业文档`
 
-const { selectedDemo, form, mode, output, errorMessage, isRunning, loadDemo, runDemo, streamDemo } =
-  useDemoRunner()
+const {
+  selectedDemo,
+  form,
+  mode,
+  output,
+  errorMessage,
+  isRunning,
+  loadDemo,
+  runDemo,
+  streamDemo,
+} = useDemoRunner()
 
-const { records: savedReports, save: saveReport, remove: deleteSavedReport, loadAll: loadSavedReports } =
-  useReportStore()
+const {
+  records: savedReports,
+  save: saveReport,
+  remove: deleteSavedReport,
+  loadAll: loadSavedReports,
+} = useReportStore()
 
 const customPrompt = ref(DEFAULT_PROMPT)
 const showPrompt = ref(false)
@@ -38,7 +51,11 @@ function resetPrompt() {
 
 const nonMetaFields = computed(() =>
   (selectedDemo.value?.inputFields ?? []).filter(
-    (f) => f.name !== 'role' && f.name !== 'authorName' && f.name !== 'reportType' && f.name !== 'dateRange',
+    (f) =>
+      f.name !== 'role' &&
+      f.name !== 'authorName' &&
+      f.name !== 'reportType' &&
+      f.name !== 'dateRange',
   ),
 )
 
@@ -78,9 +95,12 @@ function viewReport(record: ReportRecord) {
   Object.keys(form).forEach((k) => delete form[k])
   Object.assign(form, record.input)
 
-  const savedPrompt = typeof record.input === 'object' && record.input !== null && 'customPrompt' in record.input
-    ? String((record.input as Record<string, string>).customPrompt ?? DEFAULT_PROMPT)
-    : DEFAULT_PROMPT
+  const savedPrompt =
+    typeof record.input === 'object' &&
+    record.input !== null &&
+    'customPrompt' in record.input
+      ? String((record.input as Record<string, string>).customPrompt ?? DEFAULT_PROMPT)
+      : DEFAULT_PROMPT
   customPrompt.value = savedPrompt
 
   output.value = record.output
@@ -111,37 +131,43 @@ const pipelineSteps = [
   {
     icon: 'i-lucide-form-input',
     label: '用户输入层',
-    detail: 'UI Form 收集 role/reportType/dateRange/companyName/devActivities 等字段，Zod Schema 前端预校验 ≥15 字，通过后 POST /api/demos/:id/run（或 /stream）',
+    detail:
+      'UI Form 收集 role/reportType/dateRange/companyName/devActivities 等字段，Zod Schema 前端预校验 ≥15 字，通过后 POST /api/demos/:id/run（或 /stream）',
     color: '#0f766e',
   },
   {
     icon: 'i-lucide-shield-check',
     label: 'Schema 校验层',
-    detail: '后端 NestJS Controller 接收 JSON body → DemosService 路由到对应 DemoRunner → parseRunRequest() 先走通用 demoRunRequestSchema，再走 demo 专属 schema（z.enum + min/max）',
+    detail:
+      '后端 NestJS Controller 接收 JSON body → DemosService 路由到对应 DemoRunner → parseRunRequest() 先走通用 demoRunRequestSchema，再走 demo 专属 schema（z.enum + min/max）',
     color: '#0891b2',
   },
   {
     icon: 'i-lucide-braces',
     label: 'Prompt 组装层',
-    detail: 'formatPrompt() 从 prompts/ 目录加载模板 → 注入 role/reportType/dateRange → REPORT_TYPE_GUIDE 映射结构指引 → ROLE_PERSPECTIVE 映射角色视角 → 可选 FewShot 示例注入 → 返回完整 prompt 字符串',
+    detail:
+      'formatPrompt() 从 prompts/ 目录加载模板 → 注入 role/reportType/dateRange → REPORT_TYPE_GUIDE 映射结构指引 → ROLE_PERSPECTIVE 映射角色视角 → 可选 FewShot 示例注入 → 返回完整 prompt 字符串',
     color: '#0d9488',
   },
   {
     icon: 'i-lucide-link-2',
     label: 'LangChain 调用层',
-    detail: 'PromptTemplate.fromTemplate() 解析变量占位 → model.invoke(prompt) 普通调用 或 model.stream(prompt) 流式调用 → ChatOpenAI 底层走 OpenAI-compatible API（DashScope / DeepSeek）',
+    detail:
+      'PromptTemplate.fromTemplate() 解析变量占位 → model.invoke(prompt) 普通调用 或 model.stream(prompt) 流式调用 → ChatOpenAI 底层走 OpenAI-compatible API（DashScope / DeepSeek）',
     color: '#6366f1',
   },
   {
     icon: 'i-lucide-cpu',
     label: 'AI 模型层',
-    detail: 'AiService 统一管理 Provider 配置 → OpenAI / DeepSeek Adapter → ChatOpenAI 实例化 → 支持 temperature 调节输出随机性',
+    detail:
+      'AiService 统一管理 Provider 配置 → OpenAI / DeepSeek Adapter → ChatOpenAI 实例化 → 支持 temperature 调节输出随机性',
     color: '#f59e0b',
   },
   {
     icon: 'i-lucide-radio',
     label: '输出 & 持久化层',
-    detail: '普通输出：等待完整 result → 前端展示 Markdown。流式输出：SSE event:meta/token/done/error → useDemoRunner 解析 SSE 帧 → 实时渲染 → 生成完成后自动写入 IndexedDB',
+    detail:
+      '普通输出：等待完整 result → 前端展示 Markdown。流式输出：SSE event:meta/token/done/error → useDemoRunner 解析 SSE 帧 → 实时渲染 → 生成完成后自动写入 IndexedDB',
     color: '#dc2626',
   },
 ]
@@ -183,15 +209,24 @@ const techTags = [
   { name: 'Zod', desc: 'Schema 校验' },
 ]
 
-function reportTypeColor(type: string): 'primary' | 'info' | 'success' | 'warning' | 'secondary' | 'error' | 'neutral' {
+function reportTypeColor(
+  type: string,
+): 'primary' | 'info' | 'success' | 'warning' | 'secondary' | 'error' | 'neutral' {
   switch (type) {
-    case '日报': return 'info'
-    case '周报': return 'primary'
-    case '月报': return 'success'
-    case '季度总结': return 'warning'
-    case '半年总结': return 'secondary'
-    case '年度总结': return 'error'
-    default: return 'neutral'
+    case '日报':
+      return 'info'
+    case '周报':
+      return 'primary'
+    case '月报':
+      return 'success'
+    case '季度总结':
+      return 'warning'
+    case '半年总结':
+      return 'secondary'
+    case '年度总结':
+      return 'error'
+    default:
+      return 'neutral'
   }
 }
 
@@ -227,8 +262,7 @@ onMounted(() => {
         color="error"
         variant="soft"
         title="Demo 加载失败"
-        :description="pageErrorMessage"
-      />
+        :description="pageErrorMessage" />
     </section>
 
     <section v-else-if="isLoadingDemo" class="demo-page__state" aria-label="正在加载">
@@ -241,7 +275,10 @@ onMounted(() => {
         <template #headline>
           <div class="flex flex-wrap gap-[0.45rem]">
             <UBadge color="primary" variant="soft">{{ selectedDemo.category }}</UBadge>
-            <UBadge v-if="selectedDemo.supportsStreaming" icon="i-lucide-radio" color="primary">
+            <UBadge
+              v-if="selectedDemo.supportsStreaming"
+              icon="i-lucide-radio"
+              color="primary">
               支持流式输出
             </UBadge>
             <UBadge color="neutral" variant="soft">{{ selectedDemo.displayMode }}</UBadge>
@@ -259,8 +296,7 @@ onMounted(() => {
             rel="noreferrer"
             icon="i-lucide-code-2"
             color="neutral"
-            variant="outline"
-          >
+            variant="outline">
             原始源码
           </UButton>
         </template>
@@ -284,8 +320,7 @@ onMounted(() => {
                   placeholder="你的名字"
                   size="sm"
                   :disabled="isRunning"
-                  @update:model-value="form.authorName = String($event ?? '')"
-                />
+                  @update:model-value="form.authorName = String($event ?? '')" />
               </label>
 
               <DemoRoleSelector
@@ -293,20 +328,21 @@ onMounted(() => {
                 :model-value="form.role ?? ''"
                 :presets="selectedDemo.rolePresets"
                 :is-running="isRunning"
-                @update:model-value="form.role = $event"
-              />
+                @update:model-value="form.role = $event" />
             </div>
 
             <DemoReportTypeSelector
-              v-if="selectedDemo.reportTypePresets && selectedDemo.reportTypePresets.length > 0"
+              v-if="
+                selectedDemo.reportTypePresets &&
+                selectedDemo.reportTypePresets.length > 0
+              "
               :model-value="form.reportType ?? ''"
               :date-range="form.dateRange ?? ''"
               :presets="selectedDemo.reportTypePresets"
               :is-running="isRunning"
               class="mb-3"
               @update:model-value="form.reportType = $event"
-              @update:date-range="form.dateRange = $event"
-            />
+              @update:date-range="form.dateRange = $event" />
 
             <DemoInputForm
               :model-value="form"
@@ -314,8 +350,7 @@ onMounted(() => {
               :is-running="isRunning"
               @update:model-value="Object.assign(form, $event)"
               @run="handleRun"
-              @stream="handleStream"
-            />
+              @stream="handleStream" />
 
             <div v-if="isSaveEnabled" class="mt-3">
               <UAlert
@@ -323,37 +358,57 @@ onMounted(() => {
                 color="primary"
                 variant="soft"
                 title="已自动保存到本地"
-                description="生成结果已存入浏览器 IndexedDB，可随时查看和删除。"
-              />
+                description="生成结果已存入浏览器 IndexedDB，可随时查看和删除。" />
             </div>
           </UCard>
 
           <UCard :ui="{ body: showPrompt ? undefined : 'hidden' }">
             <template #header>
-              <button type="button" class="flex items-center justify-between gap-2 w-full cursor-pointer" @click="showPrompt = !showPrompt">
+              <button
+                type="button"
+                class="flex items-center justify-between gap-2 w-full cursor-pointer"
+                @click="showPrompt = !showPrompt">
                 <div class="flex items-center gap-2 font-extrabold">
                   <UIcon name="i-lucide-braces" />
                   <span>Prompt 模板</span>
-                  <span v-if="customPrompt !== DEFAULT_PROMPT" class="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span
+                    v-if="customPrompt !== DEFAULT_PROMPT"
+                    class="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
                 <div class="flex items-center gap-2">
-                  <UButton v-if="customPrompt !== DEFAULT_PROMPT && !showPrompt" size="xs" variant="ghost" color="neutral" @click.stop="resetPrompt">
+                  <UButton
+                    v-if="customPrompt !== DEFAULT_PROMPT && !showPrompt"
+                    size="xs"
+                    variant="ghost"
+                    color="neutral"
+                    @click.stop="resetPrompt">
                     重置
                   </UButton>
-                  <UIcon :name="showPrompt ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="text-muted" />
+                  <UIcon
+                    :name="showPrompt ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                    class="text-muted" />
                 </div>
               </button>
             </template>
             <div v-if="showPrompt" class="grid gap-2">
               <p class="text-sm text-muted">
-                下方是即将发送给 AI 的 Prompt 模板。你可以直接修改它来调整 AI 的输出风格。变量占位（如 {role}）会在运行时自动替换。
+                下方是即将发送给 AI 的 Prompt 模板。你可以直接修改它来调整 AI
+                的输出风格。变量占位（如 {role}）会在运行时自动替换。
               </p>
-              <UTextarea :model-value="customPrompt" :rows="12" :disabled="isRunning" autoresize @update:model-value="customPrompt = String($event ?? '')" />
+              <UTextarea
+                :model-value="customPrompt"
+                :rows="12"
+                :disabled="isRunning"
+                autoresize
+                @update:model-value="customPrompt = String($event ?? '')" />
             </div>
           </UCard>
 
           <UCard>
-            <DemoOutputPanel :mode="mode" :output="output" :error-message="errorMessage" />
+            <DemoOutputPanel
+              :mode="mode"
+              :output="output"
+              :error-message="errorMessage" />
           </UCard>
 
           <UCard v-if="savedReports.length > 0">
@@ -371,10 +426,12 @@ onMounted(() => {
               <div
                 v-for="record in savedReports"
                 :key="record.id"
-                class="flex items-center justify-between gap-2 py-2.5 px-3 rounded-md bg-white/65 border border-black/5"
-              >
+                class="flex items-center justify-between gap-2 py-2.5 px-3 rounded-md bg-white/65 border border-black/5">
                 <div class="flex flex-wrap items-center gap-[0.45rem] min-w-0">
-                  <UBadge :color="reportTypeColor(record.reportType)" variant="soft" size="sm">
+                  <UBadge
+                    :color="reportTypeColor(record.reportType)"
+                    variant="soft"
+                    size="sm">
                     {{ record.reportType }}
                   </UBadge>
                   <UBadge color="neutral" variant="subtle" size="sm">
@@ -391,29 +448,46 @@ onMounted(() => {
                     color="neutral"
                     variant="ghost"
                     size="xs"
-                    @click="viewReport(record)"
-                  />
-                  <UPopover :open="deletePopoverOpen === record.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
-                  <UButton
-                    icon="i-lucide-trash-2"
-                    color="error"
-                    variant="ghost"
-                    size="xs"
-                    @click="deletePopoverOpen = record.id"
-                  />
+                    @click="viewReport(record)" />
+                  <UPopover
+                    :open="deletePopoverOpen === record.id"
+                    placement="bottom-end"
+                    @update:open="
+                      (v: boolean) => {
+                        if (!v) closePopover()
+                      }
+                    ">
+                    <UButton
+                      icon="i-lucide-trash-2"
+                      color="error"
+                      variant="ghost"
+                      size="xs"
+                      @click="deletePopoverOpen = record.id" />
 
-                  <template #content>
-                    <div class="grid gap-3 p-2">
-                      <p class="text-sm whitespace-nowrap">确定要删除这份报告吗？</p>
-                      <div class="flex gap-2 justify-end">
-                        <UButton color="neutral" variant="ghost" size="xs" @click="closePopover">否</UButton>
-                        <UButton color="error" variant="solid" size="xs" @click="confirmDelete(record.id)">是</UButton>
+                    <template #content>
+                      <div class="grid gap-3 p-2">
+                        <p class="text-sm whitespace-nowrap">确定要删除这份报告吗？</p>
+                        <div class="flex gap-2 justify-end">
+                          <UButton
+                            color="neutral"
+                            variant="ghost"
+                            size="xs"
+                            @click="closePopover"
+                            >否</UButton
+                          >
+                          <UButton
+                            color="error"
+                            variant="solid"
+                            size="xs"
+                            @click="confirmDelete(record.id)"
+                            >是</UButton
+                          >
+                        </div>
                       </div>
-                    </div>
-                  </template>
-                </UPopover>
+                    </template>
+                  </UPopover>
+                </div>
               </div>
-            </div>
             </div>
           </UCard>
         </div>
@@ -422,8 +496,7 @@ onMounted(() => {
           :demo="selectedDemo"
           :pipeline-steps="pipelineSteps"
           :code-analysis-items="codeAnalysisItems"
-          :tech-tags="techTags"
-        />
+          :tech-tags="techTags" />
       </section>
     </section>
   </UContainer>

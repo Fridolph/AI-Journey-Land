@@ -1,53 +1,53 @@
-import { UpdateCardDto } from "./dto/update-card.dto";
-import { CreateCardDto } from "./dto/create-card.dto";
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { QueryCardsDto } from "./dto/query-card.dto";
-import { Prisma } from "@prisma/client";
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '../prisma/prisma.service'
+import { Prisma } from '@prisma/client'
+import { QueryCardsDto } from './dto/query-cards.dto'
+import { CreateCardDto } from './dto/create-card.dto'
+import { UpdateCardDto } from './dto/update-card.dto'
 
 @Injectable()
 export class CardsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: QueryCardsDto) {
-    const page = Math.max(Number(query.page) || 1, 1);
-    const pageSize = Math.min(Math.max(Number(query.pageSize) || 10, 1), 100);
-    const skip = (page - 1) * pageSize;
-    const take = pageSize;
-    const where: Prisma.CardWhereInput = {};
+    const page = query.page
+    const pageSize = query.pageSize
+    const skip = (page - 1) * pageSize
+    const take = pageSize
+    const where: Prisma.CardWhereInput = {}
 
     if (query.keyword) {
       where.OR = [
         {
           title: {
             contains: query.keyword,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         {
           summary: {
             contains: query.keyword,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         {
           content: {
             contains: query.keyword,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
-      ];
+      ]
     }
     if (query.status) {
-      where.status = query.status;
+      where.status = query.status
     }
 
     if (query.difficulty) {
-      where.difficulty = query.difficulty;
+      where.difficulty = query.difficulty
     }
 
     if (query.category) {
-      where.category = query.category;
+      where.category = query.category
     }
 
     const [items, total] = await Promise.all([
@@ -61,7 +61,7 @@ export class CardsService {
       }),
       this.prisma.card.count({
         where,
-      })
+      }),
     ])
 
     return {
@@ -78,11 +78,11 @@ export class CardsService {
   async findOne(id: string) {
     const card = await this.prisma.card.findUnique({
       where: { id },
-    });
+    })
 
-    if (!card) throw new NotFoundException("卡片不存在");
+    if (!card) throw new NotFoundException('卡片不存在')
 
-    return card;
+    return card
   }
 
   async create(createCardDto: CreateCardDto) {
@@ -90,13 +90,13 @@ export class CardsService {
       data: {
         title: createCardDto.title,
         summary: createCardDto.summary,
-        content: createCardDto.content || "",
+        content: createCardDto.content || '',
       },
-    });
+    })
   }
 
   async update(id: string, updateCardDto: UpdateCardDto) {
-    await this.findOne(id);
+    await this.findOne(id)
 
     return this.prisma.card.update({
       where: { id },
@@ -108,14 +108,14 @@ export class CardsService {
         difficulty: updateCardDto.difficulty,
         status: updateCardDto.status,
       },
-    });
+    })
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    await this.findOne(id)
 
     return this.prisma.card.delete({
       where: { id },
-    });
+    })
   }
 }

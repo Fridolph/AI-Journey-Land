@@ -57,7 +57,9 @@ describe('SessionManager', () => {
     const session = manager.createSession('demo-1')
     session.lastActivityAt = new Date('2024-01-01T00:00:00.000Z')
 
-    const deletedCount = manager.cleanupExpiredSessions(new Date('2024-01-01T00:00:02.000Z'))
+    const deletedCount = manager.cleanupExpiredSessions(
+      new Date('2024-01-01T00:00:02.000Z'),
+    )
 
     expect(deletedCount).toBe(1)
     expect(manager.size()).toBe(0)

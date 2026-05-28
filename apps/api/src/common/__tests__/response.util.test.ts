@@ -16,7 +16,11 @@ describe('ResponseUtil', () => {
   })
 
   it('构建标准错误响应', () => {
-    const response = ResponseUtil.error('未找到资源', HttpStatus.NOT_FOUND, '/api/unknown')
+    const response = ResponseUtil.error(
+      '未找到资源',
+      HttpStatus.NOT_FOUND,
+      '/api/unknown',
+    )
 
     expect(response).toMatchObject({
       code: HttpStatus.NOT_FOUND,

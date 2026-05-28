@@ -13,7 +13,17 @@ const props = defineProps<{
 const copied = shallowRef(false)
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
-const keywords = new Set(['await', 'const', 'for', 'from', 'if', 'import', 'in', 'new', 'of'])
+const keywords = new Set([
+  'await',
+  'const',
+  'for',
+  'from',
+  'if',
+  'import',
+  'in',
+  'new',
+  'of',
+])
 
 const lines = computed(() => splitTokensByLine(tokenizeCode(props.code)))
 const languageLabel = computed(() => props.language ?? 'code')
@@ -144,14 +154,15 @@ onBeforeUnmount(() => {
         variant="ghost"
         size="sm"
         :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
-        @click="copyCode"
-      >
+        @click="copyCode">
         {{ copied ? '已复制' : '复制' }}
       </UButton>
     </div>
 
     <div class="source-code__scroller">
-      <pre class="source-code__pre" :aria-label="`${filename ?? 'source'} 源码`"><code><span
+      <pre
+        class="source-code__pre"
+        :aria-label="`${filename ?? 'source'} 源码`"><code><span
         v-for="(line, lineIndex) in lines"
         :key="lineIndex"
         class="source-code__line"
@@ -200,8 +211,8 @@ onBeforeUnmount(() => {
   margin: 0;
   color: #cbd5e1;
   font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
   font-size: 0.82rem;
   line-height: 1.65;
   padding: 0.45rem 0;

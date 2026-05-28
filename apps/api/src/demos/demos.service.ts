@@ -118,7 +118,10 @@ export class DemosService {
     const data = body as any
     return this.prisma.demo.create({
       data: {
-        id: data.id || data.title?.replace(/\s+/g, '-').toLowerCase() || Date.now().toString(),
+        id:
+          data.id ||
+          data.title?.replace(/\s+/g, '-').toLowerCase() ||
+          Date.now().toString(),
         title: data.title,
         description: data.description || '',
         learningGoal: data.learningGoal || '',

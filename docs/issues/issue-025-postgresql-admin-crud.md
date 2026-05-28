@@ -52,12 +52,12 @@
 
 ## 遇到的关键问题
 
-| 问题 | 根因 | 解决 |
-|------|------|------|
-| PrismaClient 启动报错 | Prisma 7 构造函数 API 变更 | 使用 `@prisma/adapter-pg` |
-| Seed 读取不到 DATABASE_URL | tsx 不自动加载 .env | 安装 dotenv, `import 'dotenv/config'` |
-| schema.prisma 报 "invalid line" | Card/Demo model 合并时产生重复字段 | 手写清理 schema |
-| API List 返回空 | DemosService 未注入 PrismaService | 添加 `@Inject(PrismaService)` |
+| 问题                            | 根因                               | 解决                                  |
+| ------------------------------- | ---------------------------------- | ------------------------------------- |
+| PrismaClient 启动报错           | Prisma 7 构造函数 API 变更         | 使用 `@prisma/adapter-pg`             |
+| Seed 读取不到 DATABASE_URL      | tsx 不自动加载 .env                | 安装 dotenv, `import 'dotenv/config'` |
+| schema.prisma 报 "invalid line" | Card/Demo model 合并时产生重复字段 | 手写清理 schema                       |
+| API List 返回空                 | DemosService 未注入 PrismaService  | 添加 `@Inject(PrismaService)`         |
 
 ## 提交
 

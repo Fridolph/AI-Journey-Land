@@ -52,10 +52,10 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>
   }
 
   private shouldSkip(context: ExecutionContext): boolean {
-    const skipByDecorator = this.reflector.getAllAndOverride<boolean>(SKIP_API_RESPONSE_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ])
+    const skipByDecorator = this.reflector.getAllAndOverride<boolean>(
+      SKIP_API_RESPONSE_KEY,
+      [context.getHandler(), context.getClass()],
+    )
 
     if (skipByDecorator) {
       return true

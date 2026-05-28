@@ -4,7 +4,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui'],
   fonts: {
-    providers: { adobe: false, bunny: false, fontshare: false, fontsource: false, google: false, googleicons: false, npm: false },
+    providers: {
+      adobe: false,
+      bunny: false,
+      fontshare: false,
+      fontsource: false,
+      google: false,
+      googleicons: false,
+      npm: false,
+    },
   },
   runtimeConfig: {
     public: { apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:5044/api' },
@@ -12,5 +20,13 @@ export default defineNuxtConfig({
   devServer: { port: 5055 },
   app: { head: { title: 'AI-Journey-Land Admin' } },
   typescript: { strict: true, typeCheck: true },
-  vite: { build: { rollupOptions: { onLog(_level: string, log: { message?: string }) { if (log.message?.includes('Sourcemap')) return } } } },
+  vite: {
+    build: {
+      rollupOptions: {
+        onLog(_level: string, log: { message?: string }) {
+          if (log.message?.includes('Sourcemap')) return
+        },
+      },
+    },
+  },
 })

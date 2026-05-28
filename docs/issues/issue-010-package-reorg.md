@@ -8,12 +8,12 @@
 
 ## 开发范围
 
-| 包 | 变更 |
-|---|---|
-| `packages/shared` | 移除 `promptTemplateWeeklyReportInputSchema`、`sourceCode`/`sourceLanguage` |
-| `packages/demo-registry` | 移除 142 行 sourceCode 内联字符串 |
-| `apps/api` | 新增 demo 专属 schema + 测试 |
-| `apps/web` | 新增本地 demo-sources 数据文件，页面改用本地数据 |
+| 包                       | 变更                                                                        |
+| ------------------------ | --------------------------------------------------------------------------- |
+| `packages/shared`        | 移除 `promptTemplateWeeklyReportInputSchema`、`sourceCode`/`sourceLanguage` |
+| `packages/demo-registry` | 移除 142 行 sourceCode 内联字符串                                           |
+| `apps/api`               | 新增 demo 专属 schema + 测试                                                |
+| `apps/web`               | 新增本地 demo-sources 数据文件，页面改用本地数据                            |
 
 ## 非目标
 

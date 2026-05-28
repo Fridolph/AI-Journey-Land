@@ -6,7 +6,11 @@ import { stringifyAiContent } from '@ai-journey-land/ai-core'
 import { ZodError } from 'zod'
 import { AiService } from '../../ai/ai.service'
 import type { DemoRunner } from '../demo-runner'
-import { memoryChatMessageSchema, type MemoryChatMessageInput, type CompressedGroup } from './schema'
+import {
+  memoryChatMessageSchema,
+  type MemoryChatMessageInput,
+  type CompressedGroup,
+} from './schema'
 import { DEFAULT_SYSTEM_PROMPT, SUMMARIZE_PROMPT } from './prompts/system'
 
 @Injectable()
@@ -87,15 +91,23 @@ export class MemoryChatService implements DemoRunner {
     const groups = this.summaries.get(sessionId) ?? []
     if (groups.length === 0) return input.systemPrompt || DEFAULT_SYSTEM_PROMPT
 
-    const summaryText = groups.map((g, i) => `\n[历史对话摘要 ${i + 1}：${g.turns}]\n${g.summary}`).join('\n')
+    const summaryText = groups
+      .map((g, i) => `\n[历史对话摘要 ${i + 1}：${g.turns}]\n${g.summary}`)
+      .join('\n')
 
     return `${input.systemPrompt || DEFAULT_SYSTEM_PROMPT}\n\n=== 对话压缩历史（请在回答时参考以下上下文）===\n${summaryText}`
   }
 
-  private buildHistory(sessionManager: ReturnType<AiService['getSessionManager']>, sessionId: string): (HumanMessage | AIMessage)[] {
-    return sessionManager.getHistory(sessionId).slice(-20).map((msg) =>
-      msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content),
-    )
+  private buildHistory(
+    sessionManager: ReturnType<AiService['getSessionManager']>,
+    sessionId: string,
+  ): (HumanMessage | AIMessage)[] {
+    return sessionManager
+      .getHistory(sessionId)
+      .slice(-20)
+      .map((msg) =>
+        msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content),
+      )
   }
 
   private async autoSummarize(
@@ -106,7 +118,9 @@ export class MemoryChatService implements DemoRunner {
     const history = sessionManager.getHistory(sessionId)
     if (history.length === 0) return
 
-    const conversation = history.map((m) => `${m.role === 'user' ? '用户' : 'AI'}：${m.content}`).join('\n\n')
+    const conversation = history
+      .map((m) => `${m.role === 'user' ? '用户' : 'AI'}：${m.content}`)
+      .join('\n\n')
     const prompt = SUMMARIZE_PROMPT.replace('{conversation}', conversation)
 
     const summaryModel = this.aiService.createStableModel({ temperature: 0.2 })

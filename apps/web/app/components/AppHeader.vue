@@ -34,11 +34,12 @@ const navigationItems = [
       color="neutral"
       variant="link"
       highlight
-      highlight-color="primary"
-    />
+      highlight-color="primary" />
 
     <template #right>
-      <UBadge color="primary" variant="soft" class="hidden sm:inline-flex">Nuxt UI</UBadge>
+      <UBadge color="primary" variant="soft" class="hidden sm:inline-flex"
+        >Nuxt UI</UBadge
+      >
     </template>
 
     <template #body>
@@ -47,8 +48,7 @@ const navigationItems = [
         orientation="vertical"
         color="neutral"
         variant="link"
-        class="w-full"
-      />
+        class="w-full" />
     </template>
   </UHeader>
 </template>
