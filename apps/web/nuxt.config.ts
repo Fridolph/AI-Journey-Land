@@ -16,11 +16,11 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:4041/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:5044/api',
     },
   },
   devServer: {
-    port: 4040,
+    port: 5033,
   },
   app: {
     head: {
