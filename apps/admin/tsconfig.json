@@ -1,10 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "jsx": "preserve",
-    "types": ["@nuxt/ui"]
-  },
+  "compilerOptions": { "module": "ESNext", "moduleResolution": "bundler", "jsx": "preserve" },
   "include": ["app/**/*.ts", "app/**/*.vue", ".nuxt/**/*.ts"]
 }

@@ -6,6 +6,18 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CardStatus {
+  todo
+  doing
+  done
+}
+
+enum CardDifficulty {
+  basic
+  medium
+  advanced
+}
+
 model Card {
   id         String   @id @default(uuid())
   title      String
