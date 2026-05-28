@@ -1,3 +1,62 @@
+<script setup lang="ts">
+const config = useRuntimeConfig()
+const apiBase = computed(() => config.public.apiBase)
+
+const dbStatus = ref<'loading' | 'connected' | 'error'>('loading')
+const dbError = ref('')
+const demos = ref<any[]>([])
+const cards = ref<any[]>([])
+const activeTab = ref('demos')
+const demoForm = reactive({ id: '', title: '', description: '', learningGoal: '', category: 'AI & Agent', routePath: '', apiNamespace: '', displayMode: 'custom-page', supportsStreaming: true, sourceUrl: '' })
+const cardForm = reactive({ id: '', title: '', content: '', summary: '', category: '', difficulty: 'basic', status: 'todo', tags: '' })
+const editCardId = ref<string | null>(null)
+const editDemoId = ref<string | null>(null)
+const cardRecordNote = ref('')
+const notice = ref('')
+function showNotice(msg: string) { notice.value = msg; setTimeout(() => notice.value = '', 2500) }
+
+async function checkDB() {
+  dbStatus.value = 'loading'
+  try { await $fetch(`${apiBase.value}/health`); dbStatus.value = 'connected' } catch (e: any) { dbStatus.value = 'error'; dbError.value = e.message }
+}
+async function loadDemos() {
+  const res = await $fetch<any>(`${apiBase.value}/demos`)
+  demos.value = (res.data as any[])?.flatMap((g: any) => g.items) ?? []
+}
+async function saveDemo() {
+  if (!demoForm.title || !demoForm.routePath) return showNotice('请填写标题和路由')
+  try {
+    if (editDemoId.value) await $fetch(`${apiBase.value}/demos/${editDemoId.value}`, { method: 'PATCH', body: demoForm })
+    else await $fetch(`${apiBase.value}/demos`, { method: 'POST', body: demoForm })
+    showNotice(editDemoId.value ? '更新成功' : '创建成功')
+    resetDemoForm(); await loadDemos()
+  } catch (e: any) { showNotice(e.message || '操作失败') }
+}
+function editDemo(d: any) { editDemoId.value = d.id; Object.assign(demoForm, d); activeTab.value = 'demos' }
+async function deleteDemo(id: string) { try { await $fetch(`${apiBase.value}/demos/${id}`, { method: 'DELETE' }); await loadDemos(); showNotice('删除成功') } catch (e: any) { showNotice(e.message) } }
+function resetDemoForm() { editDemoId.value = null; Object.assign(demoForm, { id: '', title: '', description: '', learningGoal: '', category: 'AI & Agent', routePath: '', apiNamespace: '', displayMode: 'custom-page', supportsStreaming: true, sourceUrl: '' }) }
+
+async function loadCards() { const res = await $fetch<any>(`${apiBase.value}/cards`); cards.value = (res.data as any[]) ?? [] }
+async function saveCard() {
+  if (!cardForm.title || !cardForm.content) return showNotice('请填写标题和内容')
+  try {
+    const payload = { ...cardForm, tags: cardForm.tags.split(',').map((t: string) => t.trim()).filter(Boolean) }
+    if (editCardId.value) await $fetch(`${apiBase.value}/cards/${editCardId.value}`, { method: 'PATCH', body: payload })
+    else await $fetch(`${apiBase.value}/cards`, { method: 'POST', body: payload })
+    showNotice(editCardId.value ? '更新成功' : '创建成功'); resetCardForm(); await loadCards()
+  } catch (e: any) { showNotice(e.message || '操作失败') }
+}
+function editCard(c: any) { editCardId.value = c.id; Object.assign(cardForm, { ...c, tags: (c.tags || []).map((t: any) => t.tag?.name || t.name).join(', ') }) }
+async function deleteCard(id: string) { try { await $fetch(`${apiBase.value}/cards/${id}`, { method: 'DELETE' }); await loadCards(); showNotice('删除成功') } catch (e: any) { showNotice(e.message) } }
+async function addCardRecord(cardId: string) {
+  if (!cardRecordNote.value) return
+  try { await $fetch(`${apiBase.value}/cards/${cardId}/records`, { method: 'POST', body: { action: 'note', note: cardRecordNote.value } }); cardRecordNote.value = ''; showNotice('学习记录已添加') } catch (e: any) { showNotice(e.message) }
+}
+function resetCardForm() { editCardId.value = null; Object.assign(cardForm, { id: '', title: '', content: '', summary: '', category: '', difficulty: 'basic', status: 'todo', tags: '' }) }
+
+onMounted(async () => { await checkDB(); await loadDemos(); await loadCards() })
+</script>
+
 <template>
   <UContainer class="py-8">
     <h1 class="text-2xl font-extrabold mb-6">Admin Dashboard</h1>
