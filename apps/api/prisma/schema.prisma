@@ -17,10 +17,34 @@ model Card {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  tags  CardTag[]
+  tags    CardTag[]
   records LearningRecord[]
 
   @@map("cards")
+}
+
+model Demo {
+  id               String  @id
+  title            String
+  description      String
+  learningGoal     String  @map("learning_goal")
+  category         String
+  tags             Json    @default("[]")
+  routePath        String  @map("route_path")
+  apiNamespace     String  @map("api_namespace")
+  displayMode      String  @map("display_mode")
+  ownerPackage     String  @map("owner_package")
+  supportsStreaming Boolean @default(false) @map("supports_streaming")
+  rolePresets      Json?   @map("role_presets")
+  reportTypePresets Json?  @map("report_type_presets")
+  inputFields      Json?   @map("input_fields")
+  sourceUrl        String? @map("source_url")
+  sourceFiles      Json?   @map("source_files")
+  knownLimits      Json    @default("[]") @map("known_limits")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("demos")
 }
 
 model Tag {

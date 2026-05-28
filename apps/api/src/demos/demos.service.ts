@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
-import { getDemoById, listDemoCatalog } from '@ai-journey-land/demo-registry'
-import type { DemoCatalogGroup, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import type { AiMessage } from '@ai-journey-land/ai-core'
+import type { DemoCatalogGroup, DemoMeta, DemoRunResponse } from '@ai-journey-land/shared'
 import { AiService } from '../ai/ai.service'
+import { PrismaService } from '../prisma/prisma.service'
 import { PromptTemplateWeeklyReportService } from './prompt-template-weekly-report/prompt-template-weekly-report.service'
 import { ChatService } from './chat/chat.service'
 import { MemoryChatService } from './memory/memory-chat.service'
@@ -21,6 +21,8 @@ export class DemosService {
     private readonly memoryChatService: MemoryChatService,
     @Inject(AiService)
     private readonly aiService: AiService,
+    @Inject(PrismaService)
+    private readonly prisma: PrismaService,
   ) {
     this.runners = new Map<string, DemoRunner>([
       [promptTemplateWeeklyReportService.demoId, promptTemplateWeeklyReportService],
@@ -29,18 +31,66 @@ export class DemosService {
     ])
   }
 
-  listDemos(): DemoCatalogGroup[] {
-    return listDemoCatalog()
+  async listDemos(): Promise<DemoCatalogGroup[]> {
+    try {
+      const demos = await this.prisma.demo.findMany({
+        orderBy: { createdAt: 'asc' },
+      })
+      if (demos.length > 0) {
+        const items = demos.map((d) => ({
+          id: d.id,
+          title: d.title,
+          description: d.description,
+          learningGoal: d.learningGoal,
+          category: d.category,
+          tags: d.tags as string[],
+          routePath: d.routePath,
+          apiNamespace: d.apiNamespace,
+          displayMode: d.displayMode as 'custom-page' | 'generic-runner',
+          ownerPackage: d.ownerPackage,
+          supportsStreaming: d.supportsStreaming,
+          rolePresets: d.rolePresets as string[] | undefined,
+          reportTypePresets: d.reportTypePresets as string[] | undefined,
+          sourceUrl: d.sourceUrl ?? undefined,
+          sourceFiles: d.sourceFiles as any,
+          knownLimits: d.knownLimits as string[],
+        }))
+        const map = new Map<string, typeof items>()
+        for (const item of items) {
+          const cat = item.category || '其他'
+          if (!map.has(cat)) map.set(cat, [])
+          map.get(cat)!.push(item)
+        }
+        return Array.from(map.entries()).map(([category, items]) => ({ category, items }))
+      }
+    } catch {
+      // Fallback to registry if DB not available
+    }
+    return []
   }
 
-  getDemo(id: string): DemoMeta {
-    const demo = getDemoById(id)
-
-    if (!demo) {
-      throw new NotFoundException(`未找到 demo：${id}`)
+  async getDemo(id: string): Promise<DemoMeta> {
+    const d = await this.prisma.demo.findUnique({ where: { id } })
+    if (!d) throw new NotFoundException(`未找到 demo：${id}`)
+    return {
+      id: d.id,
+      title: d.title,
+      description: d.description,
+      learningGoal: d.learningGoal,
+      category: d.category,
+      tags: d.tags as string[],
+      routePath: d.routePath,
+      apiNamespace: d.apiNamespace,
+      displayMode: d.displayMode as 'custom-page' | 'generic-runner',
+      ownerPackage: d.ownerPackage,
+      supportsStreaming: d.supportsStreaming,
+      rolePresets: d.rolePresets as string[] | undefined,
+      reportTypePresets: d.reportTypePresets as string[] | undefined,
+      inputFields: (d.inputFields as any) ?? [],
+      sourceUrl: d.sourceUrl ?? undefined,
+      sourceFiles: d.sourceFiles as any,
+      knownLimits: d.knownLimits as string[],
     }
-
-    return demo
   }
 
   async runDemo(id: string, body: unknown): Promise<DemoRunResponse> {
