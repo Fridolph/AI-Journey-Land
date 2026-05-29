@@ -9,7 +9,7 @@ interface Card { id: string; title: string; summary?: string; content: string; c
 
 const cards = ref<Card[]>([])
 const pagination = ref({ page: 1, pageSize: 10, total: 0, totalPages: 0 })
-const filters = reactive({ keyword: '', status: '', difficulty: '', category: '' })
+const filters = reactive({ keyword: '', status: 'all', difficulty: 'all', category: '' })
 const form = reactive({ title: '', summary: '', content: '', category: '', difficulty: 'basic', status: 'todo' })
 const editId = ref<string | null>(null)
 const notice = ref('')
@@ -18,8 +18,8 @@ function showNotice(msg: string) { notice.value = msg; setTimeout(() => notice.v
 async function load() {
   const params = new URLSearchParams({ page: String(pagination.value.page), pageSize: '10' })
   if (filters.keyword) params.set('keyword', filters.keyword)
-  if (filters.status) params.set('status', filters.status)
-  if (filters.difficulty) params.set('difficulty', filters.difficulty)
+  if (filters.status && filters.status !== 'all') params.set('status', filters.status)
+  if (filters.difficulty && filters.difficulty !== 'all') params.set('difficulty', filters.difficulty)
   if (filters.category) params.set('category', filters.category)
   try {
     const res = await $fetch<any>(`${apiBase.value}/cards?${params}`)
@@ -54,8 +54,8 @@ onMounted(load)
     <UCard>
       <div class="flex items-center gap-3 flex-wrap">
         <UInput v-model="filters.keyword" placeholder="搜索标题/摘要/内容" class="w-48" @keydown.enter="search()" />
-        <USelect v-model="filters.status" :items="['', ...STATUS_OPTIONS]" placeholder="状态" class="w-28" @update:model-value="search()" />
-        <USelect v-model="filters.difficulty" :items="['', ...DIFFICULTY_OPTIONS]" placeholder="难度" class="w-28" @update:model-value="search()" />
+        <USelect v-model="filters.status" :items="[{ label: '全部状态', value: 'all' }, ...STATUS_OPTIONS.map(v => ({ label: v, value: v }))]" placeholder="状态" class="w-28" @update:model-value="search()" />
+        <USelect v-model="filters.difficulty" :items="[{ label: '全部难度', value: 'all' }, ...DIFFICULTY_OPTIONS.map(v => ({ label: v, value: v }))]" placeholder="难度" class="w-28" @update:model-value="search()" />
         <UInput v-model="filters.category" placeholder="分类" class="w-28" @keydown.enter="search()" />
         <UButton icon="i-lucide-search" color="primary" @click="search()">搜索</UButton>
       </div>
