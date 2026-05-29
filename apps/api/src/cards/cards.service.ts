@@ -38,39 +38,32 @@ export class CardsService {
         },
       ]
     }
-    if (query.status) {
-      where.status = query.status
-    }
+    if (query.status) where.status = query.status
+    if (query.category) where.category = query.category
+    if (query.difficulty) where.difficulty = query.difficulty
 
-    if (query.difficulty) {
-      where.difficulty = query.difficulty
-    }
-
-    if (query.category) {
-      where.category = query.category
-    }
-
-    const [items, total] = await Promise.all([
+    const orderBy = {
+      [query.sortBy]: query.sortOrder,
+    } satisfies Prisma.CardOrderByWithRelationInput
+    const [items, total] = await this.prisma.$transaction([
       this.prisma.card.findMany({
         where,
         skip,
         take,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy,
       }),
-      this.prisma.card.count({
-        where,
-      }),
+      this.prisma.card.count({ where }),
     ])
 
     return {
       items,
-      pagination: {
+      meta: {
         page,
         pageSize,
         total,
         totalPages: Math.ceil(total / pageSize),
+        sortBy: query.sortBy,
+        sortOrder: query.sortOrder,
       },
     }
   }
@@ -91,6 +84,9 @@ export class CardsService {
         title: createCardDto.title,
         summary: createCardDto.summary,
         content: createCardDto.content || '',
+        category: createCardDto.category,
+        difficulty: createCardDto.difficulty,
+        status: createCardDto.status,
       },
     })
   }

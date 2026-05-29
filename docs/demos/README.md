@@ -26,6 +26,7 @@ docs/demos/
 - [Card Learning Demo：数据库环境](./card-learning-demo/数据库环境.md)
 - [Card Learning Demo：Prisma Schema 语法入门](./card-learning-demo/Prisma-Schema语法入门.md)
 - [Card Learning Demo：DTO 与 Zod 校验](./card-learning-demo/DTO与Zod校验.md)
+- [Card Learning Demo：Prisma Service 操作入门](./card-learning-demo/Prisma-Service操作入门.md)
 
 ## 文档约定
 
