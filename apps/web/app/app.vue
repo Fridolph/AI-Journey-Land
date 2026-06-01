@@ -1,6 +1,9 @@
 <template>
   <UApp>
-    <div class="app-shell">
+    <template v-if="isChatRoute">
+      <NuxtPage />
+    </template>
+    <div v-else class="app-shell">
       <AppHeader />
       <main class="app-shell__main">
         <NuxtPage />
@@ -8,6 +11,11 @@
     </div>
   </UApp>
 </template>
+
+<script setup lang="ts">
+const route = useRoute()
+const isChatRoute = computed(() => route.path.startsWith('/chat'))
+</script>
 
 <style scoped>
 .app-shell {

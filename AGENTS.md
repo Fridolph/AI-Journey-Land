@@ -122,6 +122,27 @@ docs/
 - 新增 demo 必须补充三件套文档（总览、前端复盘、后端与AI复盘）
 - 提交格式遵循 `docs/02-工程化约定.md` 中的 Commit 格式规范
 
+### Tailwind CSS 编写规范
+
+- 优先使用 Tailwind utility class 直接写在模板 class 属性中
+- 当单个 class 内 CSS 属性名超过 9 个时，使用 BEM 命名抽取到 `<style scoped>`
+- BEM 类内部**必须使用 `@apply` 声明 Tailwind utility**，仅当 Tailwind 不支持的新特性 API（如某些 CSS4 属性）才降级为普通 CSS
+- 禁止在 `<style>` 中混用 `@apply` 与普通 CSS 属性
+
+```css
+/* ✅ 正确：@apply Tailwind utility */
+.chat-sidebar__item {
+  @apply flex items-center gap-2 px-2.5 py-2 m-1 rounded-lg cursor-pointer transition-colors;
+}
+
+/* ❌ 错误：普通 CSS 而非 @apply */
+.chat-sidebar__item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+}
+```
+
 ## 8. GitHub Issue 开发流程
 
 每个 issue 都按完整工程流程推进，避免在 `dev` 或 `main` 上直接堆改动。
