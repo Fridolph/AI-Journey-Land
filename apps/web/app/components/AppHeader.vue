@@ -6,6 +6,11 @@ const navigationItems = [
     to: '/',
   },
   {
+    label: 'Chat',
+    icon: 'i-lucide-message-circle',
+    to: '/demos/ai-chat-group',
+  },
+  {
     label: 'Docs',
     icon: 'i-lucide-book-open',
     to: 'https://github.com/Fridolph/AI-Journey-Land/tree/main/docs',
