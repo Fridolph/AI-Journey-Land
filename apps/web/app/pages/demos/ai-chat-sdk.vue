@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Chat } from '@ai-sdk/vue'
+import { DefaultChatTransport } from 'ai'
 
 const chat = new Chat({
-  api: '/api/ai-chat',
-  initialMessages: [],
+  transport: new DefaultChatTransport({ api: '/api/ai-chat' }),
 })
 
 const input = ref('')
@@ -28,7 +28,7 @@ watch(() => chat.messages, () => {
 <template>
   <UContainer as="main" class="py-8">
     <div class="max-w-2xl mx-auto">
-      <UPageHeader title="Chat Demo (AI SDK)" description="@ai-sdk/vue Chat + @ai-sdk/openai streamText" class="mb-4">
+      <UPageHeader title="Chat Demo (AI SDK)" description="@ai-sdk/vue Chat + DefaultChatTransport" class="mb-4">
         <template #links>
           <UButton to="/" icon="i-lucide-arrow-left" variant="ghost" color="neutral">返回</UButton>
         </template>
