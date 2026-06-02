@@ -23,6 +23,6 @@ export class AiChatController {
       messages: body.messages as any,
     })
 
-    result.pipeDataStreamToResponse(res)
+    result.pipeTextStreamToResponse(res)
   }
 }
