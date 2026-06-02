@@ -8,7 +8,7 @@ const navigationItems = [
   {
     label: 'Chat',
     icon: 'i-lucide-message-circle',
-    to: '/demos/ai-chat-group',
+    to: '/chat',
   },
   {
     label: 'Docs',
