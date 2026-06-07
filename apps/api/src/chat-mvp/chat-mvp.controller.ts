@@ -10,8 +10,8 @@ export class ChatMvpController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  sendMessage(@Body() body: CreateChatMvpMessageDto) {
+  async sendMessage(@Body() body: CreateChatMvpMessageDto) {
     console.log('[chat-mvp] request payload:', body)
-    return this.chatMvpService.createReply(body.message)
+    return await this.chatMvpService.createReply(body.message)
   }
 }

@@ -50,13 +50,13 @@ async function sendMessage() {
   <UContainer as="main" class="chat-mvp-page">
     <div class="chat-mvp-shell">
       <div class="chat-mvp-eyebrow">AI Chat MVP #34</div>
-      <h1 class="chat-mvp-title">接口握手可见实验线</h1>
+      <h1 class="chat-mvp-title">Prompt 可见实验线</h1>
       <p class="chat-mvp-description">
-        这一步先不接 AI，只验证浏览器输入的一句话如何穿过 Nuxt 与 NestJS，再把响应带回页面。
+        这一步开始接入真实 LLM，但仍保持最小一次性响应，重点是看清模型收到了什么、回了什么。
       </p>
 
       <UCard :ui="{ body: 'p-5 sm:p-6 grid gap-4' }">
-        <UFormField label="输入消息" description="发送前后请观察浏览器 console 与后端 terminal。">
+        <UFormField label="输入消息" description="发送前后请观察浏览器 console 与后端 terminal 中的 Prompt 与原始响应。">
           <UTextarea
             v-model="message"
             :rows="4"
@@ -74,7 +74,7 @@ async function sendMessage() {
           >
             发送握手请求
           </UButton>
-          <UBadge color="neutral" variant="soft">POST /api/chat-mvp</UBadge>
+          <UBadge color="neutral" variant="soft">LLM via POST /api/chat-mvp</UBadge>
         </div>
 
         <UAlert

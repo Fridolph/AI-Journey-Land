@@ -1,37 +1,38 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ChatMvpController } from '../chat-mvp.controller'
-import { ChatMvpService } from '../chat-mvp.service'
+import type { ChatMvpService } from '../chat-mvp.service'
 
 describe('ChatMvpController', () => {
-  let chatMvpService: ChatMvpService
+  let chatMvpService: Pick<ChatMvpService, 'createReply'>
   let chatMvpController: ChatMvpController
 
   beforeEach(() => {
-    chatMvpService = new ChatMvpService()
-    chatMvpController = new ChatMvpController(chatMvpService)
+    chatMvpService = {
+      createReply: vi.fn().mockResolvedValue({
+        reply: '你好，我已经收到你的消息。',
+        echoedMessage: '你好',
+      }),
+    }
+
+    chatMvpController = new ChatMvpController(chatMvpService as ChatMvpService)
   })
 
-  it('返回可见的最小握手响应', () => {
-    expect(chatMvpController.sendMessage({ message: '你好' })).toEqual({
-      reply: 'pong: 你好',
+  it('透传消息给 service 并返回结果', async () => {
+    await expect(chatMvpController.sendMessage({ message: '你好' })).resolves.toEqual({
+      reply: '你好，我已经收到你的消息。',
       echoedMessage: '你好',
     })
+
+    expect(chatMvpService.createReply).toHaveBeenCalledWith('你好')
   })
 
-  it('记录请求与响应日志', () => {
+  it('记录请求日志', async () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    expect(chatMvpController.sendMessage({ message: 'hello' })).toEqual({
-      reply: 'pong: hello',
-      echoedMessage: 'hello',
-    })
+    await chatMvpController.sendMessage({ message: 'hello' })
 
     expect(logSpy).toHaveBeenCalledWith('[chat-mvp] request payload:', {
       message: 'hello',
-    })
-    expect(logSpy).toHaveBeenCalledWith('[chat-mvp] response payload:', {
-      reply: 'pong: hello',
-      echoedMessage: 'hello',
     })
 
     logSpy.mockRestore()
