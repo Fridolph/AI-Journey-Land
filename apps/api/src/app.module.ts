@@ -4,6 +4,7 @@ import { AiModule } from './ai/ai.module'
 import { AiChatModule } from './ai-chat/ai-chat.module'
 import { AuthModule } from './auth/auth.module'
 import { ChatModule } from './chat/chat.module'
+import { ChatMvpModule } from './chat-mvp/chat-mvp.module'
 import { DemosModule } from './demos/demos.module'
 // [LEARN] Cards/Prisma 待从零构建，暂时注释
 // import { CardsModule } from './cards/cards.module'
@@ -21,6 +22,7 @@ import { HealthController } from './health.controller'
     AiChatModule,
     AuthModule,
     ChatModule,
+    ChatMvpModule,
     DemosModule,
     // CardsModule,
   ],
