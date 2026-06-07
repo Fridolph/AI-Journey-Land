@@ -23,7 +23,7 @@
 - Issue: <https://github.com/Fridolph/AI-Journey-Land/issues/34>
 - 分支: `feat/#34-chat-mvp-handshake`
 - 类型: `feat`
-- 状态: 已合并到 `dev`
+- 状态: review-ready
 
 ## Plan / TDD
 
@@ -144,6 +144,6 @@ pnpm test
 
 - PR: 本地 issue 分支合并到 `dev`
 - Commit:
-  - `22d31d6` `feat(#34): 新增 chat-mvp 握手实验线`
-- 合并到 `dev`: 是
+  - `842c1b2` `feat(#34): 新增 chat-mvp 握手实验线`
+- 合并到 `dev`: 待合并
 - Issue 关闭时间: 待回写后关闭
