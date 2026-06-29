@@ -3,8 +3,10 @@ import type { DemoMeta } from '@ai-journey-land/shared'
 export const promptTemplateWeeklyReportDemo: DemoMeta = {
   id: 'prompt-template-weekly-report',
   title: '角色驱动 · 智能报告',
-  description: 'Role-Driven Document Generator —— 选择角色和报告类型，填入工作数据，AI 即按角色视角生成专业文档。同一份数据，技术 Leader 看技术债，CEO 看业务价值——角色不同，输出完全不同。支持日报到年度总结的全周期覆盖，本地 IndexedDB 持久化，Few-Shot 自定义模板。',
-  learningGoal: '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式：模板是壳，角色是魂，数据是血肉。核心技术栈：LangChain、Zod、SSE Streaming、IndexedDB。',
+  description:
+    'Role-Driven Document Generator —— 选择角色和报告类型，填入工作数据，AI 即按角色视角生成专业文档。同一份数据，技术 Leader 看技术债，CEO 看业务价值——角色不同，输出完全不同。支持日报到年度总结的全周期覆盖，本地 IndexedDB 持久化，Few-Shot 自定义模板。',
+  learningGoal:
+    '理解 PromptTemplate + Role Injection + Few-Shot 的 AI 文档生成范式：模板是壳，角色是魂，数据是血肉。核心技术栈：LangChain、Zod、SSE Streaming、IndexedDB。',
   category: 'AI & Agent',
   tags: ['Prompt Template', 'Role Injection', 'LangChain', 'Streaming', 'Few-Shot'],
   routePath: '/demos/prompt-template-weekly-report',

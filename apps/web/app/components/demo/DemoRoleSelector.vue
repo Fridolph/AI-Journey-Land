@@ -18,7 +18,6 @@ const emit = defineEmits<{
       :items="presets"
       :disabled="isRunning"
       size="sm"
-      @update:model-value="emit('update:modelValue', String($event))"
-    />
+      @update:model-value="emit('update:modelValue', String($event))" />
   </label>
 </template>

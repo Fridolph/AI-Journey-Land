@@ -1,11 +1,29 @@
 {
-  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxfmt/configuration_schema.json",
-  "indentStyle": "space",
-  "indentWidth": 2,
-  "lineWidth": 100,
-  "quoteStyle": "single",
-  "semicolons": "always",
-  "trailingCommas": "es5",
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
   "singleQuote": true,
-  "semi": false
+  "trailingComma": "all",
+  "printWidth": 90,
+  "useTabs": false,
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "vueIndentScriptAndStyle": false,
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "jsxSingleQuote": false,
+  "proseWrap": "preserve",
+  "htmlWhitespaceSensitivity": "css",
+  "insertFinalNewline": true,
+  "ignorePatterns": [
+    ".git/**",
+    ".turbo/**",
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
+    "apps/web/.nuxt/**",
+    "apps/web/.output/**",
+    "apps/api/dist/**",
+    "packages/*/dist/**",
+    "pnpm-lock.yaml"
+  ]
 }

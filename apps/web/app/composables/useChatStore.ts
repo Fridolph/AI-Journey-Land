@@ -122,7 +122,9 @@ export function useChatStore() {
     return record?.messages ?? []
   }
 
-  async function loadSessionConfig(sessionId: string): Promise<Record<string, unknown> | undefined> {
+  async function loadSessionConfig(
+    sessionId: string,
+  ): Promise<Record<string, unknown> | undefined> {
     const db = await openDB()
     const tx = db.transaction(SESSION_STORE, 'readonly')
     const store = tx.objectStore(SESSION_STORE)
@@ -134,15 +136,20 @@ export function useChatStore() {
     return record?.config as Record<string, unknown> | undefined
   }
 
-  async function saveSessionConfig(sessionId: string, config: Record<string, unknown>): Promise<void> {
+  async function saveSessionConfig(
+    sessionId: string,
+    config: Record<string, unknown>,
+  ): Promise<void> {
     const db = await openDB()
     const tx = db.transaction(SESSION_STORE, 'readwrite')
     const store = tx.objectStore(SESSION_STORE)
-    const existing = await new Promise<ChatSessionRecord | undefined>((resolve, reject) => {
-      const req = store.get(sessionId)
-      req.onsuccess = () => resolve(req.result)
-      req.onerror = () => reject(req.error)
-    })
+    const existing = await new Promise<ChatSessionRecord | undefined>(
+      (resolve, reject) => {
+        const req = store.get(sessionId)
+        req.onsuccess = () => resolve(req.result)
+        req.onerror = () => reject(req.error)
+      },
+    )
     const record: ChatSessionRecord = {
       id: sessionId,
       title: existing?.title ?? '新对话',
@@ -157,5 +164,15 @@ export function useChatStore() {
     })
   }
 
-  return { sessions, isLoading, loadAll, save, remove, saveMessages, loadMessages, loadSessionConfig, saveSessionConfig }
+  return {
+    sessions,
+    isLoading,
+    loadAll,
+    save,
+    remove,
+    saveMessages,
+    loadMessages,
+    loadSessionConfig,
+    saveSessionConfig,
+  }
 }

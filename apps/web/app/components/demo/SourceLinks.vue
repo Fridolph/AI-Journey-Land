@@ -44,8 +44,7 @@ defineProps<{
         icon="i-lucide-code-2"
         variant="subtle"
         color="neutral"
-        size="xs"
-      >
+        size="xs">
         原始源码
       </UButton>
     </div>

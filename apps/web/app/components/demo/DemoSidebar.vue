@@ -25,13 +25,17 @@ const emit = defineEmits<{
         class="demo-sidebar__item"
         :class="{ 'demo-sidebar__item--active': demo.id === activeDemoId }"
         type="button"
-        @click="emit('select', demo.id)"
-      >
+        @click="emit('select', demo.id)">
         <span class="demo-sidebar__category">{{ demo.category }}</span>
         <span class="demo-sidebar__name">{{ demo.title }}</span>
         <span class="demo-sidebar__desc">{{ demo.description }}</span>
         <span class="demo-sidebar__tags">
-          <UBadge v-for="tag in demo.tags" :key="tag" color="neutral" variant="soft" size="sm">
+          <UBadge
+            v-for="tag in demo.tags"
+            :key="tag"
+            color="neutral"
+            variant="soft"
+            size="sm">
             {{ tag }}
           </UBadge>
         </span>

@@ -34,24 +34,37 @@ function confirmDelete(id: string) {
         :key="s.id"
         class="flex items-center justify-between gap-2 py-1.5 px-2 rounded hover:bg-muted cursor-pointer"
         :class="{ 'bg-muted': s.id === currentSessionId }"
-        @click="emit('select', s.id)"
-      >
+        @click="emit('select', s.id)">
         <span class="text-sm truncate flex-1 min-w-0">{{ s.title }}</span>
-        <UPopover :open="deletePopoverOpen === s.id" placement="bottom-end" @update:open="(v: boolean) => { if (!v) closePopover() }">
+        <UPopover
+          :open="deletePopoverOpen === s.id"
+          placement="bottom-end"
+          @update:open="
+            (v: boolean) => {
+              if (!v) closePopover()
+            }
+          ">
           <UButton
             icon="i-lucide-trash-2"
             color="error"
             variant="ghost"
             size="xs"
-            @click.stop="deletePopoverOpen = s.id"
-          />
+            @click.stop="deletePopoverOpen = s.id" />
 
           <template #content>
             <div class="grid gap-3 p-2">
               <p class="text-sm whitespace-nowrap">确定删除此会话？</p>
               <div class="flex gap-2 justify-end">
-                <UButton color="neutral" variant="ghost" size="xs" @click="closePopover">否</UButton>
-                <UButton color="error" variant="solid" size="xs" @click="confirmDelete(s.id)">是</UButton>
+                <UButton color="neutral" variant="ghost" size="xs" @click="closePopover"
+                  >否</UButton
+                >
+                <UButton
+                  color="error"
+                  variant="solid"
+                  size="xs"
+                  @click="confirmDelete(s.id)"
+                  >是</UButton
+                >
               </div>
             </div>
           </template>
@@ -65,8 +78,7 @@ function confirmDelete(id: string) {
         variant="ghost"
         color="neutral"
         :disabled="atLimit"
-        @click="emit('create')"
-      >
+        @click="emit('create')">
         {{ atLimit ? '暂只支持 10 个会话' : '新会话' }}
       </UButton>
     </div>

@@ -56,9 +56,11 @@ const requiredFields = ['devActivities']
         :key="field.name"
         class="grid gap-1.5"
         :class="{
-          'col-span-full': field.name === 'teamGoal' || field.name === 'devActivities' || field.name === 'reportTemplate',
-        }"
-      >
+          'col-span-full':
+            field.name === 'teamGoal' ||
+            field.name === 'devActivities' ||
+            field.name === 'reportTemplate',
+        }">
         <span class="text-[0.82rem] font-bold text-[#334155]">
           {{ field.label }}
           <span v-if="requiredFields.includes(field.name)" class="text-red-500">*</span>
@@ -70,15 +72,13 @@ const requiredFields = ['devActivities']
           :rows="field.name === 'devActivities' ? 7 : 4"
           autoresize
           :disabled="isRunning"
-          @update:model-value="updateField(field.name, String($event ?? ''))"
-        />
+          @update:model-value="updateField(field.name, String($event ?? ''))" />
         <UInput
           v-else
           :model-value="modelValue[field.name] ?? ''"
           :placeholder="field.placeholder"
           :disabled="isRunning"
-          @update:model-value="updateField(field.name, String($event ?? ''))"
-        />
+          @update:model-value="updateField(field.name, String($event ?? ''))" />
       </label>
     </div>
 
@@ -87,8 +87,7 @@ const requiredFields = ['devActivities']
       icon="i-lucide-circle-alert"
       color="error"
       variant="soft"
-      :description="validationError"
-    />
+      :description="validationError" />
 
     <div class="flex flex-wrap gap-3">
       <UButton
@@ -96,8 +95,7 @@ const requiredFields = ['devActivities']
         icon="i-lucide-play"
         color="primary"
         :loading="isRunning"
-        :disabled="isRunning"
-      >
+        :disabled="isRunning">
         普通运行
       </UButton>
       <UButton
@@ -107,8 +105,7 @@ const requiredFields = ['devActivities']
         variant="subtle"
         :loading="isRunning"
         :disabled="isRunning"
-        @click="handleStream"
-      >
+        @click="handleStream">
         流式运行
       </UButton>
     </div>

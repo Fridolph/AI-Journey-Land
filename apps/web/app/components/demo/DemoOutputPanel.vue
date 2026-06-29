@@ -77,13 +77,18 @@ onBeforeUnmount(() => {
   <section class="grid gap-4">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-[0.72rem] font-extrabold uppercase tracking-[0.08em] text-land-primary">
+        <p
+          class="text-[0.72rem] font-extrabold uppercase tracking-[0.08em] text-land-primary">
           Model Output
         </p>
         <h3 class="mt-0.5 text-xl font-extrabold">运行结果</h3>
       </div>
-      <UBadge v-if="mode === 'streaming'" color="primary" variant="soft">Streaming</UBadge>
-      <UBadge v-else-if="mode === 'loading'" color="warning" variant="soft">Running</UBadge>
+      <UBadge v-if="mode === 'streaming'" color="primary" variant="soft"
+        >Streaming</UBadge
+      >
+      <UBadge v-else-if="mode === 'loading'" color="warning" variant="soft"
+        >Running</UBadge
+      >
       <UBadge v-else-if="mode === 'done'" color="success" variant="soft">Done</UBadge>
       <UBadge v-else-if="mode === 'error'" color="error" variant="soft">Error</UBadge>
       <UBadge v-else color="neutral" variant="soft">Idle</UBadge>
@@ -95,8 +100,7 @@ onBeforeUnmount(() => {
       color="error"
       variant="soft"
       title="运行失败"
-      :description="errorMessage"
-    />
+      :description="errorMessage" />
 
     <div v-if="mode === 'loading'" class="output-panel__loading">
       <div class="output-panel__loading-orbit">
@@ -119,14 +123,14 @@ onBeforeUnmount(() => {
       <button
         class="output-panel__copy-btn"
         :class="{ 'output-panel__copy-btn--done': copied }"
-        @click="copyOutput"
-      >
+        @click="copyOutput">
         <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" />
       </button>
       <pre
         ref="outputContent"
         class="min-h-72 max-h-[33.75rem] overflow-auto whitespace-pre-wrap rounded-lg border border-black/10 bg-[#101816] px-4 py-4 text-[0.9rem] leading-relaxed text-[#d7fff4]"
-      >{{ output }}</pre>
+        >{{ output }}</pre
+      >
     </div>
 
     <div v-else-if="mode !== 'loading'" class="output-panel__empty">

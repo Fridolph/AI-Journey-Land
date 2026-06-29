@@ -5,7 +5,9 @@ import { of, firstValueFrom } from 'rxjs'
 import { SKIP_API_RESPONSE_KEY } from '../decorators/skip-api-response.decorator'
 import { ResponseInterceptor } from '../interceptors/response.interceptor'
 
-function createContext(options: { skip?: boolean; contentType?: string } = {}): ExecutionContext {
+function createContext(
+  options: { skip?: boolean; contentType?: string } = {},
+): ExecutionContext {
   function handler() {}
   class TestController {}
 

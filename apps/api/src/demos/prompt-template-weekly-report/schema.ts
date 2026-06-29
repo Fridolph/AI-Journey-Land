@@ -3,7 +3,14 @@ import { z } from 'zod'
 export const REPORT_ROLES = ['部门Leader', '技术研发', '老板'] as const
 export type ReportRole = (typeof REPORT_ROLES)[number]
 
-export const REPORT_TYPES = ['日报', '周报', '月报', '季度总结', '半年总结', '年度总结'] as const
+export const REPORT_TYPES = [
+  '日报',
+  '周报',
+  '月报',
+  '季度总结',
+  '半年总结',
+  '年度总结',
+] as const
 export type ReportType = (typeof REPORT_TYPES)[number]
 
 export const promptTemplateWeeklyReportInputSchema = z.object({
@@ -20,4 +27,6 @@ export const promptTemplateWeeklyReportInputSchema = z.object({
   customPrompt: z.string().optional().default(''),
 })
 
-export type PromptTemplateWeeklyReportInput = z.infer<typeof promptTemplateWeeklyReportInputSchema>
+export type PromptTemplateWeeklyReportInput = z.infer<
+  typeof promptTemplateWeeklyReportInputSchema
+>

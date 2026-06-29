@@ -46,10 +46,7 @@ export class ChatService implements DemoRunner {
     ctx.sessionManager.addMessage(ctx.sessionId, 'assistant', fullContent)
   }
 
-  private prepare(
-    body: unknown,
-    modelType: 'stable' | 'streaming',
-  ): PrepareResult {
+  private prepare(body: unknown, modelType: 'stable' | 'streaming'): PrepareResult {
     const input = this.parseInput(body)
     const sessionManager = this.aiService.getSessionManager()
     const sessionId = this.ensureSession(sessionManager, input.sessionId)
@@ -108,8 +105,10 @@ export class ChatService implements DemoRunner {
   private buildHistoryMessages(
     history: { role: string; content: string }[],
   ): (HumanMessage | AIMessage)[] {
-    return history.slice(-20).map((msg) =>
-      msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content),
-    )
+    return history
+      .slice(-20)
+      .map((msg) =>
+        msg.role === 'user' ? new HumanMessage(msg.content) : new AIMessage(msg.content),
+      )
   }
 }

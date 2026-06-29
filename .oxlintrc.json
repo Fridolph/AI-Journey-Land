@@ -1,19 +1,56 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
   "env": {
+    "builtin": true,
     "browser": true,
     "node": true
   },
+  "plugins": ["oxc", "typescript", "unicorn", "promise", "node", "vitest", "vue"],
   "ignorePatterns": [
-    "node_modules/**",
-    "dist/**",
-    "coverage/**",
+    ".git/**",
     ".turbo/**",
-    ".nuxt/**",
-    ".output/**",
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
     "apps/web/.nuxt/**",
     "apps/web/.output/**",
+    "apps/api/dist/**",
     "packages/*/dist/**",
-    "apps/api/dist/**"
+    "pnpm-lock.yaml",
+    "docs/**"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-unused-expressions": "warn",
+    "no-shadow": "warn",
+    "block-scoped-var": "off",
+    "no-useless-escape": "warn",
+    "typescript/no-explicit-any": "off",
+    "typescript/no-extraneous-class": "off",
+    "typescript/triple-slash-reference": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/prefer-add-event-listener": "off",
+    "vitest/require-mock-type-parameters": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.{test,spec}.ts", "**/__tests__/**/*.ts"],
+      "globals": {
+        "afterAll": "readonly",
+        "afterEach": "readonly",
+        "beforeAll": "readonly",
+        "beforeEach": "readonly",
+        "describe": "readonly",
+        "expect": "readonly",
+        "it": "readonly",
+        "test": "readonly",
+        "vi": "readonly"
+      }
+    }
   ]
 }

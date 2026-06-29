@@ -124,15 +124,18 @@ export function useDemoRunner() {
     mode.value = 'streaming'
 
     try {
-      const response = await fetch(`${apiBase.value}/demos/${selectedDemo.value.id}/stream`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${apiBase.value}/demos/${selectedDemo.value.id}/stream`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            input: { ...form },
+          }),
         },
-        body: JSON.stringify({
-          input: { ...form },
-        }),
-      })
+      )
 
       if (!response.body) {
         throw new Error('当前浏览器没有返回可读流。')
