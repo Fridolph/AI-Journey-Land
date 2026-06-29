@@ -10,51 +10,29 @@ export class CardsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: QueryCardsDto) {
-    const page = query.page
-    const pageSize = query.pageSize
+    const { keyword, page, pageSize, difficulty, status, category } = query
     const skip = (page - 1) * pageSize
     const take = pageSize
     const where: Prisma.CardWhereInput = {}
 
-    if (query.keyword) {
+    if (keyword) {
       where.OR = [
-        {
-          title: {
-            contains: query.keyword,
-            mode: 'insensitive',
-          },
-        },
-        {
-          summary: {
-            contains: query.keyword,
-            mode: 'insensitive',
-          },
-        },
-        {
-          content: {
-            contains: query.keyword,
-            mode: 'insensitive',
-          },
-        },
+        { title:   { contains: keyword, mode: 'insensitive' } },
+        { summary: { contains: keyword, mode: 'insensitive' } },
+        { content: { contains: keyword, mode: 'insensitive' } },
       ]
     }
-    if (query.status) where.status = query.status
-    if (query.category) where.category = query.category
-    if (query.difficulty) where.difficulty = query.difficulty
+    if (difficulty) where.difficulty = difficulty
+    if (status) where.status = status
+    if (category) where.category = category
 
     const orderBy = {
       [query.sortBy]: query.sortOrder,
     } satisfies Prisma.CardOrderByWithRelationInput
     const [items, total] = await this.prisma.$transaction([
-      this.prisma.card.findMany({
-        where,
-        skip,
-        take,
-        orderBy,
-      }),
+      this.prisma.card.findMany({ where, skip, take, orderBy }),
       this.prisma.card.count({ where }),
     ])
-
     return {
       items,
       meta: {
@@ -69,49 +47,40 @@ export class CardsService {
   }
 
   async findOne(id: string) {
-    const card = await this.prisma.card.findUnique({
-      where: { id },
-    })
-
-    if (!card) throw new NotFoundException('卡片不存在')
-
+    const card = await this.prisma.card.findUnique({ where: { id } })
+    if (!card) throw new NotFoundException('未找到匹配记录')
     return card
   }
 
-  async create(createCardDto: CreateCardDto) {
+  async create(dto: CreateCardDto) {
     return this.prisma.card.create({
       data: {
-        title: createCardDto.title,
-        summary: createCardDto.summary,
-        content: createCardDto.content || '',
-        category: createCardDto.category,
-        difficulty: createCardDto.difficulty,
-        status: createCardDto.status,
+        title: dto.title,
+        summary: dto.summary || '',
+        content: dto.content || '',
+        category: dto.category || '',
+        difficulty: dto.difficulty,
+        status: dto.status,
       },
     })
   }
 
-  async update(id: string, updateCardDto: UpdateCardDto) {
-    await this.findOne(id)
-
-    return this.prisma.card.update({
-      where: { id },
-      data: {
-        title: updateCardDto.title,
-        summary: updateCardDto.summary,
-        content: updateCardDto.content,
-        category: updateCardDto.category,
-        difficulty: updateCardDto.difficulty,
-        status: updateCardDto.status,
-      },
-    })
+  async update(id: string, dto: UpdateCardDto) {
+    const card = await this.prisma.card.findUnique({ where: { id } })
+    if (!card) throw new NotFoundException('更新失败，未找到匹配项')
+    const data: Prisma.CardUpdateInput = {}
+    if (dto.title !== undefined) data.title = dto.title
+    if (dto.summary !== undefined) data.summary = dto.summary
+    if (dto.content !== undefined) data.content = dto.content
+    if (dto.category !== undefined) data.category = dto.category
+    if (dto.difficulty !== undefined) data.difficulty = dto.difficulty
+    if (dto.status !== undefined) data.status = dto.status
+    return this.prisma.card.update({ where: { id }, data })
   }
 
   async remove(id: string) {
-    await this.findOne(id)
-
-    return this.prisma.card.delete({
-      where: { id },
-    })
+    const card = await this.prisma.card.findUnique({ where: { id } })
+    if (!card) throw new NotFoundException('删除失败，未找到匹配项')
+    return this.prisma.card.delete({ where: { id } })
   }
 }

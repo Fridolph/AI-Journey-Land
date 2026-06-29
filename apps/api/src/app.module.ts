@@ -6,10 +6,9 @@ import { AuthModule } from './auth/auth.module'
 import { ChatModule } from './chat/chat.module'
 import { ChatMvpModule } from './chat-mvp/chat-mvp.module'
 import { DemosModule } from './demos/demos.module'
-// [LEARN] Cards/Prisma 待从零构建，暂时注释
-// import { CardsModule } from './cards/cards.module'
+import { CardsModule } from './cards/cards.module'
 import { HealthController } from './health.controller'
-// import { PrismaModule } from './prisma/prisma.module'
+import { PrismaModule } from './prisma/prisma.module'
 
 @Module({
   imports: [
@@ -17,14 +16,14 @@ import { HealthController } from './health.controller'
       isGlobal: true,
       envFilePath: ['apps/api/.env', '.env'],
     }),
-    // PrismaModule,
+    PrismaModule,
     AiModule,
     AiChatModule,
     AuthModule,
     ChatModule,
     ChatMvpModule,
     DemosModule,
-    // CardsModule,
+    CardsModule,
   ],
   controllers: [HealthController],
 })
